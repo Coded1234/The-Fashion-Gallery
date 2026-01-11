@@ -6,9 +6,19 @@ const { connectDB } = require('../server/config/database');
 let dbInitialized = false;
 
 module.exports = async (req, res) => {
-  if (!dbInitialized) {
-    await connectDB();
-    dbInitialized = true;
+  try {
+    if (!dbInitialized) {
+      console.log('Initializing database connection...');
+      await connectDB();
+      dbInitialized = true;
+      console.log('Database connected successfully');
+    }
+    return app(req, res);
+  } catch (error) {
+    console.error('API Error:', error);
+    return res.status(500).json({ 
+      message: 'Internal server error',
+      error: error.message 
+    });
   }
-  return app(req, res);
 };
