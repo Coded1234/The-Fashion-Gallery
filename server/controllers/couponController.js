@@ -358,6 +358,61 @@ const recordCouponUsage = async (req, res) => {
   }
 };
 
+// @desc    Get active coupons for homepage
+// @route   GET /api/coupons/active/homepage
+const getActiveCoupons = async (req, res) => {
+  try {
+    const now = new Date();
+    const coupons = await Coupon.findAll({
+      where: {
+        is_active: true,
+        [Op.or]: [
+          { start_date: { [Op.lte]: now }, end_date: { [Op.gte]: now } },
+          { start_date: null, end_date: null },
+          { start_date: { [Op.lte]: now }, end_date: null },
+          { start_date: null, end_date: { [Op.gte]: now } },
+        ],
+      },
+      order: [["created_at", "DESC"]],
+      limit: 1,
+    });
+
+    if (coupons.length > 0) {
+      const coupon = coupons[0];
+      
+      // Generate AI message if not exists
+      if (!coupon.ai_message) {
+        coupon.ai_message = generateCouponMessage(coupon);
+        await coupon.save();
+      }
+
+      res.json({ success: true, coupon });
+    } else {
+      res.json({ success: true, coupon: null });
+    }
+  } catch (error) {
+    console.error("Error fetching active coupons:", error);
+    res.status(500).json({ message: "Failed to fetch active coupons", error: error.message });
+  }
+};
+
+// Helper function to generate AI-style coupon messages
+const generateCouponMessage = (coupon) => {
+  const { discount_type, discount_value, description, code } = coupon;
+  
+  // Round the discount value to remove decimals
+  const roundedValue = Math.round(Number(discount_value));
+  
+  const templates = [
+    `Get ${discount_type === 'percentage' ? roundedValue + '%' : 'GH₵' + roundedValue} Off ${description || 'Your Purchase'}!\nUse code ${code} at checkout`,
+    `Save ${discount_type === 'percentage' ? roundedValue + '%' : 'GH₵' + roundedValue} ${description ? 'on ' + description : 'Today'}!\nApply code ${code} at checkout`,
+    `Exclusive Offer: ${discount_type === 'percentage' ? roundedValue + '% Discount' : 'GH₵' + roundedValue + ' Off'} ${description || ''}!\nShop now with code ${code}`,
+    `Limited Time: ${discount_type === 'percentage' ? roundedValue + '%' : 'GH₵' + roundedValue} Off ${description || 'Everything'}!\nDon't miss out! Use ${code}`,
+  ];
+  
+  return templates[Math.floor(Math.random() * templates.length)];
+};
+
 module.exports = {
   getAllCoupons,
   getCouponById,
@@ -367,4 +422,5 @@ module.exports = {
   validateCoupon,
   applyCouponToOrder,
   recordCouponUsage,
+  getActiveCoupons,
 };

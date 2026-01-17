@@ -12,6 +12,7 @@ const ProductCard = ({
   onAddToCart,
   onToggleWishlist,
   isWishlisted: externalWishlisted,
+  showFullDescription = false,
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -95,9 +96,9 @@ const ProductCard = ({
   };
 
   return (
-    <div className="group bg-white rounded-xl shadow-sm overflow-hidden card-hover">
+    <div className="group bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden card-hover">
       {/* Image */}
-      <div className="relative img-zoom aspect-[3/4]">
+      <div className="relative img-zoom aspect-[4/5]">
         <Link to={`/product/${product.id}`}>
           <img
             src={getProductImage(product)}
@@ -121,7 +122,7 @@ const ProductCard = ({
         </div>
 
         {/* Quick Actions */}
-        <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300">
           <button
             onClick={handleToggleWishlist}
             disabled={wishlistLoading}
@@ -130,13 +131,14 @@ const ProductCard = ({
                 ? "bg-red-500 text-white"
                 : "bg-white text-gray-700 hover:bg-red-500 hover:text-white"
             } ${wishlistLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+            aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
           >
             <FiHeart size={18} className={isWishlisted ? "fill-current" : ""} />
           </button>
         </div>
 
         {/* Add to Cart Button */}
-        <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300">
           <button
             onClick={handleAddToCart}
             disabled={product.remainingStock === 0}
@@ -155,39 +157,33 @@ const ProductCard = ({
       {/* Info */}
       <div className="p-4">
         <Link to={`/product/${product.id}`}>
-          <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
-            {product.brand || product.category}
-          </p>
-          <h3 className="font-medium text-gray-800 mb-2 hover:text-primary-500 transition-colors line-clamp-1">
+          <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-2 hover:text-primary-500 transition-colors line-clamp-1">
             {product.name}
           </h3>
+          
+          {/* Description - Desktop Only */}
+          {product.description && (
+            <p className={`hidden lg:block text-sm text-gray-600 dark:text-gray-400 mb-2 ${showFullDescription ? '' : 'overflow-hidden text-ellipsis whitespace-nowrap'}`}>
+              {product.description}
+            </p>
+          )}
         </Link>
-
-        {/* Rating */}
-        {product.reviewCount > 0 && (
-          <div className="flex items-center gap-1 mb-2">
-            <FiStar className="text-yellow-400 fill-yellow-400" size={14} />
-            <span className="text-sm text-gray-600">
-              {product.averageRating} ({product.reviewCount})
-            </span>
-          </div>
-        )}
 
         {/* Price */}
         <div className="flex items-center gap-2">
-          <span className="text-lg font-bold text-gray-900">
-            GH₵{product.price?.toLocaleString()}
+          <span className="text-lg font-bold text-gray-900 dark:text-gray-100">
+            GH₵{Math.round(product.price)?.toLocaleString()}
           </span>
           {product.comparePrice && (
-            <span className="text-sm text-gray-400 line-through">
-              GH₵{product.comparePrice.toLocaleString()}
+            <span className="text-sm text-gray-400 dark:text-gray-500 line-through">
+              GH₵{Math.round(product.comparePrice).toLocaleString()}
             </span>
           )}
         </div>
 
-        {/* Stock Status */}
+        {/* Stock Status - Desktop Only */}
         {product.remainingStock <= 10 && product.remainingStock > 0 && (
-          <p className="text-xs text-orange-500 mt-2">
+          <p className="hidden lg:block text-xs text-orange-500 mt-2">
             Only {product.remainingStock} left in stock
           </p>
         )}

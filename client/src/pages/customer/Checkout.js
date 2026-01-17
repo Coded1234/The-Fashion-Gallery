@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import api from "../../utils/api";
 import { getImageUrl } from "../../utils/imageUrl";
 import toast from "react-hot-toast";
+import AddressMapPicker from "../../components/customer/AddressMapPicker";
 import {
   FiMapPin,
   FiUser,
@@ -49,10 +50,18 @@ const Checkout = () => {
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState("");
 
-  // Shipping cost calculation - ensure all values are numbers
+  // Shipping state for Yango integration
+  const [shippingCost, setShippingCost] = useState(0);
+  const [shippingLoading, setShippingLoading] = useState(false);
+  const [shippingDetails, setShippingDetails] = useState(null);
+  const [shippingCalculated, setShippingCalculated] = useState(false);
+  const [city, setCity] = useState("");
+  const [postalCode, setPostalCode] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState(null);
+
+  // Cost calculation - ensure all values are numbers
   const subtotal = parseFloat(totalAmount) || 0;
-  const shippingCost = subtotal > 50000 ? 0 : 2500;
-  const tax = (subtotal - couponDiscount) * 0.075; // 7.5% VAT on discounted amount
+  const tax = (subtotal - couponDiscount) * 0.0; // Tax included in prices
   const finalTotal = subtotal - couponDiscount + shippingCost + tax;
 
   // Nigerian states
@@ -64,6 +73,10 @@ const Checkout = () => {
 
   const handleInputChange = (e) => {
     setShippingInfo({ ...shippingInfo, [e.target.name]: e.target.value });
+    // Reset shipping calculation when address changes
+    if (e.target.name === "address" || e.target.name === "phone") {
+      setShippingCalculated(false);
+    }
   };
 
   // Coupon functions
@@ -118,11 +131,76 @@ const Checkout = () => {
       toast.error("Please enter a valid email address");
       return false;
     }
+    if (!city) {
+      toast.error("Please enter your city");
+      return false;
+    }
     return true;
+  };
+
+  // Handle address selection from map
+  const handleAddressSelect = (addressData) => {
+    setShippingInfo({
+      ...shippingInfo,
+      address: addressData.address,
+    });
+    setCity(addressData.city);
+    setSelectedLocation({
+      latitude: addressData.latitude,
+      longitude: addressData.longitude,
+    });
+    setShippingCalculated(false);
+  };
+
+  // Calculate shipping rate using Yango API
+  const calculateShipping = async () => {
+    if (!validateShipping()) {
+      return;
+    }
+
+    setShippingLoading(true);
+    try {
+      const response = await api.post("/shipping/calculate", {
+        address: shippingInfo.address,
+        city: city,
+        postalCode: postalCode,
+        phone: shippingInfo.phone,
+      });
+
+      if (response.data.success) {
+        setShippingCost(response.data.data.shippingFee);
+        setShippingDetails(response.data.data);
+        setShippingCalculated(true);
+        toast.success(
+          `Shipping calculated: GH₵${Math.round(response.data.data.shippingFee)}`
+        );
+      }
+    } catch (error) {
+      console.error("Shipping calculation error:", error);
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to calculate shipping. Using estimated rate."
+      );
+      // Fallback to estimated rate
+      setShippingCost(50);
+      setShippingDetails({
+        shippingFee: 50,
+        estimatedDeliveryTime: "2-5 business days",
+        carrier: "Standard Delivery",
+        fallback: true,
+      });
+      setShippingCalculated(true);
+    } finally {
+      setShippingLoading(false);
+    }
   };
 
   const handleContinueToPayment = () => {
     if (validateShipping()) {
+      if (!shippingCalculated) {
+        toast.error("Please calculate shipping cost first");
+        return;
+      }
       setCurrentStep(2);
       window.scrollTo(0, 0);
     }
@@ -133,15 +211,22 @@ const Checkout = () => {
     navigate("/order-summary", {
       state: {
         orderData: {
-          shippingAddress: shippingInfo,
+          shippingAddress: {
+            ...shippingInfo,
+            city,
+            postalCode,
+          },
           paymentMethod: paymentMethod,
           couponId: appliedCoupon?.id || null,
           discount: couponDiscount,
+          shippingDetails: shippingDetails,
         },
         items: items,
         totalAmount: totalAmount,
         coupon: appliedCoupon,
         couponDiscount: couponDiscount,
+        shippingCost: shippingCost,
+        shippingDetails: shippingDetails,
       },
     });
   };
@@ -286,10 +371,22 @@ const Checkout = () => {
                     </div>
                   </div>
 
-                  {/* Address */}
+                  {/* Map Address Picker */}
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                      <FiMapPin className="inline mr-2" />
+                      Select Delivery Location on Map *
+                    </label>
+                    <AddressMapPicker
+                      onAddressSelect={handleAddressSelect}
+                      currentPosition={selectedLocation}
+                    />
+                  </div>
+
+                  {/* Manual Address Override (Optional) */}
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Delivery Address *
+                      Additional Address Details (Optional)
                     </label>
                     <div className="relative">
                       <FiMapPin className="absolute left-4 top-4 text-gray-400" />
@@ -297,11 +394,112 @@ const Checkout = () => {
                         name="address"
                         value={shippingInfo.address}
                         onChange={handleInputChange}
-                        rows="3"
+                        rows="2"
                         className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
-                        placeholder="Enter your full delivery address (e.g., House number, street name, area, city)"
+                        placeholder="Add apartment, floor, building name, or landmarks"
                       />
                     </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      The address above was detected from the map. You can add more details here.
+                    </p>
+                  </div>
+
+                  {/* City (Auto-filled from map) */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      City *
+                    </label>
+                    <input
+                      type="text"
+                      value={city}
+                      onChange={(e) => {
+                        setCity(e.target.value);
+                        setShippingCalculated(false);
+                      }}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 bg-gray-50"
+                      placeholder="Auto-detected from map"
+                      readOnly
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Auto-filled from map selection
+                    </p>
+                  </div>
+
+                  {/* Postal Code (Optional) */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Postal Code (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={postalCode}
+                      onChange={(e) => {
+                        setPostalCode(e.target.value);
+                        setShippingCalculated(false);
+                      }}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      placeholder="e.g., GA-123-4567"
+                    />
+                  </div>
+
+                  {/* Calculate Shipping Button */}
+                  <div className="md:col-span-2">
+                    <button
+                      type="button"
+                      onClick={calculateShipping}
+                      disabled={shippingLoading || !shippingInfo.address || !city}
+                      className="w-full py-3 bg-primary-600 text-white rounded-xl font-medium hover:bg-primary-700 disabled:bg-gray-400 transition-colors flex items-center justify-center gap-2"
+                    >
+                      {shippingLoading ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          Calculating...
+                        </>
+                      ) : shippingCalculated ? (
+                        <>
+                          <FiCheck className="text-white" />
+                          Shipping Calculated
+                        </>
+                      ) : (
+                        <>
+                          <FiTruck />
+                          Calculate Shipping Cost
+                        </>
+                      )}
+                    </button>
+                    
+                    {/* Shipping Details Display */}
+                    {shippingDetails && (
+                      <div className="mt-4 p-4 bg-green-50 rounded-xl border border-green-200">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <p className="font-semibold text-green-800 flex items-center gap-2">
+                              <FiTruck className="text-green-600" />
+                              {shippingDetails.carrier}
+                            </p>
+                            <p className="text-sm text-green-700 mt-1">
+                              {shippingDetails.estimatedDeliveryTime}
+                            </p>
+                            {shippingDetails.distance && (
+                              <p className="text-xs text-green-600 mt-1">
+                                Distance: ~{shippingDetails.distance} km
+                              </p>
+                            )}
+                            {shippingDetails.fallback && (
+                              <p className="text-xs text-amber-600 mt-1">
+                                ⚠ Using estimated rate
+                              </p>
+                            )}
+                          </div>
+                          <div className="text-right">
+                            <p className="text-2xl font-bold text-green-800">
+                              GH₵{Math.round(shippingDetails.shippingFee)}
+                            </p>
+                            <p className="text-xs text-green-600">Shipping Fee</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -583,13 +781,22 @@ const Checkout = () => {
                 <div className="flex justify-between text-gray-600">
                   <span>Shipping</span>
                   <span>
-                    {shippingCost === 0 ? "FREE" : formatPrice(shippingCost)}
+                    {shippingCalculated ? (
+                      shippingCost === 0 ? (
+                        "FREE"
+                      ) : (
+                        `GH₵${Math.round(shippingCost)}`
+                      )
+                    ) : (
+                      <span className="text-amber-600 text-sm">Not calculated</span>
+                    )}
                   </span>
                 </div>
-                <div className="flex justify-between text-gray-600">
-                  <span>Tax (7.5%)</span>
-                  <span>{formatPrice(tax)}</span>
-                </div>
+                {tax > 0 && (
+                  <div className="flex justify-between text-gray-600">
+                    <span>{formatPrice(tax)}</span>
+                  </div>
+                )}
                 <div className="border-t pt-3 flex justify-between text-lg font-bold text-gray-800">
                   <span>Total</span>
                   <span className="gradient-text">
@@ -598,11 +805,12 @@ const Checkout = () => {
                 </div>
               </div>
 
-              {/* Free Shipping Notice */}
-              {subtotal < 50000 && (
-                <div className="mt-4 p-3 bg-yellow-50 rounded-lg">
-                  <p className="text-sm text-yellow-800">
-                    Add {formatPrice(50000 - subtotal)} more for free shipping!
+              {/* Free Shipping Notice - removed since we use Yango */}
+              {shippingDetails && shippingDetails.serviceType && (
+                <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                  <p className="text-sm text-blue-800 flex items-center gap-2">
+                    <FiTruck className="text-blue-600" />
+                    {shippingDetails.carrier} - {shippingDetails.estimatedDeliveryTime}
                   </p>
                 </div>
               )}

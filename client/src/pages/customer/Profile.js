@@ -9,7 +9,6 @@ import {
   FiMail,
   FiPhone,
   FiLock,
-  FiMapPin,
   FiCamera,
   FiEdit2,
   FiSave,
@@ -136,7 +135,7 @@ const Profile = () => {
     if (!file) return;
 
     // Validate file type
-    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif", "image/bmp", "image/heic", "image/heif", "image/avif"];
     if (!allowedTypes.includes(file.type)) {
       toast.error("Please upload a valid image file (JPEG, PNG, or WebP)");
       return;

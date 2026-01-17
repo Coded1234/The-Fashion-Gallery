@@ -20,7 +20,6 @@ const ProductForm = () => {
     comparePrice: "",
     category: "",
     subcategory: "",
-    brand: "",
     totalStock: "",
     sizes: [],
     colors: [],
@@ -36,21 +35,30 @@ const ProductForm = () => {
   const [newSize, setNewSize] = useState("");
   const [newColor, setNewColor] = useState({ name: "", code: "#000000" });
 
+  const availableSizes = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
+  const availableColors = [
+    { name: "Black", code: "#000000" },
+    { name: "White", code: "#FFFFFF" },
+    { name: "Red", code: "#FF0000" },
+    { name: "Blue", code: "#0000FF" },
+    { name: "Green", code: "#00FF00" },
+    { name: "Yellow", code: "#FFFF00" },
+    { name: "Pink", code: "#FFC0CB" },
+    { name: "Purple", code: "#800080" },
+    { name: "Orange", code: "#FFA500" },
+    { name: "Gray", code: "#808080" },
+    { name: "Brown", code: "#A52A2A" },
+    { name: "Navy", code: "#000080" },
+  ];
+
   const categories = [
     {
       value: "men",
       label: "Men",
-      subcategories: ["shirts", "pants", "jackets", "suits"],
     },
     {
       value: "women",
       label: "Women",
-      subcategories: ["dresses", "tops", "skirts", "pants"],
-    },
-    {
-      value: "kids",
-      label: "Kids",
-      subcategories: ["boys", "girls", "babies"],
     },
   ];
 
@@ -70,8 +78,6 @@ const ProductForm = () => {
         price: data.price || "",
         comparePrice: data.comparePrice || "",
         category: data.category || "",
-        subcategory: data.subcategory || "",
-        brand: data.brand || "",
         totalStock: data.totalStock || "",
         sizes: data.sizes || [],
         colors: data.colors || [],
@@ -136,13 +142,12 @@ const ProductForm = () => {
     setExistingImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const addSize = () => {
-    if (newSize && !formData.sizes.includes(newSize)) {
+  const addSize = (size) => {
+    if (size && !formData.sizes.includes(size)) {
       setFormData((prev) => ({
         ...prev,
-        sizes: [...prev.sizes, newSize],
+        sizes: [...prev.sizes, size],
       }));
-      setNewSize("");
     }
   };
 
@@ -153,16 +158,15 @@ const ProductForm = () => {
     }));
   };
 
-  const addColor = () => {
+  const addColor = (color) => {
     if (
-      newColor.name &&
-      !formData.colors.find((c) => (c.name || c) === newColor.name)
+      color &&
+      !formData.colors.find((c) => (c.name || c) === color.name)
     ) {
       setFormData((prev) => ({
         ...prev,
-        colors: [...prev.colors, { name: newColor.name, code: newColor.code }],
+        colors: [...prev.colors, color],
       }));
-      setNewColor({ name: "", code: "#000000" });
     }
   };
 
@@ -198,7 +202,6 @@ const ProductForm = () => {
       }
       submitData.append("category", formData.category);
       submitData.append("subcategory", formData.subcategory);
-      submitData.append("brand", formData.brand);
       submitData.append("totalStock", parseInt(formData.totalStock) || 0);
       submitData.append("isActive", formData.isActive);
       submitData.append("featured", formData.featured);
@@ -230,10 +233,6 @@ const ProductForm = () => {
       setSaving(false);
     }
   };
-
-  const selectedCategory = categories.find(
-    (c) => c.value === formData.category
-  );
 
   if (loading) {
     return (
@@ -298,19 +297,6 @@ const ProductForm = () => {
             </div>
 
             <div>
-              <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-                Brand
-              </label>
-              <input
-                type="text"
-                name="brand"
-                value={formData.brand}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-              />
-            </div>
-
-            <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Category <span className="text-red-500">*</span>
               </label>
@@ -329,27 +315,6 @@ const ProductForm = () => {
                 ))}
               </select>
             </div>
-
-            {selectedCategory && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Subcategory
-                </label>
-                <select
-                  name="subcategory"
-                  value={formData.subcategory}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                >
-                  <option value="">Select Subcategory</option>
-                  {selectedCategory.subcategories.map((sub) => (
-                    <option key={sub} value={sub}>
-                      {sub.charAt(0).toUpperCase() + sub.slice(1)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
           </div>
         </div>
 
@@ -417,20 +382,25 @@ const ProductForm = () => {
                 Sizes
               </label>
               <div className="flex gap-2 mb-2">
-                <input
-                  type="text"
-                  value={newSize}
-                  onChange={(e) => setNewSize(e.target.value)}
-                  placeholder="e.g., XL"
+                <select
+                  value=""
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      addSize(e.target.value);
+                      e.target.value = "";
+                    }
+                  }}
                   className="flex-1 px-3 md:px-4 py-1.5 md:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-                <button
-                  type="button"
-                  onClick={addSize}
-                  className="px-3 md:px-4 py-1.5 md:py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
                 >
-                  Add
-                </button>
+                  <option value="">Select size to add</option>
+                  {availableSizes
+                    .filter((size) => !formData.sizes.includes(size))
+                    .map((size) => (
+                      <option key={size} value={size}>
+                        {size}
+                      </option>
+                    ))}
+                </select>
               </div>
               <div className="flex flex-wrap gap-2">
                 {formData.sizes.map((size, index) => (
@@ -456,32 +426,33 @@ const ProductForm = () => {
                 Colors
               </label>
               <div className="flex gap-2 mb-2">
-                <input
-                  type="text"
-                  value={newColor.name}
-                  onChange={(e) =>
-                    setNewColor((prev) => ({ ...prev, name: e.target.value }))
-                  }
-                  placeholder="Color name (e.g., Red)"
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-                <div className="flex items-center gap-2 px-3 border border-gray-300 rounded-lg">
-                  <input
-                    type="color"
-                    value={newColor.code}
-                    onChange={(e) =>
-                      setNewColor((prev) => ({ ...prev, code: e.target.value }))
+                <select
+                  value=""
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      const selectedColor = availableColors.find(
+                        (c) => c.name === e.target.value
+                      );
+                      if (selectedColor) {
+                        addColor(selectedColor);
+                        e.target.value = "";
+                      }
                     }
-                    className="w-10 h-8 cursor-pointer"
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={addColor}
-                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+                  }}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 >
-                  Add
-                </button>
+                  <option value="">Select color to add</option>
+                  {availableColors
+                    .filter(
+                      (color) =>
+                        !formData.colors.find((c) => (c.name || c) === color.name)
+                    )
+                    .map((color) => (
+                      <option key={color.name} value={color.name}>
+                        {color.name}
+                      </option>
+                    ))}
+                </select>
               </div>
               <div className="flex flex-wrap gap-2">
                 {formData.colors.map((color, index) => {
@@ -541,7 +512,7 @@ const ProductForm = () => {
               </span>
             </label>
             <p className="text-xs text-gray-500 mt-2">
-              Max 5 images. Supported formats: JPG, PNG, WEBP
+              Max 5 images. All common image formats supported (JPG, PNG, WEBP, HEIC, etc.)
             </p>
           </div>
 

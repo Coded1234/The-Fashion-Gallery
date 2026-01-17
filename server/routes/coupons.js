@@ -8,8 +8,12 @@ const {
   deleteCoupon,
   validateCoupon,
   recordCouponUsage,
+  getActiveCoupons,
 } = require("../controllers/couponController");
 const { protect, adminOnly } = require("../middleware/auth");
+
+// Public routes
+router.get("/active/homepage", getActiveCoupons);
 
 // Customer routes
 router.post("/validate", protect, validateCoupon);

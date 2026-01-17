@@ -56,15 +56,6 @@ const Contact = () => {
 
   const contactInfo = [
     {
-      icon: FiMapPin,
-      title: "Visit Us",
-      details: [
-        "Enam's Clothings Headquarters",
-        "Accra Mall, Spintex Road",
-        "Accra, Ghana",
-      ],
-    },
-    {
       icon: FiPhone,
       title: "Call Us",
       details: ["+233 XX XXX XXXX", "+233 XX XXX XXXX"],
@@ -149,7 +140,7 @@ const Contact = () => {
       {/* Contact Info Cards */}
       <section className="py-12 -mt-8">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {contactInfo.map((info, index) => (
               <div
                 key={index}
@@ -312,22 +303,8 @@ const Contact = () => {
               </form>
             </div>
 
-            {/* Map & Additional Info */}
+            {/* Additional Info */}
             <div className="space-y-6">
-              {/* Map Placeholder */}
-              <div className="bg-white rounded-2xl shadow-sm overflow-hidden h-80">
-                <iframe
-                  title="Store Location"
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3970.9988849285244!2d-0.16916068573499!3d5.5888849351738!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xfdf9084b2b7a773%3A0xbf5ef1ff2d0f4ba8!2sAccra%20Mall!5e0!3m2!1sen!2sgh!4v1641234567890!5m2!1sen!2sgh"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen=""
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                />
-              </div>
-
               {/* FAQ Link */}
               <div className="bg-white rounded-2xl shadow-sm p-6">
                 <h3 className="font-semibold text-gray-800 mb-2">

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
 import { logout } from "../../redux/slices/authSlice";
+import api from "../../utils/api";
 import {
   FiShoppingCart,
   FiHeart,
@@ -13,8 +14,8 @@ import {
   FiChevronDown,
 } from "react-icons/fi";
 
-const promoMessages = [
-  "Free shipping on orders over GH₵50,000",
+const defaultPromoMessages = [
+  "Free shipping on orders over GH₵1,000",
   "🔥 New arrivals just dropped!",
   "💫 Up to 30% off on selected items",
   "📦 Fast & secure delivery nationwide",
@@ -26,7 +27,34 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [promoIndex, setPromoIndex] = useState(0);
+  const [promoMessages, setPromoMessages] = useState(defaultPromoMessages);
   const dropdownRef = useRef(null);
+
+  // Fetch active coupon and add to promo messages
+  useEffect(() => {
+    const fetchActiveCoupon = async () => {
+      try {
+        const response = await api.get("/coupons/active/homepage");
+        if (response.data.success && response.data.coupon) {
+          const coupon = response.data.coupon;
+          const couponMessage =
+            coupon.ai_message
+              ?.split("\n")[0]
+              ?.replace(/(\d+)\.\d+%/g, "$1%")
+              .replace(/GH₵(\d+)\.\d+/g, "GH₵$1") ||
+            `🎉 Get ${
+              coupon.discount_type === "percentage"
+                ? Math.round(coupon.discount_value) + "%"
+                : "GH₵" + Math.round(coupon.discount_value)
+            } Off ${coupon.description || "Your Purchase"}!`;
+          setPromoMessages([couponMessage, ...defaultPromoMessages]);
+        }
+      } catch (error) {
+        console.error("Error fetching active coupon:", error);
+      }
+    };
+    fetchActiveCoupon();
+  }, []);
 
   // Rotate promo messages
   useEffect(() => {
@@ -34,7 +62,7 @@ const Navbar = () => {
       setPromoIndex((prev) => (prev + 1) % promoMessages.length);
     }, 4000);
     return () => clearInterval(interval);
-  }, []);
+  }, [promoMessages.length]);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -44,7 +72,6 @@ const Navbar = () => {
   const categories = [
     { name: "Men", path: "/shop/men" },
     { name: "Women", path: "/shop/women" },
-    { name: "Kids", path: "/shop/kids" },
   ];
 
   const handleSearch = (e) => {
@@ -58,7 +85,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate("/");
+    navigate("/login");
   };
 
   // Close dropdown when clicking outside
@@ -114,12 +141,16 @@ const Navbar = () => {
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="p-2 md:hidden hover:bg-gray-100 rounded-full"
+            aria-label="Toggle mobile menu"
           >
             <FiMenu size={24} />
           </button>
 
           {/* Logo */}
-          <Link to="/" className="text-xl sm:text-2xl font-bold gradient-text whitespace-nowrap">
+          <Link
+            to="/"
+            className="text-xl sm:text-2xl font-bold gradient-text whitespace-nowrap"
+          >
             Enam's Clothings
           </Link>
 
@@ -142,6 +173,7 @@ const Navbar = () => {
             <button
               onClick={() => setSearchOpen(!searchOpen)}
               className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              aria-label="Toggle search"
             >
               <FiSearch size={20} />
             </button>
@@ -150,6 +182,7 @@ const Navbar = () => {
             <Link
               to="/wishlist"
               className="p-2 hover:bg-gray-100 rounded-full transition-colors hidden md:block"
+              aria-label="View wishlist"
             >
               <FiHeart size={20} />
             </Link>
@@ -158,6 +191,7 @@ const Navbar = () => {
             <Link
               to="/cart"
               className="p-2 hover:bg-gray-100 rounded-full transition-colors relative"
+              aria-label={`Shopping cart with ${items.length} items`}
             >
               <FiShoppingCart size={20} />
               {items.length > 0 && (
@@ -173,6 +207,8 @@ const Navbar = () => {
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-full"
+                  aria-label="User menu"
+                  aria-expanded={dropdownOpen}
                 >
                   <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center text-white font-medium">
                     {user?.firstName?.[0]}
@@ -414,7 +450,7 @@ const Navbar = () => {
               📞 +233256810699
             </p>
             <p className="text-xs text-gray-400 text-center mt-1">
-              Free shipping on orders over GH₵50,000
+              Free shipping on orders over GH₵1,000
             </p>
           </div>
         </div>

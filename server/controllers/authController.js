@@ -228,11 +228,17 @@ const uploadAvatar = async (req, res) => {
       "image/jpg",
       "image/png",
       "image/webp",
+      "image/gif",
+      "image/bmp",
+      "image/tiff",
+      "image/heic",
+      "image/heif",
+      "image/avif",
     ];
     if (!allowedMimeTypes.includes(req.file.mimetype)) {
       return res.status(400).json({
         message:
-          "Invalid file type. Only JPEG, PNG and WebP images are allowed",
+          "Invalid file type. Only image files are allowed",
       });
     }
 

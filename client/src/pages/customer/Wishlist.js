@@ -482,18 +482,7 @@ const Wishlist = () => {
                 </h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                   {recentlyViewed.map((product) => {
-                    const images = Array.isArray(product.images)
-                      ? product.images
-                      : [];
-                    const imageUrl =
-                      images.length > 0
-                        ? images[0].startsWith("http")
-                          ? images[0]
-                          : `${
-                              process.env.REACT_APP_API_URL ||
-                              "http://localhost:5000"
-                            }${images[0]}`
-                        : "/placeholder.jpg";
+                    const imageUrl = getProductImage(product);
                     const price = parseFloat(product.price) || 0;
                     const salePrice = parseFloat(product.salePrice) || 0;
                     const hasDiscount = salePrice > 0 && salePrice < price;

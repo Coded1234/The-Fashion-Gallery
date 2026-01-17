@@ -10,7 +10,6 @@ const getProducts = async (req, res) => {
       page = 1,
       limit = 12,
       category,
-      subcategory,
       minPrice,
       maxPrice,
       size,
@@ -25,7 +24,6 @@ const getProducts = async (req, res) => {
     const where = { isActive: true };
 
     if (category) where.category = category;
-    if (subcategory) where.subcategory = subcategory;
     if (brand) where.brand = brand;
     if (featured === "true") where.featured = true;
 

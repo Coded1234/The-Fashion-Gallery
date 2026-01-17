@@ -19,11 +19,10 @@ const IMAGES = {
     main: "/images/banners.jpg?w=1600",
   },
 
-  // Category cards (Men, Women, Kids)
+  // Category cards (Men, Women)
   categories: {
     men: "/images/men.jpg?w=500",
     women: "/images/women.jpg?w=500",
-    kids: "https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?w=500",
   },
 
   // Trending section images

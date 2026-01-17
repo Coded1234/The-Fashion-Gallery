@@ -6,9 +6,7 @@ import {
   FiUser,
   FiMapPin,
   FiCreditCard,
-  FiTruck,
   FiCheck,
-  FiClock,
   FiPrinter,
 } from "react-icons/fi";
 import { ordersAPI, adminAPI } from "../../utils/api";
@@ -135,23 +133,49 @@ const OrderDetail = () => {
           </button>
           <div className="flex items-center gap-2">
             <span className="text-xs md:text-sm text-gray-500">Status:</span>
-            <select
-              value={order.status}
-              onChange={(e) => handleStatusChange(e.target.value)}
-              disabled={updatingStatus}
-              className={`px-2 md:px-3 py-1.5 md:py-2 text-xs md:text-sm font-medium rounded-lg border cursor-pointer ${getStatusColor(
-                order.status
-              )}`}
-            >
-              {statuses.map((status) => (
-                <option key={status} value={status}>
-                  {status.charAt(0).toUpperCase() + status.slice(1)}
-                </option>
-              ))}
-            </select>
+            {order.status === 'delivered' || order.status === 'cancelled' ? (
+              <span
+                className={`px-2 md:px-3 py-1.5 md:py-2 text-xs md:text-sm font-medium rounded-lg border ${getStatusColor(
+                  order.status
+                )}`}
+              >
+                {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+              </span>
+            ) : (
+              <select
+                value={order.status}
+                onChange={(e) => handleStatusChange(e.target.value)}
+                disabled={updatingStatus}
+                className={`px-2 md:px-3 py-1.5 md:py-2 text-xs md:text-sm font-medium rounded-lg border cursor-pointer ${getStatusColor(
+                  order.status
+                )}`}
+              >
+                {statuses.map((status) => (
+                  <option key={status} value={status}>
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Status Locked Message */}
+      {(order.status === 'delivered' || order.status === 'cancelled') && (
+        <div className={`${
+          order.status === 'delivered' 
+            ? 'bg-green-50 border-green-200 text-green-800' 
+            : 'bg-red-50 border-red-200 text-red-800'
+        } border rounded-lg p-3 flex items-center gap-2 text-sm`}>
+          <FiCheck className={order.status === 'delivered' ? 'text-green-600' : 'text-red-600'} />
+          <span>
+            {order.status === 'delivered' 
+              ? 'This order has been delivered. Status is now locked.' 
+              : 'This order has been cancelled. Status is now locked.'}
+          </span>
+        </div>
+      )}
 
       {/* Order Progress */}
       {order.status !== "cancelled" && (

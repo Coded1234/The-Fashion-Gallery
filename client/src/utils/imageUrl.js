@@ -42,6 +42,16 @@ export const getProductImage = (product, index = 0) => {
   const image = product?.images?.[index];
   if (!image) return "/placeholder.jpg";
 
-  const url = typeof image === "string" ? image : image.url;
-  return getImageUrl(url);
+  // Handle string directly
+  if (typeof image === "string") {
+    return getImageUrl(image);
+  }
+
+  // Handle object with url property
+  if (typeof image === "object" && image.url) {
+    return getImageUrl(image.url);
+  }
+
+  // Fallback
+  return "/placeholder.jpg";
 };

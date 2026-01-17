@@ -20,8 +20,15 @@ const OrderSummary = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
-  const { orderData, items, totalAmount, coupon, couponDiscount } =
-    location.state || {};
+  const { 
+    orderData, 
+    items, 
+    totalAmount, 
+    coupon, 
+    couponDiscount,
+    shippingCost: passedShippingCost,
+    shippingDetails 
+  } = location.state || {};
   const [loading, setLoading] = useState(false);
 
   // If no data, redirect back to checkout
@@ -39,8 +46,8 @@ const OrderSummary = () => {
 
   const subtotal = parseFloat(totalAmount) || 0;
   const discount = parseFloat(couponDiscount) || 0;
-  const shippingCost = subtotal > 50000 ? 0 : 2500;
-  const tax = (subtotal - discount) * 0.075;
+  const shippingCost = parseFloat(passedShippingCost) || 0;
+  const tax = (subtotal - discount) * 0.0; // Tax included in prices
   const finalTotal = subtotal - discount + shippingCost + tax;
 
   const handleConfirmOrder = async () => {
@@ -51,6 +58,8 @@ const OrderSummary = () => {
       const finalOrderData = {
         ...orderData,
         total_amount: finalTotal,
+        shipping_fee: shippingCost,
+        shipping_details: shippingDetails,
         ...(coupon && {
           coupon_id: coupon.id,
           discount_amount: discount,
@@ -101,7 +110,7 @@ const OrderSummary = () => {
         // For COD and Bank Transfer, just refresh cart and redirect
         await dispatch(fetchCart());
         toast.success("Order confirmed successfully!");
-        navigate(`/order-detail/${order.id}`);
+        navigate("/orders");
       }
     } catch (error) {
       console.error("Order error:", error);
@@ -323,10 +332,7 @@ const OrderSummary = () => {
                     {shippingCost === 0 ? "Free" : formatPrice(shippingCost)}
                   </span>
                 </div>
-                <div className="flex justify-between text-gray-600">
-                  <span>Tax (7.5%)</span>
-                  <span>{formatPrice(tax)}</span>
-                </div>
+                
                 <div className="pt-3 border-t border-gray-200">
                   <div className="flex justify-between items-center">
                     <span className="text-lg font-semibold text-gray-900">

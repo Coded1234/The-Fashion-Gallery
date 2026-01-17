@@ -35,9 +35,8 @@ const createOrder = async (req, res) => {
       (sum, item) => sum + parseFloat(item.price) * item.quantity,
       0
     );
-    const shippingFee = subtotal > 50000 ? 0 : 2500; // Free shipping over GH₵50,000
-    const tax = subtotal * 0.075; // 7.5% tax
-    const totalAmount = subtotal + shippingFee + tax;
+    const shippingFee = subtotal > 1000 ? 0 : 50; // Free shipping over GH₵1,000
+    const totalAmount = subtotal + shippingFee ;
 
     // Calculate total items (sum of all quantities)
     const totalItems = cart.items.reduce((sum, item) => sum + item.quantity, 0);
@@ -231,6 +230,7 @@ const cancelOrder = async (req, res) => {
               0,
               (product.soldCount || 0) - item.quantity
             );
+            product.remainingStock = (product.totalStock || 0) - product.soldCount;
             await product.save();
           }
         }

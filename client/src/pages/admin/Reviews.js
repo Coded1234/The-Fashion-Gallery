@@ -168,7 +168,7 @@ const Reviews = () => {
                     <th className="px-2 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
                       Product
                     </th>
-                    <th className="px-2 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
+                    <th className="px-2 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Customer
                     </th>
                     <th className="px-2 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -221,7 +221,7 @@ const Reviews = () => {
                             </div>
                           </div>
                         </td>
-                        <td className="px-2 md:px-6 py-2 md:py-4 whitespace-nowrap hidden sm:table-cell">
+                        <td className="px-2 md:px-6 py-2 md:py-4 whitespace-nowrap">
                           <div className="text-xs md:text-sm text-gray-900">
                             {review.user?.firstName} {review.user?.lastName}
                           </div>

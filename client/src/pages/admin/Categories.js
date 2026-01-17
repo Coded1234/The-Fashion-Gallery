@@ -8,7 +8,6 @@ import {
   FiFolderPlus,
   FiX,
   FiCheck,
-  FiMove,
 } from "react-icons/fi";
 import api from "../../utils/api";
 
@@ -345,7 +344,7 @@ const Categories = () => {
         </h3>
         <p className="text-xs md:text-sm text-blue-700">
           The product system currently uses these predefined categories:{" "}
-          <strong>Men</strong>, <strong>Women</strong>, <strong>Kids</strong>.
+          <strong>Men</strong> and <strong>Women</strong>.
           Categories created here can be used for future product organization
           and filtering. To use custom categories with products, the product
           form needs to be updated to use dynamic categories from this list.

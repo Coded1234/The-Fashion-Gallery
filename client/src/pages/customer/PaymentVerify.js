@@ -184,7 +184,7 @@ const PaymentVerify = () => {
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
-              to={`/orders/${order?.id}`}
+              to="/orders"
               className="flex-1 py-4 btn-gradient rounded-xl font-semibold text-center flex items-center justify-center gap-2"
             >
               <FiShoppingBag />

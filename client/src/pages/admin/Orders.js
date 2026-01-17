@@ -88,19 +88,6 @@ const Orders = () => {
     return colors[status] || "bg-gray-100 text-gray-800";
   };
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case "delivered":
-        return <FiCheck size={14} />;
-      case "shipped":
-        return <FiTruck size={14} />;
-      case "cancelled":
-        return <FiX size={14} />;
-      default:
-        return null;
-    }
-  };
-
   const filteredOrders = orders.filter((order) => {
     if (!searchTerm) return true;
     const searchLower = searchTerm.toLowerCase();
@@ -233,23 +220,34 @@ const Orders = () => {
                         </td>
                         <td className="px-2 md:px-6 py-2 md:py-4 whitespace-nowrap">
                           <div className="flex items-center gap-1 md:gap-2">
-                            <select
-                              value={order.status}
-                              onChange={(e) =>
-                                handleStatusChange(order.id, e.target.value)
-                              }
-                              disabled={updatingStatus === order.id}
-                              className={`text-xs font-medium rounded-full px-1.5 md:px-2 py-0.5 md:py-1 border-0 cursor-pointer ${getStatusColor(
-                                order.status
-                              )}`}
-                            >
-                              {statuses.map((status) => (
-                                <option key={status} value={status}>
-                                  {status.charAt(0).toUpperCase() +
-                                    status.slice(1)}
-                                </option>
-                              ))}
-                            </select>
+                            {order.status === 'delivered' || order.status === 'cancelled' ? (
+                              <span
+                                className={`text-xs font-medium rounded-full px-1.5 md:px-2 py-0.5 md:py-1 ${getStatusColor(
+                                  order.status
+                                )}`}
+                              >
+                                {order.status.charAt(0).toUpperCase() +
+                                  order.status.slice(1)}
+                              </span>
+                            ) : (
+                              <select
+                                value={order.status}
+                                onChange={(e) =>
+                                  handleStatusChange(order.id, e.target.value)
+                                }
+                                disabled={updatingStatus === order.id}
+                                className={`text-xs font-medium rounded-full px-1.5 md:px-2 py-0.5 md:py-1 border-0 cursor-pointer ${getStatusColor(
+                                  order.status
+                                )}`}
+                              >
+                                {statuses.map((status) => (
+                                  <option key={status} value={status}>
+                                    {status.charAt(0).toUpperCase() +
+                                      status.slice(1)}
+                                  </option>
+                                ))}
+                              </select>
+                            )}
                             {updatingStatus === order.id && (
                               <LoadingSpinner size="small" />
                             )}

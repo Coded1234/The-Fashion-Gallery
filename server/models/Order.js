@@ -45,6 +45,11 @@ const Order = sequelize.define(
       type: DataTypes.DECIMAL(10, 2),
       defaultValue: 0,
     },
+    shippingDetails: {
+      type: DataTypes.JSONB,
+      allowNull: true,
+      comment: "Stores carrier, service type, estimated delivery, distance, etc.",
+    },
     discount: {
       type: DataTypes.DECIMAL(10, 2),
       defaultValue: 0,

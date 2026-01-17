@@ -61,7 +61,6 @@ const Reports = () => {
         categoryBreakdown: [
           { category: "Men", orders: 68, revenue: 1020000 },
           { category: "Women", orders: 52, revenue: 780000 },
-          { category: "Kids", orders: 24, revenue: 360000 },
         ],
         ordersByStatus: {
           pending: 12,

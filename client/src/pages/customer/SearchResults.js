@@ -4,7 +4,6 @@ import {
   FiSearch,
   FiFilter,
   FiX,
-  FiChevronDown,
   FiGrid,
   FiList,
 } from "react-icons/fi";
@@ -32,7 +31,6 @@ const SearchResults = () => {
     { value: "", label: "All Categories" },
     { value: "men", label: "Men" },
     { value: "women", label: "Women" },
-    { value: "kids", label: "Kids" },
   ];
 
   const sortOptions = [

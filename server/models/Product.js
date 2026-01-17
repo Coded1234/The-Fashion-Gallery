@@ -32,11 +32,7 @@ const Product = sequelize.define(
       allowNull: true,
     },
     category: {
-      type: DataTypes.ENUM("men", "women", "kids"),
-      allowNull: false,
-    },
-    subcategory: {
-      type: DataTypes.STRING(50),
+      type: DataTypes.ENUM("men", "women"),
       allowNull: false,
     },
     images: {
@@ -50,10 +46,6 @@ const Product = sequelize.define(
     colors: {
       type: DataTypes.JSONB,
       defaultValue: [],
-    },
-    brand: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
     },
     tags: {
       type: DataTypes.ARRAY(DataTypes.STRING),
@@ -86,18 +78,12 @@ const Product = sequelize.define(
     remainingStock: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
+      allowNull: false,
     },
   },
   {
     tableName: "products",
     underscored: true,
-    hooks: {
-      beforeSave: (product) => {
-        // Auto-calculate remainingStock before saving
-        product.remainingStock =
-          (product.totalStock || 0) - (product.soldCount || 0);
-      },
-    },
   }
 );
 

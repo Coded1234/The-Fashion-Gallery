@@ -28,7 +28,7 @@ if (isCloudinaryConfigured) {
     cloudinary: cloudinary,
     params: {
       folder: 'clothing-store',
-      allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+      allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'tiff', 'heic', 'heif', 'avif'],
       transformation: [{ width: 800, height: 1000, crop: 'limit' }]
     }
   });
@@ -40,7 +40,7 @@ if (isCloudinaryConfigured) {
     cloudinary: cloudinary,
     params: {
       folder: 'clothing-store/avatars',
-      allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+      allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'heic', 'heif', 'avif'],
       transformation: [{ width: 200, height: 200, crop: 'fill', gravity: 'face' }]
     }
   });

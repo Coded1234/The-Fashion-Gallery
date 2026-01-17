@@ -76,6 +76,11 @@ const Coupon = sequelize.define(
       comment:
         "Array of category names this coupon applies to. Empty means all categories.",
     },
+    ai_message: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      comment: "AI-generated promotional message for the coupon",
+    },
   },
   {
     tableName: "coupons",

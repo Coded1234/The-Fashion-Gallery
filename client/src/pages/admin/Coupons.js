@@ -7,8 +7,6 @@ import {
   FiX,
   FiTag,
   FiPercent,
-  FiDollarSign,
-  FiCalendar,
   FiCheck,
 } from "react-icons/fi";
 import api from "../../utils/api";
@@ -42,7 +40,7 @@ const Coupons = () => {
     applicable_categories: [],
   });
 
-  const categories = ["men", "women", "kids"];
+  const categories = ["men", "women"];
 
   useEffect(() => {
     fetchCoupons();

@@ -213,6 +213,26 @@ const createProduct = async (req, res) => {
     if (productData.totalStock) {
       productData.totalStock = parseInt(productData.totalStock) || 0;
     }
+    
+    // Set remainingStock equal to totalStock for new products (soldCount is 0)
+    productData.remainingStock = productData.totalStock || 0;
+    productData.soldCount = 0;
+
+    // Enforce featured products limit of 4
+    if (productData.featured === true) {
+      const featuredCount = await Product.count({ where: { featured: true } });
+      if (featuredCount >= 4) {
+        // Find the oldest featured product and remove featured status
+        const oldestFeatured = await Product.findOne({
+          where: { featured: true },
+          order: [["createdAt", "ASC"]],
+        });
+        if (oldestFeatured) {
+          oldestFeatured.featured = false;
+          await oldestFeatured.save();
+        }
+      }
+    }
 
     const product = await Product.create(productData);
     res.status(201).json(product);
@@ -285,6 +305,22 @@ const updateProduct = async (req, res) => {
 
     // Remove existingImages from updateData (it's not a model field)
     delete updateData.existingImages;
+
+    // Enforce featured products limit of 4
+    if (updateData.featured === true && product.featured === false) {
+      const featuredCount = await Product.count({ where: { featured: true } });
+      if (featuredCount >= 4) {
+        // Find the oldest featured product and remove featured status
+        const oldestFeatured = await Product.findOne({
+          where: { featured: true },
+          order: [["createdAt", "ASC"]],
+        });
+        if (oldestFeatured) {
+          oldestFeatured.featured = false;
+          await oldestFeatured.save();
+        }
+      }
+    }
 
     await product.update(updateData);
     await product.reload();
@@ -487,6 +523,8 @@ const updateOrderStatus = async (req, res) => {
               }
             }
 
+            // Update remainingStock
+            product.remainingStock = (product.totalStock || 0) - product.soldCount;
             await product.save();
             console.log(
               `Updated soldCount for ${product.name}: +${item.quantity}, total: ${product.soldCount}`
@@ -519,6 +557,8 @@ const updateOrderStatus = async (req, res) => {
               }
             }
 
+            // Update remainingStock
+            product.remainingStock = (product.totalStock || 0) - product.soldCount;
             await product.save();
             console.log(
               `Restored soldCount for ${product.name}: -${item.quantity}, total: ${product.soldCount}`

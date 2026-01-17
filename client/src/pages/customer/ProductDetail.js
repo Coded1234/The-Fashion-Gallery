@@ -9,7 +9,7 @@ import { addToCart } from "../../redux/slices/cartSlice";
 import ProductCard from "../../components/customer/ProductCard";
 import SizeGuide from "../../components/customer/SizeGuide";
 import { reviewsAPI, authAPI } from "../../utils/api";
-import { getProductImage, getImageUrl } from "../../utils/imageUrl";
+import { getProductImage } from "../../utils/imageUrl";
 import { addToRecentlyViewed } from "../../utils/recentlyViewed";
 import toast from "react-hot-toast";
 import {
@@ -356,26 +356,26 @@ const ProductDetail = () => {
             {/* Price */}
             <div className="flex items-baseline gap-4">
               <span className="text-3xl font-bold text-gray-900">
-                GH₵{Number(product.price).toLocaleString()}
+                GH₵{Math.round(Number(product.price)).toLocaleString()}
               </span>
               {product.comparePrice && (
                 <span className="text-xl text-gray-400 line-through">
-                  GH₵{Number(product.comparePrice).toLocaleString()}
+                  GH₵{Math.round(Number(product.comparePrice)).toLocaleString()}
                 </span>
               )}
               {discountPercent > 0 && (
                 <span className="text-green-600 font-medium">
                   Save GH₵
-                  {(
+                  {Math.round(
                     Number(product.comparePrice) - Number(product.price)
                   ).toLocaleString()}
                 </span>
               )}
             </div>
 
-            {/* Short Description */}
+            {/* Description */}
             <p className="text-gray-600 leading-relaxed">
-              {product.description?.substring(0, 200)}...
+              {product.description}
             </p>
 
             {/* Color Selection */}
@@ -482,24 +482,24 @@ const ProductDetail = () => {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-4">
+            <div className="flex gap-2 sm:gap-4">
               <button
                 onClick={handleAddToCart}
                 disabled={selectedSizeStock === 0}
-                className="flex-1 py-4 border-2 border-primary-500 text-primary-500 rounded-xl font-semibold hover:bg-primary-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 py-2 sm:py-4 text-sm sm:text-base border-2 border-primary-500 text-primary-500 rounded-lg sm:rounded-xl font-semibold hover:bg-primary-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Add to Cart
               </button>
               <button
                 onClick={handleBuyNow}
                 disabled={selectedSizeStock === 0}
-                className="flex-1 py-4 btn-gradient rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 py-2 sm:py-4 text-sm sm:text-base btn-gradient rounded-lg sm:rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Buy Now
               </button>
               <button
                 onClick={handleToggleWishlist}
-                className={`p-4 border-2 rounded-xl transition-colors ${
+                className={`p-2 sm:p-4 border-2 rounded-lg sm:rounded-xl transition-colors ${
                   isWishlisted
                     ? "bg-red-50 border-red-500 text-red-500"
                     : "border-gray-300 hover:border-red-500 hover:text-red-500"
@@ -507,8 +507,11 @@ const ProductDetail = () => {
               >
                 <FiHeart
                   className={isWishlisted ? "fill-red-500" : ""}
-                  size={24}
+                  size={20}
                 />
+              </button>
+              <button className="p-2 sm:p-4 border-2 border-gray-300 rounded-lg sm:rounded-xl hover:border-primary-500 hover:text-primary-500 transition-colors">
+                <FiShare2 size={20} />
               </button>
             </div>
 
@@ -529,14 +532,6 @@ const ProductDetail = () => {
                 <FiShield className="mx-auto mb-2 text-primary-500" size={24} />
                 <p className="text-sm text-gray-600">Secure Payment</p>
               </div>
-            </div>
-
-            {/* Share */}
-            <div className="flex items-center gap-4 pt-4">
-              <span className="text-gray-600">Share:</span>
-              <button className="p-2 hover:bg-gray-100 rounded-full">
-                <FiShare2 />
-              </button>
             </div>
           </div>
         </div>
@@ -807,9 +802,8 @@ const ProductDetail = () => {
                     Delivery Information
                   </h4>
                   <ul className="text-gray-600 space-y-2">
-                    <li>• Standard delivery: 3-5 business days</li>
-                    <li>• Express delivery: 1-2 business days</li>
-                    <li>• Free shipping on orders over GH₵50,000</li>
+                    <li>• Delivery: 1-2 business days</li>
+                    <li>• Free shipping on orders over GH₵1,000</li>
                   </ul>
                 </div>
                 <div>
@@ -817,7 +811,7 @@ const ProductDetail = () => {
                     Return Policy
                   </h4>
                   <ul className="text-gray-600 space-y-2">
-                    <li>• 30-day return policy</li>
+                    <li>• 7-day return policy</li>
                     <li>• Items must be unworn with original tags</li>
                     <li>• Free returns on all orders</li>
                   </ul>

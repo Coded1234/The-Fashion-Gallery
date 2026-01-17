@@ -145,7 +145,7 @@ const Cart = () => {
 
   // Calculate summary - ensure all values are numbers
   const subtotal = parseFloat(totalAmount) || 0;
-  const shippingFee = subtotal > 50000 ? 0 : 2500;
+  const shippingFee = 0; // Will be calculated at checkout with Yango
   const total = subtotal - couponDiscount + shippingFee;
 
   // Empty cart state
@@ -320,11 +320,11 @@ const Cart = () => {
                     {/* Price */}
                     <div className="text-right">
                       <p className="text-lg font-bold text-gray-800">
-                        GH₵{(item.price * item.quantity).toLocaleString()}
+                        GH₵{Math.round(item.price * item.quantity).toLocaleString()}
                       </p>
                       {item.quantity > 1 && (
                         <p className="text-sm text-gray-500">
-                          GH₵{item.price.toLocaleString()} each
+                          GH₵{Math.round(item.price).toLocaleString()} each
                         </p>
                       )}
                     </div>
@@ -417,18 +417,8 @@ const Cart = () => {
                 )}
                 <div className="flex justify-between text-gray-600">
                   <span>Shipping</span>
-                  {shippingFee === 0 ? (
-                    <span className="text-green-600">Free</span>
-                  ) : (
-                    <span>GH₵{shippingFee.toLocaleString()}</span>
-                  )}
+                  <span className="text-sm text-gray-500">Calculated at checkout</span>
                 </div>
-                {shippingFee > 0 && (
-                  <p className="text-sm text-gray-500">
-                    Add GH₵{(50000 - subtotal).toLocaleString()} more for free
-                    shipping
-                  </p>
-                )}
               </div>
 
               {/* Total */}

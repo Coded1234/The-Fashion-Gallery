@@ -48,30 +48,7 @@ const Shop = () => {
     { value: "", label: "All Categories" },
     { value: "men", label: "Men" },
     { value: "women", label: "Women" },
-    { value: "kids", label: "Kids" },
   ];
-
-  const subcategories = {
-    men: [
-      "shirts",
-      "t-shirts",
-      "pants",
-      "jackets",
-      "suits",
-      "shorts",
-      "hoodies",
-    ],
-    women: [
-      "dresses",
-      "shirts",
-      "t-shirts",
-      "pants",
-      "skirts",
-      "jackets",
-      "hoodies",
-    ],
-    kids: ["shirts", "t-shirts", "pants", "dresses", "shorts", "jackets"],
-  };
 
   const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
 
@@ -98,7 +75,6 @@ const Shop = () => {
     const params = {
       page: searchParams.get("page") || 1,
       category: category || searchParams.get("category") || filters.category,
-      subcategory: searchParams.get("subcategory") || filters.subcategory,
       minPrice: searchParams.get("minPrice") || filters.minPrice,
       maxPrice: searchParams.get("maxPrice") || filters.maxPrice,
       size: searchParams.get("size") || filters.size,
@@ -198,11 +174,11 @@ const Shop = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Page Header */}
       <div className="bg-white border-b">
-        <div className="container mx-auto px-4 py-8">
-          <h1 className="text-3xl font-bold text-gray-800 capitalize">
+        <div className="container mx-auto px-4 py-4 sm:py-8">
+          <h1 className="text-xl sm:text-3xl font-bold text-gray-800 capitalize">
             {category || "All Products"}
           </h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-sm sm:text-base text-gray-600 mt-1 sm:mt-2">
             {pagination.total} products found
           </p>
         </div>
@@ -248,84 +224,44 @@ const Shop = () => {
                 </div>
               </FilterSection>
 
-              {/* Subcategory Filter */}
-              {filters.category && subcategories[filters.category] && (
-                <FilterSection title="Subcategory" name="subcategory">
-                  <div className="space-y-2">
-                    {subcategories[filters.category].map((sub) => (
-                      <label
-                        key={sub}
-                        className="flex items-center gap-3 cursor-pointer"
-                      >
-                        <input
-                          type="radio"
-                          name="subcategory"
-                          checked={filters.subcategory === sub}
-                          onChange={() =>
-                            handleFilterChange("subcategory", sub)
-                          }
-                          className="w-4 h-4 text-primary-500 focus:ring-primary-500"
-                        />
-                        <span className="text-gray-600 capitalize">{sub}</span>
-                      </label>
-                    ))}
-                  </div>
-                </FilterSection>
-              )}
-
               {/* Price Filter */}
-              <FilterSection title="Price Range" name="price">
-                <div className="space-y-4">
+              <FilterSection title="Price, GH₵" name="price">
+                <div className="space-y-3">
                   <div className="flex gap-2">
                     <input
                       type="number"
-                      placeholder="Min"
+                      placeholder="min"
                       value={tempMinPrice}
                       onChange={handleMinPriceChange}
-                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
+                    <span className="flex items-center text-gray-400">—</span>
                     <input
                       type="number"
-                      placeholder="Max"
+                      placeholder="max"
                       value={tempMaxPrice}
                       onChange={handleMaxPriceChange}
-                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
-                  <button
-                    onClick={applyPriceFilter}
-                    className="w-full px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors font-medium"
-                  >
-                    Apply
-                  </button>
-                  <div className="flex flex-wrap gap-2">
-                    {[
-                      "Under GH₵10k",
-                      "GH₵10k-GH₵30k",
-                      "GH₵30k-GH₵50k",
-                      "Over GH₵50k",
-                    ].map((range, i) => {
-                      const ranges = [
-                        { min: "", max: "10000" },
-                        { min: "10000", max: "30000" },
-                        { min: "30000", max: "50000" },
-                        { min: "50000", max: "" },
-                      ];
-                      return (
-                        <button
-                          key={range}
-                          onClick={() => {
-                            setTempMinPrice(ranges[i].min);
-                            setTempMaxPrice(ranges[i].max);
-                            handleFilterChange("minPrice", ranges[i].min);
-                            handleFilterChange("maxPrice", ranges[i].max);
-                          }}
-                          className="px-3 py-1 text-sm border rounded-full hover:border-primary-500 hover:text-primary-500 transition-colors"
-                        >
-                          {range}
-                        </button>
-                      );
-                    })}
+                  <div className="flex items-center justify-between pt-2">
+                    <button
+                      onClick={() => {
+                        setTempMinPrice("");
+                        setTempMaxPrice("");
+                        handleFilterChange("minPrice", "");
+                        handleFilterChange("maxPrice", "");
+                      }}
+                      className="text-xs text-gray-500 hover:text-gray-700 uppercase"
+                    >
+                      Clear
+                    </button>
+                    <button
+                      onClick={applyPriceFilter}
+                      className="text-xs text-green-600 hover:text-green-700 font-medium uppercase"
+                    >
+                      Save
+                    </button>
                   </div>
                 </div>
               </FilterSection>
@@ -450,16 +386,6 @@ const Shop = () => {
                     </button>
                   </span>
                 )}
-                {filters.subcategory && (
-                  <span className="inline-flex items-center gap-2 px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm">
-                    {filters.subcategory}
-                    <button
-                      onClick={() => handleFilterChange("subcategory", "")}
-                    >
-                      <FiX size={14} />
-                    </button>
-                  </span>
-                )}
                 {filters.size && (
                   <span className="inline-flex items-center gap-2 px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm">
                     Size: {filters.size}
@@ -532,7 +458,7 @@ const Shop = () => {
               <div
                 className={`grid gap-6 ${
                   viewMode === "grid"
-                    ? "grid-cols-2 md:grid-cols-3"
+                    ? "grid-cols-2 md:grid-cols-4"
                     : "grid-cols-1"
                 }`}
               >
@@ -690,39 +616,53 @@ const Shop = () => {
               </FilterSection>
 
               {/* Price */}
-              <FilterSection title="Price Range" name="price">
-                <div className="space-y-4">
+              <FilterSection title="Price, GH₵" name="price">
+                <div className="space-y-3">
                   <div className="flex gap-2">
                     <input
                       type="number"
-                      placeholder="Min"
+                      placeholder="min"
                       value={tempMinPrice}
                       onChange={handleMinPriceChange}
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="w-full px-3 py-2 border rounded-lg text-sm"
                     />
+                    <span className="flex items-center text-gray-400">—</span>
                     <input
                       type="number"
-                      placeholder="Max"
+                      placeholder="max"
                       value={tempMaxPrice}
                       onChange={handleMaxPriceChange}
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="w-full px-3 py-2 border rounded-lg text-sm"
                     />
                   </div>
-                  <button
-                    onClick={applyPriceFilter}
-                    className="w-full px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors font-medium"
-                  >
-                    Apply
-                  </button>
+                  <div className="flex items-center justify-between pt-2">
+                    <button
+                      onClick={() => {
+                        setTempMinPrice("");
+                        setTempMaxPrice("");
+                        handleFilterChange("minPrice", "");
+                        handleFilterChange("maxPrice", "");
+                      }}
+                      className="text-xs text-gray-500 hover:text-gray-700 uppercase"
+                    >
+                      Clear
+                    </button>
+                    <button
+                      onClick={applyPriceFilter}
+                      className="text-xs text-green-600 hover:text-green-700 font-medium uppercase"
+                    >
+                      Save
+                    </button>
+                  </div>
                 </div>
               </FilterSection>
             </div>
 
             {/* Apply Button */}
-            <div className="p-4 border-t sticky bottom-0 bg-white">
+            <div className="p-3 sm:p-4 border-t sticky bottom-0 bg-white">
               <button
                 onClick={() => setMobileFilterOpen(false)}
-                className="w-full py-3 bg-primary-500 text-white rounded-lg font-medium"
+                className="w-full py-2 sm:py-3 text-sm sm:text-base bg-primary-500 text-white rounded-lg font-medium"
               >
                 Apply Filters
               </button>

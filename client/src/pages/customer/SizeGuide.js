@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 
 const SizeGuidePage = () => {
   const [activeCategory, setActiveCategory] = useState("men");
@@ -7,7 +6,6 @@ const SizeGuidePage = () => {
   const categories = [
     { id: "men", name: "Men's Clothing" },
     { id: "women", name: "Women's Clothing" },
-    { id: "kids", name: "Kids' Clothing" },
   ];
 
   const sizeCharts = {
@@ -96,43 +94,6 @@ const SizeGuidePage = () => {
             ["30", "72-74", "96-98", "79"],
             ["32", "76-78", "100-102", "81"],
             ["34", "80-82", "104-106", "81"],
-          ],
-        },
-      ],
-    },
-    kids: {
-      title: "Kids' Size Guide",
-      sections: [
-        {
-          name: "Toddlers (2-6 years)",
-          headers: ["Size", "Age", "Height (cm)", "Chest (cm)", "Waist (cm)"],
-          rows: [
-            ["2-3Y", "2-3 yrs", "92-98", "52-54", "50-51"],
-            ["3-4Y", "3-4 yrs", "98-104", "54-56", "51-52"],
-            ["4-5Y", "4-5 yrs", "104-110", "56-58", "52-53"],
-            ["5-6Y", "5-6 yrs", "110-116", "58-60", "53-54"],
-          ],
-        },
-        {
-          name: "Kids (6-12 years)",
-          headers: ["Size", "Age", "Height (cm)", "Chest (cm)", "Waist (cm)"],
-          rows: [
-            ["6-7Y", "6-7 yrs", "116-122", "60-62", "54-55"],
-            ["7-8Y", "7-8 yrs", "122-128", "62-64", "55-56"],
-            ["8-9Y", "8-9 yrs", "128-134", "64-66", "56-57"],
-            ["9-10Y", "9-10 yrs", "134-140", "66-68", "57-58"],
-            ["10-11Y", "10-11 yrs", "140-146", "68-70", "58-60"],
-            ["11-12Y", "11-12 yrs", "146-152", "70-72", "60-62"],
-          ],
-        },
-        {
-          name: "Teens (12+ years)",
-          headers: ["Size", "Age", "Height (cm)", "Chest (cm)", "Waist (cm)"],
-          rows: [
-            ["12-13Y", "12-13 yrs", "152-158", "72-76", "62-64"],
-            ["13-14Y", "13-14 yrs", "158-164", "76-80", "64-66"],
-            ["14-15Y", "14-15 yrs", "164-170", "80-84", "66-68"],
-            ["15-16Y", "15-16 yrs", "170-176", "84-88", "68-70"],
           ],
         },
       ],

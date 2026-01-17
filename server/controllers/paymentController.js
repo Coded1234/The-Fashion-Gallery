@@ -146,9 +146,9 @@ const verifyPayment = async (req, res) => {
                 for (const item of order.items) {
                   const product = await Product.findByPk(item.productId);
                   if (product) {
-                    // Increase soldCount which will automatically reduce remainingStock via hook
-                    product.soldCount =
-                      (product.soldCount || 0) + item.quantity;
+                    // Increase soldCount and decrease remainingStock
+                    product.soldCount = (product.soldCount || 0) + item.quantity;
+                    product.remainingStock = (product.totalStock || 0) - product.soldCount;
                     await product.save();
                   }
                 }
@@ -247,8 +247,9 @@ const paystackWebhook = async (req, res) => {
             for (const item of order.items) {
               const product = await Product.findByPk(item.productId);
               if (product) {
-                // Increase soldCount which will automatically reduce remainingStock via hook
+                // Increase soldCount and decrease remainingStock
                 product.soldCount = (product.soldCount || 0) + item.quantity;
+                product.remainingStock = (product.totalStock || 0) - product.soldCount;
                 await product.save();
               }
             }

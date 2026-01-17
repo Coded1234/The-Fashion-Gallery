@@ -1,14 +1,12 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  FiFacebook,
-  FiTwitter,
   FiInstagram,
-  FiYoutube,
   FiMail,
   FiPhone,
   FiCheck,
 } from "react-icons/fi";
+import { SiTiktok } from "react-icons/si";
 import { newsletterAPI } from "../../utils/api";
 import toast from "react-hot-toast";
 
@@ -87,34 +85,28 @@ const Footer = () => {
             <h4 className="text-xl font-bold gradient-text mb-4">
               Enam's Clothings
             </h4>
-            <p className="text-gray-400 mb-4">
+            <p className="text-gray-300 mb-4">
               Your one-stop destination for premium fashion and clothing.
               Quality meets style.
             </p>
             <div className="flex gap-4">
               <a
-                href="#"
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-primary-500 transition-colors"
-              >
-                <FiFacebook />
-              </a>
-              <a
-                href="#"
-                className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-primary-500 transition-colors"
-              >
-                <FiTwitter />
-              </a>
-              <a
-                href="#"
-                className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-primary-500 transition-colors"
+                aria-label="Instagram"
               >
                 <FiInstagram />
               </a>
               <a
-                href="#"
+                href="https://tiktok.com"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-primary-500 transition-colors"
+                aria-label="TikTok"
               >
-                <FiYoutube />
+                <SiTiktok />
               </a>
             </div>
           </div>
@@ -126,7 +118,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/shop"
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className="text-gray-300 hover:text-white transition-colors"
                 >
                   Shop All
                 </Link>
@@ -134,7 +126,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/shop/men"
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className="text-gray-300 hover:text-white transition-colors"
                 >
                   Men
                 </Link>
@@ -142,17 +134,9 @@ const Footer = () => {
               <li>
                 <Link
                   to="/shop/women"
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className="text-gray-300 hover:text-white transition-colors"
                 >
                   Women
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/shop/kids"
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
-                  Kids
                 </Link>
               </li>
             </ul>
@@ -165,7 +149,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/orders"
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className="text-gray-300 hover:text-white transition-colors"
                 >
                   Track Order
                 </Link>
@@ -173,7 +157,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/faq"
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className="text-gray-300 hover:text-white transition-colors"
                 >
                   Shipping Info
                 </Link>
@@ -181,7 +165,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/faq"
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className="text-gray-300 hover:text-white transition-colors"
                 >
                   Returns & Exchange
                 </Link>
@@ -189,7 +173,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/faq"
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className="text-gray-300 hover:text-white transition-colors"
                 >
                   FAQs
                 </Link>
@@ -197,7 +181,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/size-guide"
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className="text-gray-300 hover:text-white transition-colors"
                 >
                   Size Guide
                 </Link>
@@ -205,7 +189,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/contact"
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className="text-gray-300 hover:text-white transition-colors"
                 >
                   Contact Us
                 </Link>
@@ -217,11 +201,11 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">Contact Us</h4>
             <ul className="space-y-3">
-              <li className="flex items-center gap-3 text-gray-400">
+              <li className="flex items-center gap-3 text-gray-300">
                 <FiPhone className="text-primary-500" />
                 <span>+233256810699</span>
               </li>
-              <li className="flex items-center gap-3 text-gray-400">
+              <li className="flex items-center gap-3 text-gray-300">
                 <FiMail className="text-primary-500" />
                 <span>support@enamsclothings.com</span>
               </li>
@@ -233,19 +217,19 @@ const Footer = () => {
       {/* Bottom Footer */}
       <div className="border-t border-gray-800 py-6">
         <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-gray-400 text-sm">
+          <p className="text-gray-300 text-sm">
             © 2026 Enam's Clothings. All rights reserved.
           </p>
-          <div className="flex gap-6 text-sm text-gray-400">
-            <a href="#" className="hover:text-white transition-colors">
+          <div className="flex gap-6 text-sm text-gray-300">
+            <button type="button" className="hover:text-white transition-colors">
               Privacy Policy
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
+            </button>
+            <button type="button" className="hover:text-white transition-colors">
               Terms of Service
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
+            </button>
+            <button type="button" className="hover:text-white transition-colors">
               Cookie Policy
-            </a>
+            </button>
           </div>
         </div>
       </div>

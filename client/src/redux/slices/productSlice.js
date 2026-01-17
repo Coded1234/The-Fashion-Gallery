@@ -15,7 +15,6 @@ const initialState = {
   },
   filters: {
     category: "",
-    subcategory: "",
     minPrice: "",
     maxPrice: "",
     size: "",
