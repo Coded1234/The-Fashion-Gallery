@@ -33,67 +33,76 @@ const AddressMapPicker = ({ onAddressSelect, currentPosition }) => {
   const [mapCenter, setMapCenter] = useState(defaultCenter);
   const [loading, setLoading] = useState(false);
   const [address, setAddress] = useState("");
-  
+
   // Detect if user is on mobile
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   const [showMobileMap, setShowMobileMap] = useState(false);
-  
+
   // Update position if currentPosition changes
   useEffect(() => {
     if (currentPosition) {
-      const newPos = { lat: currentPosition.latitude, lng: currentPosition.longitude };
+      const newPos = {
+        lat: currentPosition.latitude,
+        lng: currentPosition.longitude,
+      };
       setPosition(newPos);
       setMapCenter([currentPosition.latitude, currentPosition.longitude]);
     }
   }, [currentPosition]);
 
   // Reverse geocode: Convert coordinates to address
-  const reverseGeocode = useCallback(async (lat, lng) => {
-    setLoading(true);
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&countrycodes=gh`,
-        {
-          headers: {
-            "User-Agent": "EcommerceWebsite/1.0",
+  const reverseGeocode = useCallback(
+    async (lat, lng) => {
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&countrycodes=gh`,
+          {
+            headers: {
+              "User-Agent": "EcommerceWebsite/1.0",
+            },
           },
+        );
+        const data = await response.json();
+
+        if (data && data.address) {
+          const addr = data.address;
+          const formattedAddress = [
+            addr.road || addr.suburb || addr.neighbourhood,
+            addr.suburb,
+            addr.city || addr.town,
+          ]
+            .filter(Boolean)
+            .join(", ");
+
+          setAddress(formattedAddress || data.display_name);
+
+          // Pass address data to parent
+          onAddressSelect({
+            address: formattedAddress || data.display_name,
+            city: addr.city || addr.town || addr.state || "Accra",
+            latitude: lat,
+            longitude: lng,
+            fullAddress: data.display_name,
+          });
         }
-      );
-      const data = await response.json();
-
-      if (data && data.address) {
-        const addr = data.address;
-        const formattedAddress = [
-          addr.road || addr.suburb || addr.neighbourhood,
-          addr.suburb,
-          addr.city || addr.town,
-        ]
-          .filter(Boolean)
-          .join(", ");
-
-        setAddress(formattedAddress || data.display_name);
-
-        // Pass address data to parent
-        onAddressSelect({
-          address: formattedAddress || data.display_name,
-          city: addr.city || addr.town || addr.state || "Accra",
-          latitude: lat,
-          longitude: lng,
-          fullAddress: data.display_name,
-        });
+      } catch (error) {
+        console.error("Reverse geocoding error:", error);
+        setAddress("Unable to get address. Please enter manually.");
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Reverse geocoding error:", error);
-      setAddress("Unable to get address. Please enter manually.");
-    } finally {
-      setLoading(false);
-    }
-  }, [onAddressSelect]);
+    },
+    [onAddressSelect],
+  );
 
   // Handle location selection
-  const handleLocationSelect = useCallback((latlng) => {
-    reverseGeocode(latlng.lat, latlng.lng);
-  }, [reverseGeocode]);
+  const handleLocationSelect = useCallback(
+    (latlng) => {
+      reverseGeocode(latlng.lat, latlng.lng);
+    },
+    [reverseGeocode],
+  );
 
   // Get user's current location
   const getCurrentLocation = () => {
@@ -117,7 +126,7 @@ const AddressMapPicker = ({ onAddressSelect, currentPosition }) => {
         console.error("Error getting location:", error);
         alert("Unable to get your location. Please select on the map.");
         setLoading(false);
-      }
+      },
     );
   };
 
@@ -151,7 +160,9 @@ const AddressMapPicker = ({ onAddressSelect, currentPosition }) => {
           <div className="bg-blue-50 p-3 border-b border-blue-200">
             <p className="text-sm text-blue-800 flex items-start gap-2">
               <FiMapPin className="mt-0.5 flex-shrink-0" />
-              <span>Tap anywhere on the map to select your delivery location</span>
+              <span>
+                Tap anywhere on the map to select your delivery location
+              </span>
             </p>
           </div>
 
@@ -217,10 +228,9 @@ const AddressMapPicker = ({ onAddressSelect, currentPosition }) => {
           <p className="text-sm text-blue-800 flex items-start gap-2">
             <FiMapPin className="mt-0.5 flex-shrink-0" />
             <span>
-              {isMobile 
+              {isMobile
                 ? "Tap the button below to open the map and select your delivery location."
-                : "Click on the map to select your delivery location, or use the button below to detect your current location automatically."
-              }
+                : "Click on the map to select your delivery location, or use the button below to detect your current location automatically."}
             </span>
           </p>
         </div>
@@ -259,7 +269,10 @@ const AddressMapPicker = ({ onAddressSelect, currentPosition }) => {
 
         {/* Map - Only show on desktop */}
         {!isMobile && (
-          <div className="border-2 border-gray-300 rounded-xl overflow-hidden relative" style={{ height: "400px", zIndex: 1 }}>
+          <div
+            className="border-2 border-gray-300 rounded-xl overflow-hidden relative"
+            style={{ height: "400px", zIndex: 1 }}
+          >
             <MapContainer
               center={mapCenter}
               zoom={13}
@@ -294,12 +307,13 @@ const AddressMapPicker = ({ onAddressSelect, currentPosition }) => {
             <p className="text-sm text-green-700">{address}</p>
             {position && (
               <p className="text-xs text-green-600 mt-2">
-                Coordinates: {position.lat.toFixed(6)}, {position.lng.toFixed(6)}
+                Coordinates: {position.lat.toFixed(6)},{" "}
+                {position.lng.toFixed(6)}
               </p>
             )}
           </div>
         )}
-        </div>
+      </div>
     </>
   );
 };

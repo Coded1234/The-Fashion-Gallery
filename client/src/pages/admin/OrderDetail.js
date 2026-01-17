@@ -133,10 +133,10 @@ const OrderDetail = () => {
           </button>
           <div className="flex items-center gap-2">
             <span className="text-xs md:text-sm text-gray-500">Status:</span>
-            {order.status === 'delivered' || order.status === 'cancelled' ? (
+            {order.status === "delivered" || order.status === "cancelled" ? (
               <span
                 className={`px-2 md:px-3 py-1.5 md:py-2 text-xs md:text-sm font-medium rounded-lg border ${getStatusColor(
-                  order.status
+                  order.status,
                 )}`}
               >
                 {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
@@ -147,7 +147,7 @@ const OrderDetail = () => {
                 onChange={(e) => handleStatusChange(e.target.value)}
                 disabled={updatingStatus}
                 className={`px-2 md:px-3 py-1.5 md:py-2 text-xs md:text-sm font-medium rounded-lg border cursor-pointer ${getStatusColor(
-                  order.status
+                  order.status,
                 )}`}
               >
                 {statuses.map((status) => (
@@ -162,17 +162,23 @@ const OrderDetail = () => {
       </div>
 
       {/* Status Locked Message */}
-      {(order.status === 'delivered' || order.status === 'cancelled') && (
-        <div className={`${
-          order.status === 'delivered' 
-            ? 'bg-green-50 border-green-200 text-green-800' 
-            : 'bg-red-50 border-red-200 text-red-800'
-        } border rounded-lg p-3 flex items-center gap-2 text-sm`}>
-          <FiCheck className={order.status === 'delivered' ? 'text-green-600' : 'text-red-600'} />
+      {(order.status === "delivered" || order.status === "cancelled") && (
+        <div
+          className={`${
+            order.status === "delivered"
+              ? "bg-green-50 border-green-200 text-green-800"
+              : "bg-red-50 border-red-200 text-red-800"
+          } border rounded-lg p-3 flex items-center gap-2 text-sm`}
+        >
+          <FiCheck
+            className={
+              order.status === "delivered" ? "text-green-600" : "text-red-600"
+            }
+          />
           <span>
-            {order.status === 'delivered' 
-              ? 'This order has been delivered. Status is now locked.' 
-              : 'This order has been cancelled. Status is now locked.'}
+            {order.status === "delivered"
+              ? "This order has been delivered. Status is now locked."
+              : "This order has been cancelled. Status is now locked."}
           </span>
         </div>
       )}
@@ -221,7 +227,7 @@ const OrderDetail = () => {
                     </span>
                   </div>
                 );
-              }
+              },
             )}
           </div>
         </div>
@@ -243,7 +249,7 @@ const OrderDetail = () => {
                   {item.productImage || item.product?.images?.[0] ? (
                     <img
                       src={getImageUrl(
-                        item.productImage || item.product?.images?.[0]
+                        item.productImage || item.product?.images?.[0],
                       )}
                       alt={item.productName || item.product?.name}
                       className="w-full h-full object-cover"
@@ -295,7 +301,9 @@ const OrderDetail = () => {
             </div>
             <div className="flex justify-between text-xs md:text-sm text-gray-600">
               <span>Shipping</span>
-              <span>{formatCurrency(order.shippingFee || order.shippingCost || 0)}</span>
+              <span>
+                {formatCurrency(order.shippingFee || order.shippingCost || 0)}
+              </span>
             </div>
             {order.discount > 0 && (
               <div className="flex justify-between text-xs md:text-sm text-green-600">
