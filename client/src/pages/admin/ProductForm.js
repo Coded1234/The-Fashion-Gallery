@@ -143,18 +143,19 @@ const ProductForm = () => {
   };
 
   const addSize = (size) => {
-    if (size && !formData.sizes.includes(size)) {
+    if (size && !formData.sizes.find(s => (s.size || s) === size)) {
+      const sizeObj = { size: size, stock: parseInt(formData.totalStock) || 0 };
       setFormData((prev) => ({
         ...prev,
-        sizes: [...prev.sizes, size],
+        sizes: [...prev.sizes, sizeObj],
       }));
     }
   };
 
-  const removeSize = (size) => {
+  const removeSize = (sizeToRemove) => {
     setFormData((prev) => ({
       ...prev,
-      sizes: prev.sizes.filter((s) => s !== size),
+      sizes: prev.sizes.filter((s) => (s.size || s) !== sizeToRemove),
     }));
   };
 
@@ -403,21 +404,24 @@ const ProductForm = () => {
                 </select>
               </div>
               <div className="flex flex-wrap gap-2">
-                {formData.sizes.map((size, index) => (
-                  <span
-                    key={index}
-                    className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
-                  >
-                    {size}
-                    <button
-                      type="button"
-                      onClick={() => removeSize(size)}
-                      className="hover:text-red-600"
+                {formData.sizes.map((size, index) => {
+                  const sizeValue = size.size || size;
+                  return (
+                    <span
+                      key={index}
+                      className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
                     >
-                      <FiX size={14} />
-                    </button>
-                  </span>
-                ))}
+                      {sizeValue}
+                      <button
+                        type="button"
+                        onClick={() => removeSize(sizeValue)}
+                        className="hover:text-red-600"
+                      >
+                        <FiX size={14} />
+                      </button>
+                    </span>
+                  );
+                })}
               </div>
             </div>
 
