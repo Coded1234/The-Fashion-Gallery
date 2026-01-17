@@ -182,6 +182,7 @@ async function geocodeAddress({ address, city, postalCode }) {
 
 /**
  * Calculate distance between two coordinates (Haversine formula)
+ * This gives straight-line distance "as the crow flies"
  */
 function calculateDistance(lat1, lon1, lat2, lon2) {
   const R = 6371; // Earth's radius in km
@@ -197,6 +198,38 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
+/**
+ * Calculate actual road distance using OSRM routing API
+ * This gives real driving distance following roads
+ */
+async function calculateRoadDistance(lat1, lon1, lat2, lon2) {
+  try {
+    // Use OSRM (Open Source Routing Machine) for road distance
+    const url = `https://router.project-osrm.org/route/v1/driving/${lon1},${lat1};${lon2},${lat2}?overview=false`;
+    
+    const response = await axios.get(url, {
+      timeout: 5000,
+      headers: { "User-Agent": "EcommerceWebsite/1.0" }
+    });
+
+    if (response.data && response.data.routes && response.data.routes.length > 0) {
+      // Distance is in meters, convert to km
+      const distanceKm = response.data.routes[0].distance / 1000;
+      console.log(`Road distance calculated: ${distanceKm.toFixed(2)} km`);
+      return distanceKm;
+    }
+
+    // Fallback to Haversine if routing fails
+    console.log("OSRM routing failed, using straight-line distance");
+    return calculateDistance(lat1, lon1, lat2, lon2);
+  } catch (error) {
+    console.error("Road distance calculation error:", error.message);
+    // Fallback to straight-line distance with 1.4x multiplier (average road distance factor)
+    const straightLine = calculateDistance(lat1, lon1, lat2, lon2);
+    return straightLine * 1.4;
+  }
+}
+
 function toRad(degrees) {
   return degrees * (Math.PI / 180);
 }
@@ -210,8 +243,8 @@ async function getYangoShippingRate(origin, destination, deliveryInfo) {
       throw new Error("Yango API credentials not configured");
     }
 
-    // Calculate distance
-    const distance = calculateDistance(
+    // Calculate actual road distance (not straight-line)
+    const distance = await calculateRoadDistance(
       origin.latitude,
       origin.longitude,
       destination.latitude,
@@ -277,8 +310,8 @@ async function getYangoShippingRate(origin, destination, deliveryInfo) {
   } catch (error) {
     console.error("Yango API error:", error.message);
     
-    // Fallback to distance-based calculation
-    const distance = calculateDistance(
+    // Fallback to distance-based calculation with road distance
+    const distance = await calculateRoadDistance(
       origin.latitude,
       origin.longitude,
       destination.latitude,
@@ -299,7 +332,7 @@ async function getYangoShippingRate(origin, destination, deliveryInfo) {
  */
 async function getYangoDeliveryOptions(origin, destination) {
   try {
-    const distance = calculateDistance(
+    const distance = await calculateRoadDistance(
       origin.latitude,
       origin.longitude,
       destination.latitude,
