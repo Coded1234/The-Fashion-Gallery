@@ -12,7 +12,13 @@ const { sendEmail, emailTemplates } = require("../config/email");
 // @route   POST /api/orders
 const createOrder = async (req, res) => {
   try {
-    const { shippingAddress, paymentMethod } = req.body;
+    const { 
+      shippingAddress, 
+      paymentMethod, 
+      couponId, 
+      discount,
+      shippingDetails 
+    } = req.body;
 
     // Get user's cart with items
     const cart = await Cart.findOne({
@@ -35,8 +41,14 @@ const createOrder = async (req, res) => {
       (sum, item) => sum + parseFloat(item.price) * item.quantity,
       0
     );
-    const shippingFee = subtotal > 1000 ? 0 : 50; // Free shipping over GH₵1,000
-    const totalAmount = subtotal + shippingFee ;
+    
+    // Use shipping details from frontend or fallback
+    const shippingFee = shippingDetails?.shippingFee || 
+                        (subtotal > 1000 ? 0 : 50); // Free shipping over GH₵1,000
+    
+    // Apply discount if provided
+    const discountAmount = parseFloat(discount) || 0;
+    const totalAmount = subtotal - discountAmount + shippingFee;
 
     // Calculate total items (sum of all quantities)
     const totalItems = cart.items.reduce((sum, item) => sum + item.quantity, 0);
@@ -49,9 +61,11 @@ const createOrder = async (req, res) => {
       paymentStatus: paymentMethod === "cod" ? "pending" : "pending",
       subtotal,
       shippingFee,
+      discount: discountAmount,
       totalAmount,
       totalItems,
       status: "pending",
+      shippingDetails: shippingDetails || null,
     });
 
     // Create order items

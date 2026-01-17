@@ -54,16 +54,13 @@ const OrderSummary = () => {
     setLoading(true);
 
     try {
-      // Add coupon info to order data if present
+      // Prepare order data with proper structure
       const finalOrderData = {
-        ...orderData,
-        total_amount: finalTotal,
-        shipping_fee: shippingCost,
-        shipping_details: shippingDetails,
-        ...(coupon && {
-          coupon_id: coupon.id,
-          discount_amount: discount,
-        }),
+        shippingAddress: orderData.shippingAddress,
+        paymentMethod: orderData.paymentMethod,
+        shippingDetails: shippingDetails || orderData.shippingDetails,
+        couponId: coupon?.id || null,
+        discount: discount,
       };
 
       // Create order
