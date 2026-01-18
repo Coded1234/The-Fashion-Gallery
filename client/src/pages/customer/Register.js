@@ -31,6 +31,7 @@ const Register = () => {
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -111,6 +112,7 @@ const Register = () => {
       return;
     }
 
+    setLoading(true);
     try {
       const { data } = await axios.post("/api/auth/register", {
         firstName: formData.firstName,
@@ -125,6 +127,8 @@ const Register = () => {
       toast.success("Registration successful! Please check your email.");
     } catch (err) {
       toast.error(err.response?.data?.message || "Registration failed");
+    } finally {
+      setLoading(false);
     }
   };
 
