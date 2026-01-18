@@ -24,7 +24,9 @@ async function runMigration() {
       ADD COLUMN IF NOT EXISTS ai_message TEXT;
     `);
 
-    console.log("✅ Migration completed: ai_message column added to coupons table");
+    console.log(
+      "✅ Migration completed: ai_message column added to coupons table",
+    );
 
     // Verify the column exists
     const [results] = await sequelize.query(`

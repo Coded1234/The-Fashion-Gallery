@@ -12,12 +12,12 @@ const { sendEmail, emailTemplates } = require("../config/email");
 // @route   POST /api/orders
 const createOrder = async (req, res) => {
   try {
-    const { 
-      shippingAddress, 
-      paymentMethod, 
-      couponId, 
+    const {
+      shippingAddress,
+      paymentMethod,
+      couponId,
       discount,
-      shippingDetails 
+      shippingDetails,
     } = req.body;
 
     // Get user's cart with items
@@ -39,13 +39,13 @@ const createOrder = async (req, res) => {
     // Calculate totals
     const subtotal = cart.items.reduce(
       (sum, item) => sum + parseFloat(item.price) * item.quantity,
-      0
+      0,
     );
-    
+
     // Use shipping details from frontend or fallback
-    const shippingFee = shippingDetails?.shippingFee || 
-                        (subtotal > 1000 ? 0 : 50); // Free shipping over GH₵1,000
-    
+    const shippingFee =
+      shippingDetails?.shippingFee || (subtotal > 1000 ? 0 : 50); // Free shipping over GH₵1,000
+
     // Apply discount if provided
     const discountAmount = parseFloat(discount) || 0;
     const totalAmount = subtotal - discountAmount + shippingFee;
@@ -242,9 +242,10 @@ const cancelOrder = async (req, res) => {
             product.set("sizes", sizes);
             product.soldCount = Math.max(
               0,
-              (product.soldCount || 0) - item.quantity
+              (product.soldCount || 0) - item.quantity,
             );
-            product.remainingStock = (product.totalStock || 0) - product.soldCount;
+            product.remainingStock =
+              (product.totalStock || 0) - product.soldCount;
             await product.save();
           }
         }

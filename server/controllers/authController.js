@@ -39,14 +39,18 @@ const register = async (req, res) => {
 
     // Send verification email
     try {
-      const { subject, html } = emailTemplates.emailVerification(user, verificationToken);
+      const { subject, html } = emailTemplates.emailVerification(
+        user,
+        verificationToken,
+      );
       await sendEmail(user.email, subject, html);
     } catch (emailError) {
       console.error("Verification email failed:", emailError);
     }
 
     res.status(201).json({
-      message: "Registration successful! Please check your email to verify your account.",
+      message:
+        "Registration successful! Please check your email to verify your account.",
       _id: user.id,
       firstName: user.firstName,
       lastName: user.lastName,
@@ -87,9 +91,10 @@ const login = async (req, res) => {
 
     // Check if email is verified
     if (!user.emailVerified) {
-      return res.status(401).json({ 
-        message: "Please verify your email address before logging in. Check your inbox for the verification link.",
-        emailVerified: false 
+      return res.status(401).json({
+        message:
+          "Please verify your email address before logging in. Check your inbox for the verification link.",
+        emailVerified: false,
       });
     }
 
@@ -250,8 +255,7 @@ const uploadAvatar = async (req, res) => {
     ];
     if (!allowedMimeTypes.includes(req.file.mimetype)) {
       return res.status(400).json({
-        message:
-          "Invalid file type. Only image files are allowed",
+        message: "Invalid file type. Only image files are allowed",
       });
     }
 
@@ -534,7 +538,10 @@ const resendVerificationEmail = async (req, res) => {
 
     // Send verification email
     try {
-      const { subject, html } = emailTemplates.emailVerification(user, verificationToken);
+      const { subject, html } = emailTemplates.emailVerification(
+        user,
+        verificationToken,
+      );
       await sendEmail(user.email, subject, html);
     } catch (emailError) {
       console.error("Verification email failed:", emailError);

@@ -32,7 +32,7 @@ const ProductDetail = () => {
   const dispatch = useDispatch();
 
   const { product, relatedProducts, loading } = useSelector(
-    (state) => state.products
+    (state) => state.products,
   );
   const { isAuthenticated } = useSelector((state) => state.auth);
 
@@ -95,7 +95,7 @@ const ProductDetail = () => {
       setSelectedColor(
         typeof firstColor === "string"
           ? { name: firstColor, code: "#000000" }
-          : firstColor
+          : firstColor,
       );
     }
 
@@ -122,9 +122,12 @@ const ProductDetail = () => {
         addToCart({
           productId: id,
           quantity,
-          size: typeof selectedSize === 'string' ? selectedSize : selectedSize?.size,
+          size:
+            typeof selectedSize === "string"
+              ? selectedSize
+              : selectedSize?.size,
           color: selectedColor,
-        })
+        }),
       ).unwrap();
       toast.success("Added to cart!");
     } catch (error) {
@@ -148,7 +151,7 @@ const ProductDetail = () => {
       await authAPI.toggleWishlist(id);
       setIsWishlisted(!isWishlisted);
       toast.success(
-        isWishlisted ? "Removed from wishlist" : "Added to wishlist"
+        isWishlisted ? "Removed from wishlist" : "Added to wishlist",
       );
     } catch (error) {
       console.error("Wishlist error:", error);
@@ -198,8 +201,8 @@ const ProductDetail = () => {
                 helpful: response.data.review.helpful,
                 isHelpfulByUser: response.data.isHelpful,
               }
-            : review
-        )
+            : review,
+        ),
       );
       toast.success(response.data.message);
     } catch (error) {
@@ -210,15 +213,17 @@ const ProductDetail = () => {
 
   const getStockForSize = (size) => {
     if (!size || !product?.sizes) return 0;
-    
+
     // Handle both string and object size formats
-    const sizeValue = typeof size === 'string' ? size : size.size;
-    const sizeObj = product.sizes.find(s => (typeof s === 'string' ? s : s.size) === sizeValue);
-    
-    if (sizeObj && typeof sizeObj === 'object' && sizeObj.stock !== undefined) {
+    const sizeValue = typeof size === "string" ? size : size.size;
+    const sizeObj = product.sizes.find(
+      (s) => (typeof s === "string" ? s : s.size) === sizeValue,
+    );
+
+    if (sizeObj && typeof sizeObj === "object" && sizeObj.stock !== undefined) {
       return sizeObj.stock;
     }
-    
+
     // Fallback to total stock
     return product?.remainingStock ?? product?.totalStock ?? 0;
   };
@@ -228,7 +233,7 @@ const ProductDetail = () => {
     ? Math.round(
         ((Number(product.comparePrice) - Number(product.price)) /
           Number(product.comparePrice)) *
-          100
+          100,
       )
     : 0;
 
@@ -378,7 +383,7 @@ const ProductDetail = () => {
                 <span className="text-green-600 font-medium">
                   Save GH₵
                   {Math.round(
-                    Number(product.comparePrice) - Number(product.price)
+                    Number(product.comparePrice) - Number(product.price),
                   ).toLocaleString()}
                 </span>
               )}
@@ -425,7 +430,12 @@ const ProductDetail = () => {
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <p className="font-medium text-gray-800">
-                    Size: <span className="text-gray-600">{typeof selectedSize === 'string' ? selectedSize : selectedSize?.size}</span>
+                    Size:{" "}
+                    <span className="text-gray-600">
+                      {typeof selectedSize === "string"
+                        ? selectedSize
+                        : selectedSize?.size}
+                    </span>
                   </p>
                   <button
                     onClick={() => setShowSizeGuide(true)}
@@ -436,11 +446,18 @@ const ProductDetail = () => {
                 </div>
                 <div className="flex flex-wrap gap-3">
                   {product.sizes.map((size, index) => {
-                    const sizeValue = typeof size === 'string' ? size : size.size;
-                    const sizeStock = typeof size === 'object' && size.stock !== undefined ? size.stock : (product.remainingStock ?? product.totalStock);
-                    const selectedSizeValue = typeof selectedSize === 'string' ? selectedSize : selectedSize?.size;
+                    const sizeValue =
+                      typeof size === "string" ? size : size.size;
+                    const sizeStock =
+                      typeof size === "object" && size.stock !== undefined
+                        ? size.stock
+                        : (product.remainingStock ?? product.totalStock);
+                    const selectedSizeValue =
+                      typeof selectedSize === "string"
+                        ? selectedSize
+                        : selectedSize?.size;
                     const isSelected = selectedSizeValue === sizeValue;
-                    
+
                     return (
                       <button
                         key={index}
@@ -450,8 +467,8 @@ const ProductDetail = () => {
                           isSelected
                             ? "bg-primary-500 text-white border-primary-500"
                             : sizeStock === 0
-                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                            : "hover:border-primary-500 hover:text-primary-500"
+                              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                              : "hover:border-primary-500 hover:text-primary-500"
                         }`}
                       >
                         {sizeValue}
@@ -620,7 +637,8 @@ const ProductDetail = () => {
                     ))}
                   </div>
                   <p className="text-gray-600">
-                    {product.reviewCount} {product.reviewCount === 1 ? 'review' : 'reviews'}
+                    {product.reviewCount}{" "}
+                    {product.reviewCount === 1 ? "review" : "reviews"}
                   </p>
                 </div>
 
@@ -800,7 +818,7 @@ const ProductDetail = () => {
                         </button>
                       </div>
                     ))}
-                    
+
                     {/* View All Reviews Button */}
                     {reviews.length > 2 && (
                       <div className="pt-6 border-t">

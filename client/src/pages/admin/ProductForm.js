@@ -89,8 +89,8 @@ const ProductForm = () => {
       if (data.images?.length > 0) {
         setExistingImages(
           data.images.map((img) =>
-            typeof img === "string" ? { url: img, publicId: "" } : img
-          )
+            typeof img === "string" ? { url: img, publicId: "" } : img,
+          ),
         );
       }
     } catch (err) {
@@ -143,7 +143,7 @@ const ProductForm = () => {
   };
 
   const addSize = (size) => {
-    if (size && !formData.sizes.find(s => (s.size || s) === size)) {
+    if (size && !formData.sizes.find((s) => (s.size || s) === size)) {
       const sizeObj = { size: size, stock: parseInt(formData.totalStock) || 0 };
       setFormData((prev) => ({
         ...prev,
@@ -160,10 +160,7 @@ const ProductForm = () => {
   };
 
   const addColor = (color) => {
-    if (
-      color &&
-      !formData.colors.find((c) => (c.name || c) === color.name)
-    ) {
+    if (color && !formData.colors.find((c) => (c.name || c) === color.name)) {
       setFormData((prev) => ({
         ...prev,
         colors: [...prev.colors, color],
@@ -435,7 +432,7 @@ const ProductForm = () => {
                   onChange={(e) => {
                     if (e.target.value) {
                       const selectedColor = availableColors.find(
-                        (c) => c.name === e.target.value
+                        (c) => c.name === e.target.value,
                       );
                       if (selectedColor) {
                         addColor(selectedColor);
@@ -449,7 +446,9 @@ const ProductForm = () => {
                   {availableColors
                     .filter(
                       (color) =>
-                        !formData.colors.find((c) => (c.name || c) === color.name)
+                        !formData.colors.find(
+                          (c) => (c.name || c) === color.name,
+                        ),
                     )
                     .map((color) => (
                       <option key={color.name} value={color.name}>
@@ -516,7 +515,8 @@ const ProductForm = () => {
               </span>
             </label>
             <p className="text-xs text-gray-500 mt-2">
-              Max 5 images. All common image formats supported (JPG, PNG, WEBP, HEIC, etc.)
+              Max 5 images. All common image formats supported (JPG, PNG, WEBP,
+              HEIC, etc.)
             </p>
           </div>
 
@@ -629,8 +629,8 @@ const ProductForm = () => {
             {saving
               ? "Saving..."
               : isEditing
-              ? "Update Product"
-              : "Create Product"}
+                ? "Update Product"
+                : "Create Product"}
           </button>
         </div>
       </form>

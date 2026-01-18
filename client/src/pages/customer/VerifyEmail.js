@@ -12,12 +12,10 @@ const VerifyEmail = () => {
   useEffect(() => {
     const verifyEmail = async () => {
       try {
-        const { data } = await axios.get(
-          `/api/auth/verify-email/${token}`
-        );
+        const { data } = await axios.get(`/api/auth/verify-email/${token}`);
         setStatus("success");
         setMessage(data.message);
-        
+
         // Redirect to login after 3 seconds
         setTimeout(() => {
           navigate("/login");
@@ -25,7 +23,7 @@ const VerifyEmail = () => {
       } catch (error) {
         setStatus("error");
         setMessage(
-          error.response?.data?.message || "Email verification failed"
+          error.response?.data?.message || "Email verification failed",
         );
       }
     };
@@ -50,17 +48,16 @@ const VerifyEmail = () => {
               <h2 className="text-2xl font-bold text-gray-800 mb-2">
                 Verifying Your Email
               </h2>
-              <p className="text-gray-600">Please wait while we verify your email address...</p>
+              <p className="text-gray-600">
+                Please wait while we verify your email address...
+              </p>
             </>
           )}
 
           {status === "success" && (
             <>
               <div className="mb-6">
-                <FiCheckCircle
-                  className="mx-auto text-green-500"
-                  size={64}
-                />
+                <FiCheckCircle className="mx-auto text-green-500" size={64} />
               </div>
               <h2 className="text-2xl font-bold text-gray-800 mb-2">
                 Email Verified!

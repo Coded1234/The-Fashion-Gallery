@@ -19,15 +19,14 @@ const ResendVerification = () => {
 
     setLoading(true);
     try {
-      const { data } = await axios.post(
-        "/api/auth/resend-verification",
-        { email }
-      );
+      const { data } = await axios.post("/api/auth/resend-verification", {
+        email,
+      });
       setSuccess(true);
       toast.success(data.message);
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Failed to resend verification email"
+        error.response?.data?.message || "Failed to resend verification email",
       );
     } finally {
       setLoading(false);

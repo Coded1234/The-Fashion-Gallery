@@ -225,13 +225,15 @@ async function calculateRoadDistance(lat1, lon1, lat2, lon2) {
     // Use OSRM (Open Source Routing Machine) for road distance
     const url = `https://router.project-osrm.org/route/v1/driving/${lon1},${lat1};${lon2},${lat2}?overview=false`;
 
-    console.log(`Calculating road distance from (${lat1},${lon1}) to (${lat2},${lon2})`);
+    console.log(
+      `Calculating road distance from (${lat1},${lon1}) to (${lat2},${lon2})`,
+    );
 
     const response = await axios.get(url, {
       timeout: 8000, // Increased timeout for Vercel
-      headers: { 
+      headers: {
         "User-Agent": "EcommerceWebsite/1.0",
-        "Accept": "application/json"
+        Accept: "application/json",
       },
       validateStatus: (status) => status < 500, // Don't throw on 4xx errors
     });
@@ -256,7 +258,9 @@ async function calculateRoadDistance(lat1, lon1, lat2, lon2) {
     // Fallback to straight-line distance with road multiplier
     const straightLine = calculateDistance(lat1, lon1, lat2, lon2);
     const estimated = straightLine * ROAD_MULTIPLIER;
-    console.log(`Using fallback: ${straightLine.toFixed(2)} km * ${ROAD_MULTIPLIER} = ${estimated.toFixed(2)} km`);
+    console.log(
+      `Using fallback: ${straightLine.toFixed(2)} km * ${ROAD_MULTIPLIER} = ${estimated.toFixed(2)} km`,
+    );
     return estimated;
   }
 }

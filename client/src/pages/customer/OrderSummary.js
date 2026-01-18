@@ -20,14 +20,14 @@ const OrderSummary = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
-  const { 
-    orderData, 
-    items, 
-    totalAmount, 
-    coupon, 
+  const {
+    orderData,
+    items,
+    totalAmount,
+    coupon,
     couponDiscount,
     shippingCost: passedShippingCost,
-    shippingDetails 
+    shippingDetails,
   } = location.state || {};
   const [loading, setLoading] = useState(false);
 
@@ -329,7 +329,7 @@ const OrderSummary = () => {
                     {shippingCost === 0 ? "Free" : formatPrice(shippingCost)}
                   </span>
                 </div>
-                
+
                 <div className="pt-3 border-t border-gray-200">
                   <div className="flex justify-between items-center">
                     <span className="text-lg font-semibold text-gray-900">
