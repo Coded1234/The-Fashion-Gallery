@@ -50,7 +50,7 @@ const emailTemplates = {
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;">
-          <h1 style="color: white; margin: 0;">StyleStore</h1>
+          <h1 style="color: white; margin: 0;">Enam's Clothings</h1>
         </div>
         <div style="padding: 30px; background: #f9f9f9;">
           <h2 style="color: #333;">Thank you for your order, ${
@@ -102,7 +102,7 @@ const emailTemplates = {
           </div>
         </div>
         <div style="padding: 20px; text-align: center; color: #999;">
-          <p>© 2026 StyleStore. All rights reserved.</p>
+          <p>© 2026 Enam's Clothings. All rights reserved.</p>
         </div>
       </div>
     `,
@@ -115,7 +115,7 @@ const emailTemplates = {
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;">
-          <h1 style="color: white; margin: 0;">StyleStore</h1>
+          <h1 style="color: white; margin: 0;">Enam's Clothings</h1>
         </div>
         <div style="padding: 30px; background: #f9f9f9;">
           <h2 style="color: #333;">Order Status Update</h2>
@@ -144,15 +144,15 @@ const emailTemplates = {
   }),
 
   welcomeEmail: (user) => ({
-    subject: "Welcome to StyleStore!",
+    subject: "Welcome to Enam's Clothings!",
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;">
-          <h1 style="color: white; margin: 0;">Welcome to StyleStore!</h1>
+          <h1 style="color: white; margin: 0;">Welcome to Enam's Clothings!</h1>
         </div>
         <div style="padding: 30px; background: #f9f9f9;">
           <h2 style="color: #333;">Hi ${user.firstName}!</h2>
-          <p style="color: #666;">Thank you for joining StyleStore. We're excited to have you!</p>
+          <p style="color: #666;">Thank you for joining Enam's Clothings. We're excited to have you!</p>
           <p style="color: #666;">Discover the latest fashion trends and enjoy exclusive deals.</p>
           
           <div style="margin-top: 30px; text-align: center;">
@@ -169,7 +169,7 @@ const emailTemplates = {
   }),
 
   passwordReset: (user, resetUrl) => ({
-    subject: "Reset Your Password - StyleStore",
+    subject: "Reset Your Password - Enam's Clothings",
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;">
@@ -196,14 +196,14 @@ const emailTemplates = {
           <p style="color: #764ba2; font-size: 12px; word-break: break-all;">${resetUrl}</p>
         </div>
         <div style="padding: 20px; text-align: center; color: #999;">
-          <p>© 2026 StyleStore. All rights reserved.</p>
+          <p>© 2026 Enam's Clothings. All rights reserved.</p>
         </div>
       </div>
     `,
   }),
 
   passwordChanged: (user) => ({
-    subject: "Password Changed Successfully - StyleStore",
+    subject: "Password Changed Successfully - Enam's Clothings",
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;">
@@ -224,14 +224,14 @@ const emailTemplates = {
           </div>
         </div>
         <div style="padding: 20px; text-align: center; color: #999;">
-          <p>© 2026 StyleStore. All rights reserved.</p>
+          <p>© 2026 Enam's Clothings. All rights reserved.</p>
         </div>
       </div>
     `,
   }),
 
   newsletterWelcome: (email) => ({
-    subject: "Welcome to StyleStore Newsletter!",
+    subject: "Welcome to Enam's Clothings Newsletter!",
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;">
@@ -262,14 +262,14 @@ const emailTemplates = {
           </p>
         </div>
         <div style="padding: 20px; text-align: center; color: #999;">
-          <p>© 2026 StyleStore. All rights reserved.</p>
+          <p>© 2026 Enam's Clothings. All rights reserved.</p>
         </div>
       </div>
     `,
   }),
 
   contactConfirmation: (contact) => ({
-    subject: "We Received Your Message - StyleStore",
+    subject: "We Received Your Message - Enam's Clothings",
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;">
@@ -288,22 +288,22 @@ const emailTemplates = {
           <p style="color: #666;">In the meantime, you might find answers to common questions on our <a href="${process.env.CLIENT_URL}/faq" style="color: #764ba2;">FAQ page</a>.</p>
         </div>
         <div style="padding: 20px; text-align: center; color: #999;">
-          <p>© 2026 StyleStore. All rights reserved.</p>
+          <p>© 2026 Enam's Clothings. All rights reserved.</p>
         </div>
       </div>
     `,
   }),
 
   emailVerification: (user, token) => ({
-    subject: "Verify Your Email Address - StyleStore",
+    subject: "Verify Your Email Address - Enam's Clothings",
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;">
-          <h1 style="color: white; margin: 0;">Welcome to StyleStore!</h1>
+          <h1 style="color: white; margin: 0;">Welcome to Enam's Clothings!</h1>
         </div>
         <div style="padding: 30px; background: #f9f9f9;">
           <h2 style="color: #333;">Hi ${user.firstName},</h2>
-          <p style="color: #666;">Thank you for registering with StyleStore. To complete your registration, please verify your email address by clicking the button below.</p>
+          <p style="color: #666;">Thank you for registering with Enam's Clothings. To complete your registration, please verify your email address by clicking the button below.</p>
           
           <div style="margin: 30px 0; text-align: center;">
             <a href="${process.env.CLIENT_URL}/verify-email/${token}" 
@@ -321,14 +321,14 @@ const emailTemplates = {
           
           <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
           <p style="color: #999; font-size: 12px;">
-            If you didn't create an account with StyleStore, you can safely ignore this email.
+            If you didn't create an account with Enam's Clothings, you can safely ignore this email.
           </p>
           <p style="color: #999; font-size: 12px;">
             This verification link will expire in 24 hours.
           </p>
         </div>
         <div style="padding: 20px; text-align: center; color: #999;">
-          <p>© 2026 StyleStore. All rights reserved.</p>
+          <p>© 2026 Enam's Clothings. All rights reserved.</p>
         </div>
       </div>
     `,

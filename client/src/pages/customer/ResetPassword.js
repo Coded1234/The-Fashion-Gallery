@@ -93,7 +93,7 @@ const ResetPassword = () => {
           {/* Header */}
           <div className="text-center mb-8">
             <Link to="/" className="text-3xl font-bold gradient-text">
-              StyleStore
+              Enam's Clothings
             </Link>
             <h2 className="text-2xl font-bold text-gray-800 mt-6">
               Reset Your Password
@@ -168,8 +168,8 @@ const ResetPassword = () => {
                     confirmPassword && confirmPassword !== password
                       ? "border-red-300"
                       : confirmPassword && confirmPassword === password
-                      ? "border-green-300"
-                      : "border-gray-300"
+                        ? "border-green-300"
+                        : "border-gray-300"
                   }`}
                   required
                 />
