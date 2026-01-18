@@ -86,11 +86,13 @@ const Home = () => {
             </p>
             <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight drop-shadow-lg">
               Discover Your
-              <span className="block gradient-text drop-shadow-lg">Perfect Style</span>
+              <span className="block gradient-text drop-shadow-lg">
+                Perfect Style
+              </span>
             </h1>
             <p className="text-xl text-gray-100 dark:text-gray-200 mb-8 drop-shadow-md">
-              Explore our latest collection of premium clothing.
-              Quality fashion for everyone.
+              Explore our latest collection of premium clothing. Quality fashion
+              for everyone.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link
@@ -120,13 +122,18 @@ const Home = () => {
             {features.map((feature, index) => (
               <div key={index} className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
-                  <feature.icon className="text-primary-500 dark:text-primary-300" size={24} />
+                  <feature.icon
+                    className="text-primary-500 dark:text-primary-300"
+                    size={24}
+                  />
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-800 dark:text-gray-200">
                     {feature.title}
                   </h4>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{feature.desc}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {feature.desc}
+                  </p>
                 </div>
               </div>
             ))}
@@ -142,7 +149,8 @@ const Home = () => {
               Shop by Category
             </h2>
             <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Browse our wide selection of clothing and accessories for men and women
+              Browse our wide selection of clothing and accessories for men and
+              women
             </p>
           </div>
 
@@ -182,7 +190,9 @@ const Home = () => {
               <h2 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-100 mb-2">
                 Featured Products
               </h2>
-              <p className="text-gray-600 dark:text-gray-300">Handpicked favorites just for you</p>
+              <p className="text-gray-600 dark:text-gray-300">
+                Handpicked favorites just for you
+              </p>
             </div>
             <Link
               to="/shop?featured=true"
@@ -230,7 +240,7 @@ const Home = () => {
             <div className="absolute bottom-10 right-10 w-40 h-40 bg-white rounded-full animate-bounce"></div>
             <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-white/50 rounded-full animate-ping"></div>
           </div>
-          
+
           <div className="container mx-auto px-4 relative z-10">
             <div className="flex flex-col md:flex-row items-center justify-between gap-8">
               <div className="text-white text-center md:text-left">
@@ -238,12 +248,15 @@ const Home = () => {
                   🎉 Limited Time Offer 🎉
                 </p>
                 <h2 className="text-2xl md:text-5xl font-bold mb-4 whitespace-pre-line animate-pulse">
-                  {activeCoupon.ai_message?.split('\n')[0]?.replace(/(\d+)\.\d+%/g, '$1%').replace(/GH₵(\d+)\.\d+/g, 'GH₵$1') || 
-                   `Get ${activeCoupon.discount_type === 'percentage' ? Math.round(activeCoupon.discount_value) + '%' : 'GH₵' + Math.round(activeCoupon.discount_value)} Off ${activeCoupon.description || 'Your Purchase'}`}
+                  {activeCoupon.ai_message
+                    ?.split("\n")[0]
+                    ?.replace(/(\d+)\.\d+%/g, "$1%")
+                    .replace(/GH₵(\d+)\.\d+/g, "GH₵$1") ||
+                    `Get ${activeCoupon.discount_type === "percentage" ? Math.round(activeCoupon.discount_value) + "%" : "GH₵" + Math.round(activeCoupon.discount_value)} Off ${activeCoupon.description || "Your Purchase"}`}
                 </h2>
                 <p className="text-white/80 text-base md:text-lg mb-6">
-                  {activeCoupon.ai_message?.split('\n')[1] || 
-                   `Use code ${activeCoupon.code} at checkout`}
+                  {activeCoupon.ai_message?.split("\n")[1] ||
+                    `Use code ${activeCoupon.code} at checkout`}
                 </p>
                 <Link
                   to="/shop"
@@ -280,7 +293,9 @@ const Home = () => {
                 <p className="text-[10px] md:text-sm uppercase tracking-widest mb-1 md:mb-2">
                   Just Arrived
                 </p>
-                <h3 className="text-sm md:text-3xl font-bold mb-2 md:mb-4">New Arrivals</h3>
+                <h3 className="text-sm md:text-3xl font-bold mb-2 md:mb-4">
+                  New Arrivals
+                </h3>
                 <Link
                   to="/shop?sort=newest"
                   className="px-3 py-1.5 md:px-6 md:py-3 text-xs md:text-base border-2 border-white rounded-full font-medium hover:bg-white hover:text-gray-900 transition-colors"
@@ -302,7 +317,9 @@ const Home = () => {
                 <p className="text-[10px] md:text-sm uppercase tracking-widest mb-1 md:mb-2">
                   Top Rated
                 </p>
-                <h3 className="text-sm md:text-3xl font-bold mb-2 md:mb-4">Best Sellers</h3>
+                <h3 className="text-sm md:text-3xl font-bold mb-2 md:mb-4">
+                  Best Sellers
+                </h3>
                 <Link
                   to="/shop?sort=popular"
                   className="px-3 py-1.5 md:px-6 md:py-3 text-xs md:text-base border-2 border-white rounded-full font-medium hover:bg-white hover:text-gray-900 transition-colors"
@@ -338,7 +355,10 @@ const Home = () => {
                 >
                   <div className="hidden md:flex gap-0.5 mb-3">
                     {[...Array(testimonial.rating)].map((_, i) => (
-                      <span key={i} className="text-yellow-400 text-sm">
+                      <span
+                        key={`${testimonial.id}-star-${i}`}
+                        className="text-yellow-400 text-sm"
+                      >
                         ★
                       </span>
                     ))}
@@ -389,12 +409,15 @@ const Home = () => {
                 },
               ].map((testimonial, index) => (
                 <div
-                  key={index}
+                  key={`default-testimonial-${index}`}
                   className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100"
                 >
                   <div className="flex gap-1 mb-4">
                     {[...Array(testimonial.rating)].map((_, i) => (
-                      <span key={i} className="text-yellow-400">
+                      <span
+                        key={`default-${index}-star-${i}`}
+                        className="text-yellow-400"
+                      >
                         ★
                       </span>
                     ))}
@@ -435,11 +458,11 @@ const Home = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {IMAGES.instagram.map((img, index) => (
               <a
-                key={index}
+                key={`instagram-${index}`}
                 href="https://instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`aspect-square rounded-xl overflow-hidden group ${index >= 4 ? 'hidden md:block' : ''}`}
+                className={`aspect-square rounded-xl overflow-hidden group ${index >= 4 ? "hidden md:block" : ""}`}
               >
                 <img
                   src={img}

@@ -1,12 +1,26 @@
 const nodemailer = require("nodemailer");
 
+// Validate email configuration
+const emailPass = process.env.EMAIL_PASS || process.env.EMAIL_PASSWORD;
+if (!process.env.EMAIL_USER || !emailPass) {
+  console.error("⚠️  EMAIL CONFIGURATION ERROR:");
+  console.error("EMAIL_USER:", process.env.EMAIL_USER ? "Set" : "MISSING");
+  console.error("EMAIL_PASS:", process.env.EMAIL_PASS ? "Set" : "MISSING");
+  console.error(
+    "EMAIL_PASSWORD:",
+    process.env.EMAIL_PASSWORD ? "Set" : "MISSING",
+  );
+  console.error("EMAIL_HOST:", process.env.EMAIL_HOST || "MISSING");
+  console.error("EMAIL_PORT:", process.env.EMAIL_PORT || "MISSING");
+}
+
 const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: process.env.EMAIL_PORT,
+  host: process.env.EMAIL_HOST || "smtp.gmail.com",
+  port: parseInt(process.env.EMAIL_PORT) || 587,
   secure: false,
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    pass: process.env.EMAIL_PASS || process.env.EMAIL_PASSWORD,
   },
 });
 
@@ -50,7 +64,7 @@ const emailTemplates = {
               order.orderNumber || order.id?.slice(-8).toUpperCase()
             }</p>
             <p><strong>Total:</strong> GH₵${Number(
-              order.totalAmount
+              order.totalAmount,
             ).toLocaleString()}</p>
             <p><strong>Status:</strong> ${order.status}</p>
           </div>
@@ -69,11 +83,11 @@ const emailTemplates = {
                   item.size || "N/A"
                 } | Qty: ${item.quantity}</p>
                 <p style="margin: 0; color: #764ba2;">GH₵${Number(
-                  item.price
+                  item.price,
                 ).toLocaleString()}</p>
               </div>
             </div>
-          `
+          `,
               )
               .join("") || ""
           }
