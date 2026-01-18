@@ -604,29 +604,24 @@ const ProductDetail = () => {
             {/* Reviews Tab */}
             {activeTab === "reviews" && (
               <div>
-                {/* Review Summary */}
-                <div className="flex flex-col md:flex-row gap-8 mb-8 pb-8 border-b">
-                  <div className="text-center md:text-left">
-                    <div className="text-5xl font-bold text-gray-800 mb-2">
-                      {product.averageRating || 0}
-                    </div>
-                    <div className="flex justify-center md:justify-start gap-1 mb-2">
-                      {[...Array(5)].map((_, i) => (
-                        <FiStar
-                          key={i}
-                          className={`${
-                            i < Math.round(product.averageRating)
-                              ? "text-yellow-400 fill-yellow-400"
-                              : "text-gray-300"
-                          }`}
-                          size={20}
-                        />
-                      ))}
-                    </div>
-                    <p className="text-gray-600">
-                      {product.reviewCount} reviews
-                    </p>
+                {/* Review Summary - Compact */}
+                <div className="flex items-center gap-3 mb-8 pb-6 border-b">
+                  <div className="flex gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <FiStar
+                        key={i}
+                        className={`${
+                          i < Math.round(product.averageRating)
+                            ? "text-yellow-400 fill-yellow-400"
+                            : "text-gray-300"
+                        }`}
+                        size={20}
+                      />
+                    ))}
                   </div>
+                  <p className="text-gray-600">
+                    {product.reviewCount} {product.reviewCount === 1 ? 'review' : 'reviews'}
+                  </p>
                 </div>
 
                 {/* Write Review Form */}
@@ -735,7 +730,7 @@ const ProductDetail = () => {
                   </div>
                 ) : (
                   <div className="space-y-6">
-                    {reviews.map((review) => (
+                    {reviews.slice(0, 2).map((review) => (
                       <div
                         key={review.id}
                         className="pb-6 border-b last:border-0"
@@ -805,6 +800,19 @@ const ProductDetail = () => {
                         </button>
                       </div>
                     ))}
+                    
+                    {/* View All Reviews Button */}
+                    {reviews.length > 2 && (
+                      <div className="pt-6 border-t">
+                        <Link
+                          to={`/product/${id}/reviews`}
+                          className="flex items-center justify-center gap-2 py-3 px-6 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl font-medium transition-colors"
+                        >
+                          View All {reviews.length} Reviews
+                          <FiChevronRight />
+                        </Link>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

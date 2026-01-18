@@ -11,6 +11,7 @@ import AdminLayout from "./layouts/AdminLayout";
 import Home from "./pages/customer/Home";
 import Shop from "./pages/customer/Shop";
 import ProductDetail from "./pages/customer/ProductDetail";
+import ProductReviews from "./pages/customer/ProductReviews";
 import Cart from "./pages/customer/Cart";
 import Checkout from "./pages/customer/Checkout";
 import OrderSummary from "./pages/customer/OrderSummary";
@@ -60,6 +61,7 @@ function App() {
         <Route path="shop" element={<Shop />} />
         <Route path="shop/:category" element={<Shop />} />
         <Route path="product/:id" element={<ProductDetail />} />
+        <Route path="product/:id/reviews" element={<ProductReviews />} />
         <Route path="cart" element={<Cart />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
