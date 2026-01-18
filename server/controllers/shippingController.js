@@ -13,6 +13,10 @@ const STORE_LOCATION = {
   address: process.env.STORE_ADDRESS || "Accra, Ghana",
 };
 
+// Road distance multiplier (used when routing API fails)
+// Accra's road network typically adds 40-60% to straight-line distance
+const ROAD_MULTIPLIER = parseFloat(process.env.ROAD_DISTANCE_MULTIPLIER) || 1.5;
+
 /**
  * Calculate shipping rate using Yango Delivery API
  */
@@ -221,9 +225,15 @@ async function calculateRoadDistance(lat1, lon1, lat2, lon2) {
     // Use OSRM (Open Source Routing Machine) for road distance
     const url = `https://router.project-osrm.org/route/v1/driving/${lon1},${lat1};${lon2},${lat2}?overview=false`;
 
+    console.log(`Calculating road distance from (${lat1},${lon1}) to (${lat2},${lon2})`);
+
     const response = await axios.get(url, {
-      timeout: 5000,
-      headers: { "User-Agent": "EcommerceWebsite/1.0" },
+      timeout: 8000, // Increased timeout for Vercel
+      headers: { 
+        "User-Agent": "EcommerceWebsite/1.0",
+        "Accept": "application/json"
+      },
+      validateStatus: (status) => status < 500, // Don't throw on 4xx errors
     });
 
     if (
@@ -233,18 +243,21 @@ async function calculateRoadDistance(lat1, lon1, lat2, lon2) {
     ) {
       // Distance is in meters, convert to km
       const distanceKm = response.data.routes[0].distance / 1000;
-      console.log(`Road distance calculated: ${distanceKm.toFixed(2)} km`);
+      console.log(`✓ Road distance calculated: ${distanceKm.toFixed(2)} km`);
       return distanceKm;
     }
 
-    // Fallback to Haversine if routing fails
-    console.log("OSRM routing failed, using straight-line distance");
-    return calculateDistance(lat1, lon1, lat2, lon2);
-  } catch (error) {
-    console.error("Road distance calculation error:", error.message);
-    // Fallback to straight-line distance with 1.4x multiplier (average road distance factor)
+    // Fallback if no routes found
+    console.log("⚠ No routes found, using straight-line with multiplier");
     const straightLine = calculateDistance(lat1, lon1, lat2, lon2);
-    return straightLine * 1.4;
+    return straightLine * ROAD_MULTIPLIER;
+  } catch (error) {
+    console.error("❌ Road distance calculation error:", error.message);
+    // Fallback to straight-line distance with road multiplier
+    const straightLine = calculateDistance(lat1, lon1, lat2, lon2);
+    const estimated = straightLine * ROAD_MULTIPLIER;
+    console.log(`Using fallback: ${straightLine.toFixed(2)} km * ${ROAD_MULTIPLIER} = ${estimated.toFixed(2)} km`);
+    return estimated;
   }
 }
 
