@@ -6,7 +6,6 @@ import IMAGES from "../../config/images";
 import toast from "react-hot-toast";
 import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight } from "react-icons/fi";
 import { useGoogleLogin } from "@react-oauth/google";
-import toast from "react-hot-toast";
 
 const Login = () => {
   const [formData, setFormData] = useState({
