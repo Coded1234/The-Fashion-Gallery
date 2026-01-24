@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { toast } from "react-hot-toast";
 import {
   FiCalendar,
   FiDollarSign,
@@ -34,43 +35,7 @@ const Reports = () => {
       setReportData(data);
     } catch (error) {
       console.error("Failed to fetch report:", error);
-      // Set mock data for demo
-      setReportData({
-        summary: {
-          totalRevenue: 2450000,
-          totalOrders: 156,
-          averageOrderValue: 15705,
-          totalItemsSold: 423,
-        },
-        revenueByDay: [
-          { date: "2026-01-05", revenue: 125000, orders: 8 },
-          { date: "2026-01-06", revenue: 180000, orders: 12 },
-          { date: "2026-01-07", revenue: 95000, orders: 6 },
-          { date: "2026-01-08", revenue: 220000, orders: 15 },
-          { date: "2026-01-09", revenue: 310000, orders: 21 },
-          { date: "2026-01-10", revenue: 175000, orders: 11 },
-          { date: "2026-01-11", revenue: 285000, orders: 18 },
-        ],
-        topProducts: [
-          { name: "Premium Cotton T-Shirt", sold: 45, revenue: 675000 },
-          { name: "Slim Fit Jeans", sold: 38, revenue: 760000 },
-          { name: "Casual Sneakers", sold: 32, revenue: 640000 },
-          { name: "Summer Dress", sold: 28, revenue: 420000 },
-          { name: "Leather Belt", sold: 25, revenue: 125000 },
-        ],
-        categoryBreakdown: [
-          { category: "Men", orders: 68, revenue: 1020000 },
-          { category: "Women", orders: 52, revenue: 780000 },
-        ],
-        ordersByStatus: {
-          pending: 12,
-          confirmed: 8,
-          processing: 15,
-          shipped: 20,
-          delivered: 95,
-          cancelled: 6,
-        },
-      });
+      toast.error("Failed to load live report data");
     } finally {
       setLoading(false);
     }
