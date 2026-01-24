@@ -5,7 +5,7 @@ import { login, clearError, googleLogin } from "../../redux/slices/authSlice";
 import IMAGES from "../../config/images";
 import toast from "react-hot-toast";
 import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight } from "react-icons/fi";
-import { useGoogleLogin } from '@react-oauth/google';
+import { useGoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -24,17 +24,18 @@ const Login = () => {
 
   const loginGoogle = useGoogleLogin({
     onSuccess: (tokenResponse) => {
-      dispatch(googleLogin(tokenResponse.access_token)).unwrap()
+      dispatch(googleLogin(tokenResponse.access_token))
+        .unwrap()
         .then(() => {
-             toast.success("Welcome back!");
+          toast.success("Welcome back!");
         })
         .catch((err) => {
-             // Error handled by slice or toast
+          // Error handled by slice or toast
         });
     },
     onError: () => {
       toast.error("Google login failed");
-    }
+    },
   });
 
   const from = location.state?.from || "/";
@@ -73,11 +74,18 @@ const Login = () => {
       await dispatch(login(formData)).unwrap();
       toast.success("Welcome back!");
     } catch (err) {
+      // Safely derive an error message string to avoid runtime crashes
+      const errMsg =
+        typeof err === "string" ? err : err?.message || JSON.stringify(err);
+
       // Check if it's an email verification error
-      if (err?.includes("verify your email") || err?.includes("verification")) {
+      if (
+        (errMsg && errMsg.includes("verify your email")) ||
+        (errMsg && errMsg.includes("verification"))
+      ) {
         toast.error(
           <div>
-            <p>{err}</p>
+            <p>{errMsg}</p>
             <Link
               to="/resend-verification"
               className="underline text-white hover:text-gray-200"
