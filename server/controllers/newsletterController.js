@@ -37,8 +37,17 @@ const subscribe = async (req, res) => {
 
     // Send welcome email
     try {
+      // To Subscriber
       const { subject, html } = emailTemplates.newsletterWelcome(email);
       await sendEmail(email, subject, html);
+
+      // To Admin
+      const adminTemplate = emailTemplates.adminNewsletterSubscription(email);
+      await sendEmail(
+        process.env.ADMIN_EMAIL || "enamclothings@gmail.com",
+        adminTemplate.subject,
+        adminTemplate.html,
+      );
     } catch (emailError) {
       console.error("Newsletter welcome email failed:", emailError);
     }

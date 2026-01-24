@@ -124,7 +124,7 @@ const verifyPayment = async (req, res) => {
 
           if (response.status && response.data.status === "success") {
             // Payment successful - update order status
-            const { Order, OrderItem, Product } = require("../models");
+            const { Order, OrderItem, Product, User } = require("../models");
             const orderId = response.data.metadata.order_id;
 
             if (orderId) {
@@ -133,6 +133,10 @@ const verifyPayment = async (req, res) => {
                   {
                     model: OrderItem,
                     as: "items",
+                  },
+                  {
+                    model: User,
+                    as: "user",
                   },
                 ],
               });
@@ -153,6 +157,33 @@ const verifyPayment = async (req, res) => {
                     product.remainingStock = (product.totalStock || 0) - product.soldCount;
                     await product.save();
                   }
+                }
+
+                // Send confirmation email
+                try {
+                  // To Customer
+                  const template = emailTemplates.orderConfirmation(
+                    order,
+                    order.user,
+                  );
+                  await sendEmail(
+                    order.user.email,
+                    template.subject,
+                    template.html,
+                  );
+
+                  // To Admin
+                  const adminTemplate = emailTemplates.adminNewOrder(
+                    order,
+                    order.user,
+                  );
+                  await sendEmail(
+                    process.env.ADMIN_EMAIL || "enamclothings@gmail.com",
+                    adminTemplate.subject,
+                    adminTemplate.html,
+                  );
+                } catch (emailError) {
+                  console.error("Error sending confirmation email:", emailError);
                 }
 
                 return res.json({

@@ -397,6 +397,107 @@ const emailTemplates = {
       </div>
     `,
   }),
+
+  // Admin Notification Templates
+  adminNewOrder: (order, user) => ({
+    subject: `[ADMIN] New Order Received - #${
+      order.orderNumber || order.id?.slice(-8).toUpperCase()
+    }`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: #333; padding: 20px; text-align: center;">
+          <h2 style="color: white; margin: 0;">New Order Alert</h2>
+        </div>
+        <div style="padding: 30px; background: #f9f9f9;">
+          <p><strong>Customer:</strong> ${user.firstName} ${user.lastName} (${
+      user.email
+    })</p>
+          <p><strong>Payment Method:</strong> ${
+            order.paymentMethod === "cod" ? "Pay on Delivery" : "Paystack"
+          }</p>
+          <p><strong>Total Amount:</strong> GH₵${Number(
+            order.totalAmount,
+          ).toLocaleString()}</p>
+          
+          <div style="background: white; padding: 15px; border-radius: 5px; margin-top: 20px;">
+            <h3>Order Items:</h3>
+             ${
+               order.items
+                 ?.map(
+                   (item) => `
+              <div style="border-bottom: 1px solid #eee; padding: 10px 0;">
+                <p style="margin: 0; font-weight: bold;">${
+                  item.productName || item.product?.name
+                }</p>
+                <p style="margin: 5px 0;">Qty: ${item.quantity} | Size: ${
+                     item.size || "N/A"
+                   }</p>
+              </div>
+            `,
+                 )
+                 .join("") || ""
+             }
+          </div>
+          
+          <div style="margin-top: 20px;">
+            <a href="${process.env.CLIENT_URL}/admin/orders/${order.id}" 
+               style="background: #333; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+              View Order in Admin Panel
+            </a>
+          </div>
+        </div>
+      </div>
+    `,
+  }),
+
+  adminNewsletterSubscription: (email) => ({
+    subject: `[ADMIN] New Newsletter Subscriber`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: #4CAF50; padding: 20px; text-align: center;">
+          <h2 style="color: white; margin: 0;">New Subscriber!</h2>
+        </div>
+        <div style="padding: 30px; background: #f9f9f9; text-align: center;">
+          <p style="font-size: 18px;">A new user has subscribed to the newsletter:</p>
+          <p style="font-size: 24px; font-weight: bold; color: #333;">${email}</p>
+        </div>
+      </div>
+    `,
+  }),
+
+  adminOrderCancellation: (order, user, reason) => ({
+    subject: `[ADMIN] Order Cancelled - #${
+      order.orderNumber || order.id?.slice(-8).toUpperCase()
+    }`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: #F44336; padding: 20px; text-align: center;">
+          <h2 style="color: white; margin: 0;">Order Cancellation Alert</h2>
+        </div>
+        <div style="padding: 30px; background: #f9f9f9;">
+          <p><strong>Customer:</strong> ${user.firstName} ${user.lastName}</p>
+          <p><strong>Order ID:</strong> #${
+            order.orderNumber || order.id?.slice(-8).toUpperCase()
+          }</p>
+          <p><strong>Amount:</strong> GH₵${Number(
+            order.totalAmount,
+          ).toLocaleString()}</p>
+          
+          <div style="background: #fff0f0; padding: 15px; border-radius: 5px; border-left: 5px solid #F44336; margin: 20px 0;">
+            <p style="margin: 0; font-weight: bold; color: #F44336;">Cancellation Reason:</p>
+            <p style="margin: 5px 0;">${reason || "No reason provided"}</p>
+          </div>
+
+          <div style="margin-top: 20px;">
+             <a href="${process.env.CLIENT_URL}/admin/orders/${order.id}" 
+               style="background: #333; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+              View Order in Admin Panel
+            </a>
+          </div>
+        </div>
+      </div>
+    `,
+  }),
 };
 
 module.exports = { sendEmail, emailTemplates };
