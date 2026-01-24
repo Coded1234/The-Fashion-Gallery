@@ -803,37 +803,157 @@ const toggleReviewApproval = async (req, res) => {
 // @route   GET /api/admin/reports/sales
 const getSalesReport = async (req, res) => {
   try {
-    const { startDate, endDate } = req.query;
+    const { startDate, endDate, range } = req.query;
 
-    const where = { paymentStatus: "paid" };
-    if (startDate || endDate) {
-      where.createdAt = {};
-      if (startDate) where.createdAt[Op.gte] = new Date(startDate);
-      if (endDate) where.createdAt[Op.lte] = new Date(endDate);
+    let dateWhere = {};
+    if (startDate && endDate) {
+      dateWhere = {
+        createdAt: {
+          [Op.between]: [new Date(startDate), new Date(endDate)],
+        },
+      };
+    } else if (range) {
+      const now = new Date();
+      let start = new Date();
+      if (range === "week") start.setDate(now.getDate() - 7);
+      else if (range === "month") start.setMonth(now.getMonth() - 1);
+      else if (range === "year") start.setFullYear(now.getFullYear() - 1);
+
+      if (range !== "all") {
+        dateWhere = {
+          createdAt: {
+            [Op.gte]: start,
+          },
+        };
+      }
     }
 
-    const salesData = await Order.findAll({
-      where,
+    const orderWhere = {
+      paymentStatus: "paid",
+      ...dateWhere,
+    };
+
+    // 1. Summary
+    const summaryData = await Order.findOne({
+      where: orderWhere,
+      attributes: [
+        [sequelize.fn("SUM", sequelize.col("total_amount")), "totalRevenue"],
+        [sequelize.fn("COUNT", sequelize.col("id")), "totalOrders"],
+        [sequelize.fn("AVG", sequelize.col("total_amount")), "averageOrderValue"],
+        [sequelize.fn("SUM", sequelize.col("total_items")), "totalItemsSold"],
+      ],
+      raw: true,
+    });
+
+    // 2. Revenue By Day
+    const revenueByDay = await Order.findAll({
+      where: orderWhere,
       attributes: [
         [sequelize.fn("DATE", sequelize.col("created_at")), "date"],
-        [sequelize.fn("SUM", sequelize.col("total_amount")), "totalSales"],
-        [sequelize.fn("COUNT", sequelize.col("id")), "orderCount"],
-        [sequelize.fn("AVG", sequelize.col("total_amount")), "avgOrderValue"],
+        [sequelize.fn("SUM", sequelize.col("total_amount")), "revenue"],
+        [sequelize.fn("COUNT", sequelize.col("id")), "orders"],
       ],
       group: [sequelize.fn("DATE", sequelize.col("created_at"))],
       order: [[sequelize.fn("DATE", sequelize.col("created_at")), "ASC"]],
       raw: true,
     });
 
-    res.json(
-      salesData.map((d) => ({
-        _id: d.date,
-        totalSales: parseFloat(d.totalSales),
-        orderCount: parseInt(d.orderCount),
-        avgOrderValue: parseFloat(d.avgOrderValue),
-      }))
-    );
+    // 3. Top Products
+    const topProducts = await OrderItem.findAll({
+      attributes: [
+        "productName",
+        [sequelize.fn("SUM", sequelize.col("quantity")), "sold"],
+        [
+          sequelize.fn("SUM", sequelize.literal("quantity * price")),
+          "revenue",
+        ],
+      ],
+      include: [
+        {
+          model: Order,
+          attributes: [],
+          where: orderWhere,
+        },
+      ],
+      group: ["productName"],
+      order: [[sequelize.literal("sold"), "DESC"]],
+      limit: 5,
+      raw: true,
+    });
+
+    // 4. Category Breakdown
+    const categoryBreakdown = await OrderItem.findAll({
+      attributes: [
+        [sequelize.col("product.category"), "category"],
+        [
+          sequelize.fn("COUNT", sequelize.fn("DISTINCT", sequelize.col("OrderItem.order_id"))),
+          "orders",
+        ],
+        [
+          sequelize.fn("SUM", sequelize.literal('"OrderItem"."quantity" * "OrderItem"."price"')),
+          "revenue",
+        ],
+      ],
+      include: [
+        {
+          model: Product,
+          as: "product",
+          attributes: [],
+          required: true,
+        },
+        {
+          model: Order,
+          attributes: [],
+          where: orderWhere,
+        },
+      ],
+      group: [sequelize.col("product.category")],
+      raw: true,
+    });
+
+    // 5. Orders By Status (include unpaid)
+    const statusWhere = { ...dateWhere };
+    const ordersByStatusData = await Order.findAll({
+      where: statusWhere,
+      attributes: [
+        "status",
+        [sequelize.fn("COUNT", sequelize.col("id")), "count"],
+      ],
+      group: ["status"],
+      raw: true,
+    });
+
+    const ordersByStatus = {};
+    ordersByStatusData.forEach((d) => {
+      ordersByStatus[d.status] = parseInt(d.count);
+    });
+
+    res.json({
+      summary: {
+        totalRevenue: parseFloat(summaryData?.totalRevenue || 0),
+        totalOrders: parseInt(summaryData?.totalOrders || 0),
+        averageOrderValue: parseFloat(summaryData?.averageOrderValue || 0),
+        totalItemsSold: parseInt(summaryData?.totalItemsSold || 0),
+      },
+      revenueByDay: revenueByDay.map((d) => ({
+        date: d.date,
+        revenue: parseFloat(d.revenue),
+        orders: parseInt(d.orders),
+      })),
+      topProducts: topProducts.map((p) => ({
+        name: p.productName,
+        sold: parseInt(p.sold),
+        revenue: parseFloat(p.revenue),
+      })),
+      categoryBreakdown: categoryBreakdown.map((c) => ({
+        category: c.category || "Uncategorized",
+        orders: parseInt(c.orders),
+        revenue: parseFloat(c.revenue),
+      })),
+      ordersByStatus,
+    });
   } catch (error) {
+    console.error("Report error:", error);
     res
       .status(500)
       .json({ message: "Error generating report", error: error.message });

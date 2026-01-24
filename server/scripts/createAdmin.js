@@ -1,44 +1,53 @@
-const bcrypt = require('bcryptjs');
-const { Sequelize } = require('sequelize');
-
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
-  dialect: 'postgres',
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false
-    }
-  }
-});
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, "../.env") });
+const { sequelize, User } = require("../models");
 
 async function createAdmin() {
   try {
-    const hash = await bcrypt.hash('Admin@123', 10);
-    
-    // Delete existing admin if exists
-    await sequelize.query(
-      'DELETE FROM users WHERE email = $1',
-      { bind: ['admin@enamclothings.com'] }
-    );
-    
-    // Create new admin
-    await sequelize.query(
-      `INSERT INTO users (id, first_name, last_name, email, password, role, is_active, created_at, updated_at) 
-       VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, NOW(), NOW())`,
-      { bind: ['Admin', 'User', 'admin@enamclothings.com', hash, 'admin', true] }
-    );
-    
-    console.log('\n✅ Admin created successfully!');
-    console.log('================================');
-    console.log('Email: admin@enamclothings.com');
-    console.log('Password: Admin@123');
-    console.log('================================\n');
-    
+    await sequelize.authenticate();
+    console.log("✅ Database connected successfully");
+
+    const adminEmail = "enamclothings@gmail.com";
+    const adminPassword = "Admin@1234";
+    const adminData = {
+      firstName: "Admin",
+      lastName: "User",
+      email: adminEmail,
+      password: adminPassword,
+      role: "admin",
+      isActive: true,
+      emailVerified: true,
+      emailVerifiedAt: new Date(),
+    };
+
+    // Check if user exists
+    const existingUser = await User.findOne({ where: { email: adminEmail } });
+
+    if (existingUser) {
+      // Update existing user to admin
+      existingUser.role = "admin";
+      existingUser.password = adminPassword; // Hook will hash this
+      existingUser.isActive = true;
+      existingUser.emailVerified = true;
+      await existingUser.save();
+      console.log("\n✅ Existing user updated to Admin successfully!");
+    } else {
+      // Create new admin
+      await User.create(adminData);
+      console.log("\n✅ New Admin user created successfully!");
+    }
+
+    console.log("================================");
+    console.log(`Email: ${adminEmail}`);
+    console.log(`Password: ${adminPassword}`);
+    console.log("================================\n");
+
     process.exit(0);
   } catch (error) {
-    console.error('Error creating admin:', error);
+    console.error("Error creating admin:", error);
     process.exit(1);
   }
 }
 
 createAdmin();
+

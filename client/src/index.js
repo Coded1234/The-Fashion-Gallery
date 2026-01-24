@@ -9,34 +9,14 @@ import { store } from "./redux/store";
 import "./index.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
+// Fallback to a hardcoded client ID if env var is missing during build
+// This ensures GoogleOAuthProvider is always rendered
+const googleClientId = process.env.REACT_APP_GOOGLE_CLIENT_ID || "744124620366-lpmacc6siit1fud76trnd2frmdfq0q29.apps.googleusercontent.com";
+
 root.render(
   <React.StrictMode>
-    {process.env.REACT_APP_GOOGLE_CLIENT_ID ? (
-      <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
-        <Provider store={store}>
-          <BrowserRouter>
-            <App />
-            <Toaster
-              position="top-right"
-              toastOptions={{
-                duration: 3000,
-                style: {
-                  background: "#333",
-                  color: "#fff",
-                },
-                success: {
-                  iconTheme: {
-                    primary: "#667eea",
-                    secondary: "#fff",
-                  },
-                },
-              }}
-            />
-          </BrowserRouter>
-        </Provider>
-      </GoogleOAuthProvider>
-    ) : (
-      // Fallback when Google client ID is missing to avoid runtime errors
+    <GoogleOAuthProvider clientId={googleClientId}>
       <Provider store={store}>
         <BrowserRouter>
           <App />
@@ -58,6 +38,6 @@ root.render(
           />
         </BrowserRouter>
       </Provider>
-    )}
+    </GoogleOAuthProvider>
   </React.StrictMode>,
 );
