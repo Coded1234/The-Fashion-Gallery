@@ -121,6 +121,17 @@ const createOrder = async (req, res) => {
           req.user,
         );
         await sendEmail(req.user.email, template.subject, template.html);
+
+        // Notify Admin
+        const adminTemplate = emailTemplates.adminNewOrder(
+          populatedOrder,
+          req.user,
+        );
+        await sendEmail(
+          process.env.ADMIN_EMAIL || "enamclothings@gmail.com",
+          adminTemplate.subject,
+          adminTemplate.html,
+        );
       } catch (emailError) {
         console.error("Error sending POD email:", emailError);
         // Don't fail the request if email fails
@@ -270,6 +281,22 @@ const cancelOrder = async (req, res) => {
     order.cancelledAt = new Date();
     order.cancelReason = reason;
     await order.save();
+
+    // Notify Admin about cancellation
+    try {
+      const adminTemplate = emailTemplates.adminOrderCancellation(
+        order,
+        req.user,
+        reason,
+      );
+      await sendEmail(
+        process.env.ADMIN_EMAIL || "enamclothings@gmail.com",
+        adminTemplate.subject,
+        adminTemplate.html,
+      );
+    } catch (emailError) {
+      console.error("Error sending cancellation email to admin:", emailError);
+    }
 
     res.json(order);
   } catch (error) {
