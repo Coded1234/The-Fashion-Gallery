@@ -257,7 +257,7 @@ const Login = () => {
                 loginGoogle();
               }}
               disabled={!googleClientId}
-              className={`flex items-center justify-center gap-2 py-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors ${!googleClientId ? 'opacity-60 cursor-not-allowed' : ''}`}
+              className={`flex items-center justify-center gap-2 py-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors ${!googleClientId ? "opacity-60 cursor-not-allowed" : ""}`}
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path
