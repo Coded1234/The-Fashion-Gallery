@@ -109,7 +109,7 @@ const Contact = () => {
     {
       icon: FiMail,
       title: "Email Us",
-      details: ["enamclothings@gmail.com"],
+      details: ["contact@thefashiongallery.com"],
     },
     {
       icon: FiClock,

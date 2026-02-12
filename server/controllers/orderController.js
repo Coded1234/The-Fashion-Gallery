@@ -128,7 +128,7 @@ const createOrder = async (req, res) => {
           req.user,
         );
         await sendEmail(
-          process.env.ADMIN_EMAIL || "enamclothings@gmail.com",
+          process.env.ADMIN_EMAIL || "admin@thefashiongallery.com",
           adminTemplate.subject,
           adminTemplate.html,
         );
@@ -290,7 +290,7 @@ const cancelOrder = async (req, res) => {
         reason,
       );
       await sendEmail(
-        process.env.ADMIN_EMAIL || "enamclothings@gmail.com",
+        process.env.ADMIN_EMAIL || "admin@thefashiongallery.com",
         adminTemplate.subject,
         adminTemplate.html,
       );

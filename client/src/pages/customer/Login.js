@@ -126,9 +126,11 @@ const Login = () => {
         <div className="w-full max-w-md">
           {/* Logo */}
           <Link to="/" className="block text-center mb-8">
-            <h1 className="text-3xl font-bold gradient-text">
-              Enam's Clothings
-            </h1>
+            <img
+              src="/images/loginlogo.png"
+              alt="The Fashion Gallery"
+              className="h-62 sm:h-64 md:h-66 w-auto object-contain mx-auto -mt-2"
+            />
           </Link>
 
           {/* Header */}

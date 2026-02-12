@@ -1,7 +1,7 @@
 {
-  "name": "enam-clothings",
+  "name": "the-fashion-gallery",
   "version": "1.0.0",
-  "description": "Enam Clothings E-commerce Store",
+  "description": "The Fashion Gallery E-commerce Store",
   "scripts": {
     "install-client": "cd client && npm install",
     "install-server": "cd server && npm install",

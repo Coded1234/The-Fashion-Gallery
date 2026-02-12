@@ -396,7 +396,7 @@ const Home = () => {
                 {
                   name: "Adaobi Okonkwo",
                   role: "Fashion Enthusiast",
-                  text: "Amazing quality and fast delivery! Enam's Clothings has become my go-to for all my fashion needs. Highly recommended!",
+                  text: "Amazing quality and fast delivery! The Fashion Gallery has become my go-to for all my fashion needs. Highly recommended!",
                   rating: 5,
                 },
                 {
@@ -456,7 +456,7 @@ const Home = () => {
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
               Follow Us on Instagram
             </h2>
-            <p className="text-gray-600">@enamsclothings</p>
+            <p className="text-gray-600">@thefashiongallery</p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">

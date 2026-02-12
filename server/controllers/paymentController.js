@@ -7,10 +7,10 @@ const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY;
 // Check if Paystack is configured
 if (!PAYSTACK_SECRET || PAYSTACK_SECRET.includes("your_")) {
   console.warn(
-    "⚠️  WARNING: Paystack not configured! Please add PAYSTACK_SECRET_KEY to .env file"
+    "⚠️  WARNING: Paystack not configured! Please add PAYSTACK_SECRET_KEY to .env file",
   );
   console.warn(
-    "⚠️  Get your keys from: https://dashboard.paystack.com/settings/developer"
+    "⚠️  Get your keys from: https://dashboard.paystack.com/settings/developer",
   );
 }
 
@@ -153,8 +153,10 @@ const verifyPayment = async (req, res) => {
                   const product = await Product.findByPk(item.productId);
                   if (product) {
                     // Increase soldCount and decrease remainingStock
-                    product.soldCount = (product.soldCount || 0) + item.quantity;
-                    product.remainingStock = (product.totalStock || 0) - product.soldCount;
+                    product.soldCount =
+                      (product.soldCount || 0) + item.quantity;
+                    product.remainingStock =
+                      (product.totalStock || 0) - product.soldCount;
                     await product.save();
                   }
                 }
@@ -178,12 +180,15 @@ const verifyPayment = async (req, res) => {
                     order.user,
                   );
                   await sendEmail(
-                    process.env.ADMIN_EMAIL || "enamclothings@gmail.com",
+                    process.env.ADMIN_EMAIL || "admin@thefashiongallery.com",
                     adminTemplate.subject,
                     adminTemplate.html,
                   );
                 } catch (emailError) {
-                  console.error("Error sending confirmation email:", emailError);
+                  console.error(
+                    "Error sending confirmation email:",
+                    emailError,
+                  );
                 }
 
                 return res.json({
@@ -282,7 +287,8 @@ const paystackWebhook = async (req, res) => {
               if (product) {
                 // Increase soldCount and decrease remainingStock
                 product.soldCount = (product.soldCount || 0) + item.quantity;
-                product.remainingStock = (product.totalStock || 0) - product.soldCount;
+                product.remainingStock =
+                  (product.totalStock || 0) - product.soldCount;
                 await product.save();
               }
             }
@@ -290,7 +296,7 @@ const paystackWebhook = async (req, res) => {
             console.log(
               "Order updated:",
               order.id,
-              "- Stock updated for all items"
+              "- Stock updated for all items",
             );
           }
         }

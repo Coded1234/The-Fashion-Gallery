@@ -77,9 +77,11 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* About */}
           <div>
-            <h4 className="text-xl font-bold gradient-text mb-4">
-              Enam's Clothings
-            </h4>
+            <img
+              src="/images/loginlogo.png"
+              alt="The Fashion Gallery"
+              className="h-2 sm:h-10 md:h-10 w-auto object-contain mb-5"
+            />
             <p className="text-gray-300 mb-4">
               Your one-stop destination for premium fashion and clothing.
               Quality meets style.
@@ -202,7 +204,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center gap-3 text-gray-300">
                 <FiMail className="text-primary-500" />
-                <span>enamclothings@gmail.com</span>
+                <span>contact@thefashiongallery.com</span>
               </li>
             </ul>
           </div>
@@ -213,7 +215,7 @@ const Footer = () => {
       <div className="border-t border-gray-800 py-6">
         <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-gray-300 text-sm">
-            © 2026 Enam's Clothings. All rights reserved.
+            © 2026 The Fashion Gallery. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm text-gray-300">
             <Link to="/privacy" className="hover:text-white transition-colors">

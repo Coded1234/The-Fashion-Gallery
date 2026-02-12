@@ -1,4 +1,4 @@
-# Enam Clothings - E-commerce Store
+# The Fashion Gallery - E-commerce Store
 
 A full-stack e-commerce clothing store built with React, Node.js, Express, and PostgreSQL.
 
@@ -104,8 +104,8 @@ A full-stack e-commerce clothing store built with React, Node.js, Express, and P
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/Coded1234/Enam-Clothings.git
-   cd Enam-Clothings
+   git clone https://github.com/Coded1234/The-Fashion-Gallery.git
+   cd The-Fashion-Gallery
    ```
 
 2. **Install dependencies**

@@ -6,7 +6,7 @@ async function createAdmin() {
     await sequelize.authenticate();
     console.log("✅ Database connected successfully");
 
-    const adminEmail = "enamclothings@gmail.com";
+    const adminEmail = "admin@thefashiongallery.com";
     const adminPassword = "[REDACTED_ADMIN_PWD]";
     const adminData = {
       firstName: "Admin",
@@ -49,4 +49,3 @@ async function createAdmin() {
 }
 
 createAdmin();
-
