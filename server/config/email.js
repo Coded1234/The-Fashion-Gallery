@@ -27,7 +27,7 @@ const transporter = nodemailer.createTransport({
 const sendEmail = async (to, subject, html) => {
   try {
     const mailOptions = {
-      from: `"Enam's Clothings" <${process.env.EMAIL_USER}>`,
+      from: `"The Fashion Gallery" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html,
@@ -50,12 +50,12 @@ const sendBulkEmail = async (recipients, subject, html) => {
     const batchSize = 20;
     // Ensure recipients is an array
     const recipientList = Array.isArray(recipients) ? recipients : [recipients];
-    
+
     for (let i = 0; i < recipientList.length; i += batchSize) {
       const batch = recipientList.slice(i, i + batchSize);
       const promises = batch.map((email) => {
         const mailOptions = {
-          from: `"Enam's Clothings" <${process.env.EMAIL_USER}>`,
+          from: `"The Fashion Gallery" <${process.env.EMAIL_USER}>`,
           to: email,
           subject,
           html,
@@ -73,7 +73,7 @@ const sendBulkEmail = async (recipients, subject, html) => {
 };
 
 // Helper for consistent email layout
-const getEmailLayout = (content, title = "Enam's Clothings") => `
+const getEmailLayout = (content, title = "The Fashion Gallery") => `
   <!DOCTYPE html>
   <html>
   <head>
@@ -84,8 +84,8 @@ const getEmailLayout = (content, title = "Enam's Clothings") => `
   <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4; color: #333;">
     <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-radius: 8px; margin-top: 20px; margin-bottom: 20px;">
       <!-- Header -->
-      <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; text-align: center;">
-        <h1 style="color: #ffffff; margin: 0; font-size: 28px; letter-spacing: 1px; font-weight: 600;">Enam's Clothings</h1>
+      <div style="background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%); padding: 40px 20px; text-align: center; border-bottom: 2px solid #c9ad65;">
+        <h1 style="color: #c9ad65; margin: 0; font-size: 28px; letter-spacing: 2px; font-weight: 600; text-transform: uppercase;">The Fashion Gallery</h1>
       </div>
       
       <!-- Content -->
@@ -95,7 +95,7 @@ const getEmailLayout = (content, title = "Enam's Clothings") => `
       
       <!-- Footer -->
       <div style="background-color: #333333; color: #888888; padding: 20px; text-align: center; font-size: 12px;">
-        <p style="margin: 0 0 10px 0;">&copy; ${new Date().getFullYear()} Enam's Clothings. All rights reserved.</p>
+        <p style="margin: 0 0 10px 0;">&copy; ${new Date().getFullYear()} The Fashion Gallery. All rights reserved.</p>
         <p style="margin: 0;">
           <a href="${process.env.CLIENT_URL}" style="color: #aaaaaa; text-decoration: none;">Visit Store</a> | 
           <a href="${process.env.CLIENT_URL}/contact" style="color: #aaaaaa; text-decoration: none;">Contact Us</a>
@@ -161,7 +161,7 @@ const emailTemplates = {
 
       <div style="text-align: center;">
         <a href="${process.env.CLIENT_URL}/orders/${order.id}" 
-           style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 30px; text-decoration: none; border-radius: 30px; font-weight: 600; display: inline-block;">
+           style="background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%); color: #c9ad65; border: 1px solid #c9ad65; padding: 14px 30px; text-decoration: none; border-radius: 30px; font-weight: 600; display: inline-block;">
           Track Order
         </a>
       </div>
@@ -261,7 +261,7 @@ const emailTemplates = {
 
       <div style="text-align: center;">
         <a href="${process.env.CLIENT_URL}/orders/${order.id}" 
-           style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 30px; text-decoration: none; border-radius: 30px; font-weight: 600; display: inline-block;">
+           style="background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%); color: #c9ad65; border: 1px solid #c9ad65; padding: 14px 30px; text-decoration: none; border-radius: 30px; font-weight: 600; display: inline-block;">
           Track Order
         </a>
       </div>
@@ -277,7 +277,7 @@ const emailTemplates = {
   welcomeEmail: (user) => {
     const content = `
       <h2 style="color: #333; margin-top: 0; text-align: center;">Welcome, ${user.firstName}!</h2>
-      <p style="text-align: center; color: #666; font-size: 16px;">We're thrilled to have you join the Enam's Clothings family.</p>
+      <p style="text-align: center; color: #666; font-size: 16px;">We're thrilled to have you join the The Fashion Gallery family.</p>
       
       <div style="margin: 30px 0; text-align: center;">
         <img src="https://img.icons8.com/clouds/200/000000/shopping-bag.png" alt="Shopping" style="width: 150px; height: auto;">
@@ -289,13 +289,13 @@ const emailTemplates = {
 
       <div style="text-align: center; margin-top: 30px;">
         <a href="${process.env.CLIENT_URL}/shop" 
-           style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 30px; text-decoration: none; border-radius: 30px; font-weight: 600; display: inline-block;">
+           style="background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%); color: #c9ad65; border: 1px solid #c9ad65; padding: 14px 30px; text-decoration: none; border-radius: 30px; font-weight: 600; display: inline-block;">
           Start Shopping
         </a>
       </div>
     `;
     return {
-      subject: "Welcome to Enam's Clothings!",
+      subject: "Welcome to The Fashion Gallery!",
       html: getEmailLayout(content, "Welcome"),
     };
   },
@@ -307,7 +307,7 @@ const emailTemplates = {
       
       <div style="text-align: center; margin: 40px 0;">
         <a href="${resetUrl}" 
-           style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 30px; text-decoration: none; border-radius: 30px; font-weight: 600; display: inline-block;">
+           style="background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%); color: #c9ad65; border: 1px solid #c9ad65; padding: 14px 30px; text-decoration: none; border-radius: 30px; font-weight: 600; display: inline-block;">
           Reset Password
         </a>
       </div>
@@ -338,7 +338,7 @@ const emailTemplates = {
 
       <div style="text-align: center;">
         <a href="${process.env.CLIENT_URL}/login" 
-           style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 30px; text-decoration: none; border-radius: 30px; font-weight: 600; display: inline-block;">
+           style="background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%); color: #c9ad65; border: 1px solid #c9ad65; padding: 14px 30px; text-decoration: none; border-radius: 30px; font-weight: 600; display: inline-block;">
           Login Now
         </a>
       </div>
@@ -365,13 +365,13 @@ const emailTemplates = {
 
       <div style="text-align: center;">
         <a href="${process.env.CLIENT_URL}/shop" 
-           style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 30px; text-decoration: none; border-radius: 30px; font-weight: 600; display: inline-block;">
+           style="background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%); color: #c9ad65; border: 1px solid #c9ad65; padding: 14px 30px; text-decoration: none; border-radius: 30px; font-weight: 600; display: inline-block;">
           Browse Collection
         </a>
       </div>
     `;
     return {
-      subject: "Welcome to Enam's Clothings Newsletter!",
+      subject: "Welcome to The Fashion Gallery Newsletter!",
       html: getEmailLayout(content, "Newsletter Subscription"),
     };
   },
@@ -388,11 +388,9 @@ const emailTemplates = {
           product.images && product.images.length > 0
             ? `
           <div style="margin: 25px 0; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
-            <img src="${
-              product.images[0].url || product.images[0]
-            }" alt="${
-                product.name
-              }" style="width: 100%; height: auto; display: block;">
+            <img src="${product.images[0].url || product.images[0]}" alt="${
+              product.name
+            }" style="width: 100%; height: auto; display: block;">
           </div>
         `
             : ""
@@ -412,7 +410,7 @@ const emailTemplates = {
         </p>
         
         <a href="${process.env.CLIENT_URL}/products/${product.id}" 
-           style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 40px; text-decoration: none; border-radius: 30px; font-weight: 600; display: inline-block; box-shadow: 0 4px 10px rgba(118, 75, 162, 0.3);">
+           style="background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%); color: #c9ad65; border: 1px solid #c9ad65; padding: 15px 40px; text-decoration: none; border-radius: 30px; font-weight: 600; display: inline-block; box-shadow: 0 4px 10px rgba(118, 75, 162, 0.3);">
           Shop Now
         </a>
         
@@ -502,7 +500,7 @@ const emailTemplates = {
       
       <div style="text-align: center; margin: 40px 0;">
         <a href="${process.env.CLIENT_URL}/verify-email/${token}" 
-           style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 30px; text-decoration: none; border-radius: 30px; font-weight: 600; display: inline-block;">
+           style="background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%); color: #c9ad65; border: 1px solid #c9ad65; padding: 14px 30px; text-decoration: none; border-radius: 30px; font-weight: 600; display: inline-block;">
           Verify Email Address
         </a>
       </div>
@@ -538,8 +536,8 @@ const emailTemplates = {
       
       <div style="background-color: #f9f9f9; padding: 15px; border-radius: 8px; margin: 20px 0;">
         <p style="margin: 5px 0;"><strong>Customer:</strong> ${user.firstName} ${
-      user.lastName
-    } (${user.email})</p>
+          user.lastName
+        } (${user.email})</p>
         <p style="margin: 5px 0;"><strong>Amount:</strong> GH₵${Number(
           order.totalAmount,
         ).toLocaleString()}</p>

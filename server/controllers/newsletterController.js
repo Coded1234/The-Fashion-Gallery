@@ -44,7 +44,7 @@ const subscribe = async (req, res) => {
       // To Admin
       const adminTemplate = emailTemplates.adminNewsletterSubscription(email);
       await sendEmail(
-        process.env.ADMIN_EMAIL || "enamclothings@gmail.com",
+        process.env.ADMIN_EMAIL || "admin@thefashiongallery.com",
         adminTemplate.subject,
         adminTemplate.html,
       );

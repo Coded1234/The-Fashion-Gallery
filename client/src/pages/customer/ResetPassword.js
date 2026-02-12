@@ -92,8 +92,12 @@ const ResetPassword = () => {
         <div className="bg-white rounded-2xl shadow-xl p-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <Link to="/" className="text-3xl font-bold gradient-text">
-              Enam's Clothings
+            <Link to="/" className="inline-block mb-6">
+              <img
+                src="/images/loginlogo.png"
+                alt="The Fashion Gallery"
+                className="h-62 sm:h-64 md:h-66 w-auto object-contain mx-auto -mt-2"
+              />
             </Link>
             <h2 className="text-2xl font-bold text-gray-800 mt-6">
               Reset Your Password

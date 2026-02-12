@@ -51,7 +51,7 @@ const PaymentVerify = () => {
         setStatus("failed");
         setMessage(
           error.response?.data?.message ||
-            "Payment verification failed. Please contact support if amount was deducted."
+            "Payment verification failed. Please contact support if amount was deducted.",
         );
       }
     };
@@ -165,7 +165,7 @@ const PaymentVerify = () => {
                         {step}
                       </p>
                     </div>
-                  )
+                  ),
                 )}
               </div>
             </div>
@@ -263,7 +263,7 @@ const PaymentVerify = () => {
         <p className="text-sm text-gray-500 mt-8">
           Need help?{" "}
           <a
-            href="mailto:support@enamsclothings.com"
+            href="mailto:support@thefashiongallery.com"
             className="text-primary-500 hover:underline"
           >
             Contact Support

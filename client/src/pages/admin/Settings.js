@@ -25,9 +25,9 @@ const Settings = () => {
 
   const [settings, setSettings] = useState({
     // General Settings
-    siteName: "Enam's Clothings",
+    siteName: "The Fashion Gallery",
     siteDescription: "Your one-stop shop for fashion",
-    contactEmail: "support@enamsclothings.com",
+    contactEmail: "support@thefashiongallery.com",
     contactPhone: "+233 XX XXX XXXX",
     address: "Accra, Ghana",
 
@@ -109,7 +109,7 @@ const Settings = () => {
       });
       setTimeout(
         () => setNotification({ show: false, type: "", message: "" }),
-        3000
+        3000,
       );
     } catch (error) {
       console.error("Error saving settings:", error);
@@ -120,7 +120,7 @@ const Settings = () => {
       });
       setTimeout(
         () => setNotification({ show: false, type: "", message: "" }),
-        3000
+        3000,
       );
     } finally {
       setSaving(false);
@@ -381,7 +381,7 @@ const Settings = () => {
                     onChange={(e) =>
                       handleChange(
                         "freeShippingThreshold",
-                        parseFloat(e.target.value) || 0
+                        parseFloat(e.target.value) || 0,
                       )
                     }
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
@@ -402,7 +402,7 @@ const Settings = () => {
                     onChange={(e) =>
                       handleChange(
                         "standardShippingRate",
-                        parseFloat(e.target.value) || 0
+                        parseFloat(e.target.value) || 0,
                       )
                     }
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
@@ -420,7 +420,7 @@ const Settings = () => {
                     onChange={(e) =>
                       handleChange(
                         "expressShippingRate",
-                        parseFloat(e.target.value) || 0
+                        parseFloat(e.target.value) || 0,
                       )
                     }
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
@@ -460,7 +460,7 @@ const Settings = () => {
                       onChange={(e) =>
                         handleChange(
                           "minOrderAmount",
-                          parseFloat(e.target.value) || 0
+                          parseFloat(e.target.value) || 0,
                         )
                       }
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
@@ -478,7 +478,7 @@ const Settings = () => {
                       onChange={(e) =>
                         handleChange(
                           "maxOrderItems",
-                          parseInt(e.target.value) || 1
+                          parseInt(e.target.value) || 1,
                         )
                       }
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"

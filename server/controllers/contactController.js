@@ -43,7 +43,7 @@ const submitContact = async (req, res) => {
           <p><strong>Subject:</strong> ${subject}</p>
           <p><strong>Message:</strong></p>
           <p>${message}</p>
-        `
+        `,
       );
     } catch (emailError) {
       console.error("Admin notification email failed:", emailError);
@@ -117,8 +117,8 @@ const updateMessage = async (req, res) => {
           `Re: ${message.subject} - StyleStore`,
           `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;">
-                <h1 style="color: white; margin: 0;">StyleStore Support</h1>
+              <div style="background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%); padding: 30px; text-align: center; border-bottom: 2px solid #c9ad65;">
+                <h1 style="color: #c9ad65; margin: 0; letter-spacing: 2px; text-transform: uppercase;">The Fashion Gallery Support</h1>
               </div>
               <div style="padding: 30px; background: #f9f9f9;">
                 <h2 style="color: #333;">Hi ${message.name},</h2>
@@ -133,7 +133,7 @@ const updateMessage = async (req, res) => {
                 <p style="color: #999; font-size: 12px;">${message.message}</p>
               </div>
             </div>
-          `
+          `,
         );
       } catch (emailError) {
         console.error("Reply email failed:", emailError);

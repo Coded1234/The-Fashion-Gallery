@@ -117,9 +117,13 @@ const AdminLayout = () => {
         } lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 text-gray-700 transition-transform duration-300 flex flex-col`}
       >
         {/* Logo */}
-        <div className="p-4 flex items-center justify-between border-b border-gray-200">
-          <Link to="/admin" className="text-xl font-bold gradient-text">
-            Enam's Clothings
+        <div className="pt-4 pb-20 px-4 flex items-center justify-between border-b border-gray-200">
+          <Link to="/admin" className="flex items-center">
+            <img
+              src="/images/loginlogo.png"
+              alt="The Fashion Gallery"
+              className="h-2 sm:h-10 md:h-10 w-auto object-contain"
+            />
           </Link>
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -130,7 +134,7 @@ const AdminLayout = () => {
         </div>
 
         {/* Menu */}
-        <nav className="flex-1 p-4">
+        <nav className="flex-1 p-4 -mt-12">
           <ul className="space-y-2">
             {menuItems.map((item) => (
               <li key={item.path}>

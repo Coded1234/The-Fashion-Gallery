@@ -167,11 +167,12 @@ const Navbar = () => {
           </button>
 
           {/* Logo */}
-          <Link
-            to="/"
-            className="text-xl sm:text-2xl font-bold gradient-text whitespace-nowrap"
-          >
-            Enam's Clothings
+          <Link to="/" className="flex items-center">
+            <img
+              src="/images/loginlogo.png"
+              alt="The Fashion Gallery"
+              className="h-2 sm:h-10 md:h-10 w-auto object-contain -mt-2"
+            />
           </Link>
 
           {/* Desktop Navigation */}
@@ -336,10 +337,14 @@ const Navbar = () => {
           <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-primary-500 to-secondary-500">
             <Link
               to="/"
-              className="text-xl font-bold text-white"
+              className="flex items-center"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Enam's Clothings
+              <img
+                src="/images/loginlogo.png"
+                alt="The Fashion Gallery"
+                className="h-10 w-auto object-contain"
+              />
             </Link>
             <button
               onClick={() => setMobileMenuOpen(false)}

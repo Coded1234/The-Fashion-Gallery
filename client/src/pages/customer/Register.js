@@ -156,9 +156,11 @@ const Register = () => {
         <div className="w-full max-w-md">
           {/* Logo */}
           <Link to="/" className="block text-center mb-8">
-            <h1 className="text-3xl font-bold gradient-text">
-              Enam's Clothings
-            </h1>
+            <img
+              src="/images/loginlogo.png"
+              alt="The Fashion Gallery"
+              className="h-62 sm:h-64 md:h-66 w-auto object-contain mx-auto -mt-2"
+            />
           </Link>
 
           {registrationSuccess ? (
@@ -520,7 +522,9 @@ const Register = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-l from-primary-500/80 to-secondary-500/80 flex items-center justify-center">
           <div className="text-white text-center p-8 max-w-md">
-            <h2 className="text-4xl font-bold mb-4">Join Enam's Clothings</h2>
+            <h2 className="text-4xl font-bold mb-4">
+              Join The Fashion Gallery
+            </h2>
             <p className="text-xl text-white/90 mb-8">
               Create an account and unlock exclusive benefits
             </p>
