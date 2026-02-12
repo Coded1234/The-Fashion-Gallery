@@ -171,7 +171,7 @@ const Navbar = () => {
             <img
               src="/images/loginlogo.png"
               alt="The Fashion Gallery"
-              className="h-2 sm:h-10 md:h-10 w-auto object-contain -mt-2"
+              className="h-10 w-auto object-contain"
             />
           </Link>
 

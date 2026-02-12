@@ -58,7 +58,7 @@ const Footer = () => {
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 px-4 py-3 rounded-lg text-gray-900 dark:text-gray-100 bg-white dark:bg-surface focus:outline-none focus:ring-2 focus:ring-white"
+                className="flex-1 px-4 py-3 rounded-lg text-gray-900 dark:text-white bg-white dark:bg-surface focus:outline-none focus:ring-2 focus:ring-white placeholder-gray-900 dark:placeholder-white"
               />
               <button
                 type="submit"
@@ -80,7 +80,7 @@ const Footer = () => {
             <img
               src="/images/loginlogo.png"
               alt="The Fashion Gallery"
-              className="h-2 sm:h-10 md:h-10 w-auto object-contain mb-5"
+              className="h-10 w-auto object-contain mb-5"
             />
             <p className="text-gray-300 mb-4">
               Your one-stop destination for premium fashion and clothing.

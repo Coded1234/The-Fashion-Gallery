@@ -122,7 +122,7 @@ const AdminLayout = () => {
             <img
               src="/images/loginlogo.png"
               alt="The Fashion Gallery"
-              className="h-2 sm:h-10 md:h-10 w-auto object-contain"
+              className="h-10 w-auto object-contain"
             />
           </Link>
           <button
@@ -134,7 +134,7 @@ const AdminLayout = () => {
         </div>
 
         {/* Menu */}
-        <nav className="flex-1 p-4 -mt-12">
+        <nav className="flex-1 p-4">
           <ul className="space-y-2">
             {menuItems.map((item) => (
               <li key={item.path}>
