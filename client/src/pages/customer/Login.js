@@ -129,7 +129,7 @@ const Login = () => {
             <img
               src="/images/loginlogo.png"
               alt="The Fashion Gallery"
-              className="h-62 sm:h-64 md:h-66 w-auto object-contain mx-auto -mt-2"
+              className="h-10 w-auto object-contain mx-auto"
             />
           </Link>
 

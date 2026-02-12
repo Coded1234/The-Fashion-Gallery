@@ -159,7 +159,7 @@ const Register = () => {
             <img
               src="/images/loginlogo.png"
               alt="The Fashion Gallery"
-              className="h-62 sm:h-64 md:h-66 w-auto object-contain mx-auto -mt-2"
+              className="h-10 w-auto object-contain mx-auto"
             />
           </Link>
 
@@ -234,7 +234,7 @@ const Register = () => {
                         value={formData.firstName}
                         onChange={handleChange}
                         placeholder="First name"
-                        className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                        className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-black"
                         required
                       />
                     </div>
@@ -249,7 +249,7 @@ const Register = () => {
                       value={formData.lastName}
                       onChange={handleChange}
                       placeholder="Last name"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-black"
                       required
                     />
                   </div>
@@ -271,7 +271,7 @@ const Register = () => {
                       value={formData.email}
                       onChange={handleChange}
                       placeholder="Enter your email"
-                      className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                      className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-black"
                       required
                     />
                   </div>
@@ -293,7 +293,7 @@ const Register = () => {
                       value={formData.phone}
                       onChange={handleChange}
                       placeholder="+233256810699"
-                      className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                      className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-black"
                     />
                   </div>
                 </div>
@@ -314,7 +314,7 @@ const Register = () => {
                       value={formData.password}
                       onChange={handleChange}
                       placeholder="Create a password"
-                      className="w-full pl-11 pr-12 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                      className="w-full pl-11 pr-12 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-black"
                       required
                     />
                     <button
