@@ -214,33 +214,40 @@ const Checkout = () => {
     }
   };
 
-  const handleContinueToPayment = () => {
+  const handleContinueToPayment = async () => {
     if (validateShipping()) {
+      // Auto-calculate shipping if not already calculated
       if (!shippingCalculated) {
-        toast.error("Please calculate shipping cost first");
-        return;
+        await calculateShipping();
       }
-      // Navigate directly to order summary page
-      navigate("/order-summary", {
-        state: {
-          orderData: {
-            shippingAddress: {
-              ...shippingInfo,
-              city,
-              postalCode,
+
+      // Wait a brief moment for state to update if shipping was just calculated
+      setTimeout(
+        () => {
+          // Navigate directly to order summary page
+          navigate("/order-summary", {
+            state: {
+              orderData: {
+                shippingAddress: {
+                  ...shippingInfo,
+                  city,
+                  postalCode,
+                },
+                couponId: appliedCoupon?.id || null,
+                discount: couponDiscount,
+                shippingDetails: shippingDetails,
+              },
+              items: items,
+              totalAmount: totalAmount,
+              coupon: appliedCoupon,
+              couponDiscount: couponDiscount,
+              shippingCost: shippingCost,
+              shippingDetails: shippingDetails,
             },
-            couponId: appliedCoupon?.id || null,
-            discount: couponDiscount,
-            shippingDetails: shippingDetails,
-          },
-          items: items,
-          totalAmount: totalAmount,
-          coupon: appliedCoupon,
-          couponDiscount: couponDiscount,
-          shippingCost: shippingCost,
-          shippingDetails: shippingDetails,
+          });
         },
-      });
+        shippingCalculated ? 0 : 500,
+      );
     }
   };
 
@@ -358,8 +365,8 @@ const Checkout = () => {
                 />
               </div>
 
-              {/* Calculate Shipping Button */}
-              <div>
+              {/* Calculate Shipping Button - Hidden, auto-calculates */}
+              <div className="hidden">
                 <button
                   type="button"
                   onClick={calculateShipping}
@@ -435,9 +442,9 @@ const Checkout = () => {
             {/* Continue Button */}
             <button
               onClick={handleContinueToPayment}
-              className="w-full mt-8 py-4 btn-gradient rounded-xl font-semibold text-lg flex items-center justify-center gap-2"
+              className="w-full mt-8 py-3 btn-gradient rounded-xl font-semibold text-base flex items-center justify-center gap-2"
             >
-              Continue to Order Summary
+              Continue
               <FiChevronRight />
             </button>
           </div>

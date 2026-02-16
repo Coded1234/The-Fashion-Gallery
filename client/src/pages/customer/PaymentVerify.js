@@ -185,14 +185,14 @@ const PaymentVerify = () => {
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
               to="/orders"
-              className="flex-1 py-4 btn-gradient rounded-xl font-semibold text-center flex items-center justify-center gap-2"
+              className="flex-1 py-3 btn-gradient rounded-xl font-semibold text-center flex items-center justify-center gap-2"
             >
               <FiShoppingBag />
               View Order
             </Link>
             <Link
               to="/"
-              className="flex-1 py-4 border-2 border-gray-300 rounded-xl font-semibold text-gray-700 text-center flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors"
+              className="flex-1 py-3 border-2 border-gray-300 rounded-xl font-semibold text-gray-700 text-center flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors"
             >
               <FiHome />
               Continue Shopping
@@ -247,13 +247,13 @@ const PaymentVerify = () => {
         <div className="flex flex-col sm:flex-row gap-4">
           <Link
             to="/cart"
-            className="flex-1 py-4 btn-gradient rounded-xl font-semibold text-center"
+            className="flex-1 py-3 btn-gradient rounded-xl font-semibold text-center"
           >
             Try Again
           </Link>
           <Link
             to="/"
-            className="flex-1 py-4 border-2 border-gray-300 rounded-xl font-semibold text-gray-700 text-center hover:bg-gray-50 transition-colors"
+            className="flex-1 py-3 border-2 border-gray-300 rounded-xl font-semibold text-gray-700 text-center hover:bg-gray-50 transition-colors"
           >
             Go Home
           </Link>

@@ -206,7 +206,7 @@ const Wishlist = () => {
             </p>
             <Link
               to="/shop"
-              className="inline-flex items-center gap-2 px-8 py-4 btn-gradient rounded-xl font-semibold text-lg"
+              className="inline-flex items-center gap-2 px-8 py-3 btn-gradient rounded-xl font-semibold text-base"
             >
               Explore Products
               <FiChevronRight />

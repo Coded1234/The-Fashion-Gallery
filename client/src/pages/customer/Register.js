@@ -461,7 +461,7 @@ const Register = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-4 btn-gradient rounded-xl font-semibold text-lg flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full py-3 btn-gradient rounded-xl font-semibold text-base flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {loading ? (
                     <div className="spinner w-6 h-6 border-2 border-white border-t-transparent"></div>

@@ -118,7 +118,6 @@ const OrderDetail = () => {
   };
 
   const orderSteps = [
-    { status: "pending", label: "Order Placed", icon: FiPackage },
     { status: "confirmed", label: "Confirmed", icon: FiRefreshCw },
     { status: "shipped", label: "Shipped", icon: FiTruck },
     { status: "delivered", label: "Delivered", icon: FiCheckCircle },
@@ -230,7 +229,7 @@ const OrderDetail = () => {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">
+                <h1 className="text-xs sm:text-lg md:text-xl lg:text-2xl font-bold text-gray-800 break-all">
                   {order.orderNumber ||
                     `Order #${(orderId || "").slice(-8).toUpperCase()}`}
                 </h1>
@@ -241,26 +240,19 @@ const OrderDetail = () => {
                 >
                   {status}
                 </span>
+                <button
+                  onClick={() => window.print()}
+                  className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  title="Print Invoice"
+                >
+                  <FiPrinter size={18} />
+                </button>
               </div>
               <p className="text-gray-600 flex items-center gap-2">
                 <FiCalendar size={16} />
                 Placed on {formatDate(order.createdAt)} at{" "}
                 {formatTime(order.createdAt)}
               </p>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => window.print()}
-                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <FiPrinter size={18} />
-                Print
-              </button>
-              <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                <FiDownload size={18} />
-                Invoice
-              </button>
             </div>
           </div>
         </div>
@@ -276,7 +268,7 @@ const OrderDetail = () => {
                 </h2>
                 <div className="relative">
                   {/* Progress Line */}
-                  <div className="absolute top-6 left-6 right-6 h-1 bg-gray-200 rounded">
+                  <div className="absolute top-5 left-5 right-5 h-0.5 bg-gray-200 rounded">
                     <div
                       className="h-full bg-gradient-to-r from-primary-500 to-secondary-500 rounded transition-all duration-500"
                       style={{
@@ -300,27 +292,27 @@ const OrderDetail = () => {
                           className="flex flex-col items-center"
                         >
                           <div
-                            className={`w-12 h-12 rounded-full flex items-center justify-center z-10 transition-all ${
+                            className={`w-10 h-10 rounded-full flex items-center justify-center z-10 transition-all ${
                               isCompleted
                                 ? "bg-gradient-to-r from-primary-500 to-secondary-500 text-white"
                                 : "bg-gray-200 text-gray-400"
                             } ${
                               isCurrent
-                                ? "ring-4 ring-primary-100 scale-110"
+                                ? "ring-3 ring-primary-100 scale-110"
                                 : ""
                             }`}
                           >
-                            <StepIcon size={20} />
+                            <StepIcon size={16} />
                           </div>
                           <p
-                            className={`mt-3 text-sm font-medium ${
+                            className={`mt-2 text-xs font-medium ${
                               isCompleted ? "text-gray-800" : "text-gray-400"
                             }`}
                           >
                             {step.label}
                           </p>
                           {isCurrent && status !== "delivered" && (
-                            <p className="text-xs text-primary-500 mt-1">
+                            <p className="text-[10px] text-primary-500 mt-0.5">
                               In Progress
                             </p>
                           )}

@@ -229,7 +229,7 @@ const Newsletter = () => {
                   <button
                     type="submit"
                     disabled={subscribing}
-                    className={`w-full py-4 px-6 rounded-lg text-white font-semibold text-lg transition-all ${
+                    className={`w-full py-3 px-6 rounded-lg text-white font-semibold text-base transition-all ${
                       subscribing
                         ? "bg-gray-400 cursor-not-allowed"
                         : "bg-primary-500 hover:bg-primary-600 transform hover:scale-105"

@@ -233,38 +233,39 @@ const Orders = () => {
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                       <div className="flex items-start gap-4">
                         <div
-                          className={`p-3 rounded-xl ${getStatusColor(
+                          className={`p-2 rounded-xl ${getStatusColor(
                             order.status,
                           )}`}
                         >
-                          <StatusIcon size={24} />
+                          <StatusIcon size={18} />
                         </div>
                         <div>
-                          <p className="text-sm text-gray-500">Order ID</p>
-                          <p className="font-bold text-gray-800">
-                            #{order.id.slice(-8).toUpperCase()}
+                          <p className="text-xs text-gray-500">Order Number</p>
+                          <p className="font-bold text-gray-800 text-xs break-all">
+                            {order.orderNumber ||
+                              `#${order.id.slice(-8).toUpperCase()}`}
                           </p>
                         </div>
                       </div>
 
                       <div className="flex flex-wrap items-center gap-4 md:gap-8">
                         <div>
-                          <p className="text-sm text-gray-500">Date</p>
-                          <p className="font-medium text-gray-800 flex items-center gap-1">
-                            <FiCalendar size={14} />
+                          <p className="text-xs text-gray-500">Date</p>
+                          <p className="font-medium text-gray-800 flex items-center gap-1 text-xs">
+                            <FiCalendar size={12} />
                             {formatDate(order.createdAt)}
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-500">Total</p>
-                          <p className="font-bold text-gray-800">
+                          <p className="text-xs text-gray-500">Total</p>
+                          <p className="font-bold text-gray-800 text-xs">
                             {formatPrice(order.totalAmount)}
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-500 mb-1">Status</p>
+                          <p className="text-xs text-gray-500 mb-1">Status</p>
                           <span
-                            className={`px-3 py-1 rounded-full text-sm font-medium capitalize ${getStatusColor(
+                            className={`px-2 py-0.5 rounded-full text-xs font-medium capitalize ${getStatusColor(
                               order.status,
                             )}`}
                           >
@@ -333,29 +334,26 @@ const Orders = () => {
                     {order.status === "cancelled" ? (
                       // Cancelled order progress
                       <div>
-                        <div className="flex items-center gap-2 pt-4">
-                          <div className="w-3 h-3 rounded-full bg-red-500" />
-                          <div className="flex-1 h-1 rounded bg-red-500" />
-                          <div className="w-3 h-3 rounded-full bg-red-500 ring-4 ring-red-100" />
-                          <div className="flex-1 h-1 rounded bg-gray-200" />
-                          <div className="w-3 h-3 rounded-full bg-gray-200" />
-                          <div className="flex-1 h-1 rounded bg-gray-200" />
-                          <div className="w-3 h-3 rounded-full bg-gray-200" />
+                        <div className="flex items-center gap-2 pt-4 px-2">
+                          <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                          <div className="flex-1 h-0.5 rounded bg-red-500" />
+                          <div className="w-2.5 h-2.5 rounded-full bg-red-500 ring-3 ring-red-100" />
+                          <div className="flex-1 h-0.5 rounded bg-gray-200" />
+                          <div className="w-2.5 h-2.5 rounded-full bg-gray-200" />
                         </div>
-                        <div className="flex justify-between mt-2 text-xs text-gray-500">
-                          <span>Pending</span>
+                        <div className="flex justify-between mt-2.5 text-[10px] text-gray-500 px-1">
+                          <span>Confirmed</span>
                           <span className="text-red-500 font-medium">
                             Cancelled
                           </span>
-                          <span>Shipped</span>
                           <span>Delivered</span>
                         </div>
                       </div>
                     ) : (
                       // Normal order progress
                       <div>
-                        <div className="flex items-center gap-2 pt-4">
-                          {["pending", "confirmed", "shipped", "delivered"].map(
+                        <div className="flex items-center gap-2 pt-4 px-2">
+                          {["confirmed", "shipped", "delivered"].map(
                             (step, index) => {
                               const steps = [
                                 "pending",
@@ -364,24 +362,25 @@ const Orders = () => {
                                 "delivered",
                               ];
                               const currentIndex = steps.indexOf(order.status);
-                              const isCompleted = index <= currentIndex;
-                              const isCurrent = index === currentIndex;
+                              const stepIndex = steps.indexOf(step);
+                              const isCompleted = stepIndex <= currentIndex;
+                              const isCurrent = stepIndex === currentIndex;
 
                               return (
                                 <React.Fragment key={step}>
                                   <div
-                                    className={`w-3 h-3 rounded-full transition-all ${
+                                    className={`w-2.5 h-2.5 rounded-full transition-all ${
                                       isCompleted
                                         ? "bg-primary-500"
                                         : "bg-gray-200"
                                     } ${
-                                      isCurrent ? "ring-4 ring-primary-100" : ""
+                                      isCurrent ? "ring-3 ring-primary-100" : ""
                                     }`}
                                   />
-                                  {index < 3 && (
+                                  {index < 2 && (
                                     <div
-                                      className={`flex-1 h-1 rounded ${
-                                        index < currentIndex
+                                      className={`flex-1 h-0.5 rounded ${
+                                        stepIndex < currentIndex
                                           ? "bg-primary-500"
                                           : "bg-gray-200"
                                       }`}
@@ -392,8 +391,7 @@ const Orders = () => {
                             },
                           )}
                         </div>
-                        <div className="flex justify-between mt-2 text-xs text-gray-500">
-                          <span>Pending</span>
+                        <div className="flex justify-between mt-2.5 text-[10px] text-gray-500 px-1">
                           <span>Confirmed</span>
                           <span>Shipped</span>
                           <span>Delivered</span>
@@ -414,7 +412,7 @@ const Orders = () => {
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-2 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Previous
               </button>
@@ -423,7 +421,7 @@ const Orders = () => {
                 <button
                   key={i + 1}
                   onClick={() => setCurrentPage(i + 1)}
-                  className={`w-10 h-10 rounded-lg font-medium transition-colors ${
+                  className={`w-8 h-8 sm:w-10 sm:h-10 text-xs sm:text-sm rounded-lg font-medium transition-colors ${
                     currentPage === i + 1
                       ? "bg-primary-500 text-white"
                       : "border border-gray-300 text-gray-600 hover:bg-gray-50"
@@ -438,59 +436,11 @@ const Orders = () => {
                   setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                 }
                 disabled={currentPage === totalPages}
-                className="px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-2 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Next
               </button>
             </div>
-          </div>
-        )}
-
-        {/* Order Stats */}
-        {orders.length > 0 && (
-          <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              {
-                label: "Total Orders",
-                value: orders.length,
-                color: "bg-blue-500",
-              },
-              {
-                label: "Delivered",
-                value: orders.filter((o) => o.status === "delivered").length,
-                color: "bg-green-500",
-              },
-              {
-                label: "In Progress",
-                value: orders.filter((o) =>
-                  ["pending", "confirmed", "shipped"].includes(o.status),
-                ).length,
-                color: "bg-yellow-500",
-              },
-              {
-                label: "Total Spent",
-                value: formatPrice(
-                  orders
-                    .filter((o) => o.status !== "cancelled")
-                    .reduce((sum, o) => sum + (o.totalAmount || 0), 0),
-                ),
-                color: "bg-purple-500",
-                isPrice: true,
-              },
-            ].map((stat) => (
-              <div
-                key={stat.label}
-                className="bg-white rounded-xl p-4 shadow-sm"
-              >
-                <div
-                  className={`w-2 h-2 rounded-full ${stat.color} mb-2`}
-                ></div>
-                <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">
-                  {stat.value}
-                </p>
-                <p className="text-sm text-gray-500">{stat.label}</p>
-              </div>
-            ))}
           </div>
         )}
       </div>
