@@ -382,7 +382,7 @@ const ProductDetail = () => {
                         key={colorObj.name}
                         onClick={() => setSelectedColor(colorObj)}
                         title={colorObj.name}
-                        className={`w-10 h-10 rounded-full border-2 transition-all ${
+                        className={`w-7 h-7 rounded-full border-2 transition-all ${
                           selectedColor?.name === colorObj.name
                             ? "ring-2 ring-offset-2 ring-primary-500"
                             : "hover:scale-110"
@@ -433,7 +433,7 @@ const ProductDetail = () => {
                         key={index}
                         onClick={() => setSelectedSize(size)}
                         disabled={sizeStock === 0}
-                        className={`min-w-[48px] h-12 px-4 rounded-lg border font-medium transition-colors ${
+                        className={`min-w-[35px] h-7 px-1 text-sm rounded-lg border font-medium transition-colors ${
                           isSelected
                             ? "bg-primary-500 text-white border-primary-500"
                             : sizeStock === 0
@@ -516,25 +516,6 @@ const ProductDetail = () => {
               <button className="p-2 sm:p-4 border-2 border-gray-300 rounded-lg sm:rounded-xl hover:border-primary-500 hover:text-primary-500 transition-colors">
                 <FiShare2 size={20} />
               </button>
-            </div>
-
-            {/* Features */}
-            <div className="grid grid-cols-3 gap-4 pt-6 border-t">
-              <div className="text-center">
-                <FiTruck className="mx-auto mb-2 text-primary-500" size={24} />
-                <p className="text-sm text-gray-600">Free Shipping</p>
-              </div>
-              <div className="text-center">
-                <FiRefreshCw
-                  className="mx-auto mb-2 text-primary-500"
-                  size={24}
-                />
-                <p className="text-sm text-gray-600">Easy Returns</p>
-              </div>
-              <div className="text-center">
-                <FiShield className="mx-auto mb-2 text-primary-500" size={24} />
-                <p className="text-sm text-gray-600">Secure Payment</p>
-              </div>
             </div>
           </div>
         </div>

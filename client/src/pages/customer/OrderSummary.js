@@ -516,8 +516,8 @@ const OrderSummary = () => {
                     <FiCheckCircle className="w-5 h-5" />
                     <span>
                       {orderData.paymentMethod === "paystack"
-                        ? "Proceed to Payment"
-                        : "Confirm Order"}
+                        ? "Pay Now"
+                        : "Place Order"}
                     </span>
                   </>
                 )}

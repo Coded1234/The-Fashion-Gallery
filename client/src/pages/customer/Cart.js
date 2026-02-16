@@ -191,7 +191,7 @@ const Cart = () => {
             </p>
             <Link
               to="/login"
-              className="inline-flex items-center gap-2 px-8 py-4 btn-gradient rounded-full font-semibold"
+              className="inline-flex items-center gap-2 px-8 py-3 btn-gradient rounded-full font-semibold"
             >
               Login to Continue
             </Link>
@@ -217,7 +217,7 @@ const Cart = () => {
             </p>
             <Link
               to="/shop"
-              className="inline-flex items-center gap-2 px-8 py-4 btn-gradient rounded-full font-semibold"
+              className="inline-flex items-center gap-2 px-8 py-3 btn-gradient rounded-full font-semibold"
             >
               <FiShoppingBag />
               Start Shopping
@@ -395,9 +395,9 @@ const Cart = () => {
             <button
               onClick={handleCheckout}
               disabled={loading}
-              className="w-full mt-6 py-4 btn-gradient rounded-xl font-semibold text-lg disabled:opacity-50"
+              className="w-full mt-6 py-3 btn-gradient rounded-xl font-semibold text-base disabled:opacity-50"
             >
-              Proceed
+              Checkout
             </button>
           </div>
         </div>
