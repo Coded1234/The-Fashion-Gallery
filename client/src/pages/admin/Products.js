@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   FiPlus,
   FiEdit2,
@@ -15,6 +15,7 @@ import { getImageUrl } from "../../utils/imageUrl";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 
 const Products = () => {
+  const location = useLocation();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -29,7 +30,7 @@ const Products = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, [currentPage, categoryFilter]);
+  }, [currentPage, categoryFilter, location.pathname, location.state]);
 
   const fetchProducts = async () => {
     try {
