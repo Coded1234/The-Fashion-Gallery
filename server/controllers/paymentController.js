@@ -148,6 +148,17 @@ const verifyPayment = async (req, res) => {
                 order.status = "confirmed";
                 await order.save();
 
+                // Clear user's cart after successful payment
+                const { Cart, CartItem } = require("../models");
+                const cart = await Cart.findOne({
+                  where: { userId: order.userId },
+                });
+                if (cart) {
+                  await CartItem.destroy({ where: { cartId: cart.id } });
+                  cart.totalAmount = 0;
+                  await cart.save();
+                }
+
                 // Update stock for each product in the order
                 for (const item of order.items) {
                   const product = await Product.findByPk(item.productId);
@@ -280,6 +291,17 @@ const paystackWebhook = async (req, res) => {
             order.paymentReference = reference;
             order.status = "confirmed";
             await order.save();
+
+            // Clear user's cart after successful payment
+            const { Cart, CartItem } = require("../models");
+            const cart = await Cart.findOne({
+              where: { userId: order.userId },
+            });
+            if (cart) {
+              await CartItem.destroy({ where: { cartId: cart.id } });
+              cart.totalAmount = 0;
+              await cart.save();
+            }
 
             // Update stock for each product in the order
             for (const item of order.items) {

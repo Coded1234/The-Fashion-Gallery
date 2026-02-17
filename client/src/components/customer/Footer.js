@@ -85,17 +85,17 @@ const Footer = () => {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* About */}
-          <div>
+          <div className="text-center sm:text-left">
             <img
               src="/images/loginlogo.png"
               alt="The Fashion Gallery"
-              className="h-10 w-auto object-contain mb-5"
+              className="h-10 w-auto object-contain mb-5 mx-auto sm:mx-0"
             />
             <p className="text-gray-300 mb-4">
               Your one-stop destination for premium fashion and clothing.
               Quality meets style.
             </p>
-            <div className="flex gap-4">
+            <div className="flex gap-4 justify-center sm:justify-start">
               <a
                 href="https://instagram.com"
                 target="_blank"
@@ -118,7 +118,7 @@ const Footer = () => {
           </div>
 
           {/* Quick Links */}
-          <div>
+          <div className="text-center sm:text-left">
             <h4 className="text-base sm:text-lg font-semibold mb-4">
               Quick Links
             </h4>
@@ -151,7 +151,7 @@ const Footer = () => {
           </div>
 
           {/* Customer Service */}
-          <div>
+          <div className="text-center sm:text-left">
             <h4 className="text-lg font-semibold mb-4">Customer Service</h4>
             <ul className="space-y-3">
               <li>
@@ -206,14 +206,14 @@ const Footer = () => {
           </div>
 
           {/* Contact */}
-          <div>
+          <div className="text-center sm:text-left">
             <h4 className="text-lg font-semibold mb-4">Contact Us</h4>
             <ul className="space-y-3">
-              <li className="flex items-center gap-3 text-gray-300">
+              <li className="flex items-center gap-3 text-gray-300 justify-center sm:justify-start">
                 <FiPhone className="text-primary-500" />
                 <span>+233200620026</span>
               </li>
-              <li className="flex items-center gap-3 text-gray-300">
+              <li className="flex items-center gap-3 text-gray-300 justify-center sm:justify-start">
                 <FiMail className="text-primary-500" />
                 <span>thefashiongallery264@gmail.com</span>
               </li>

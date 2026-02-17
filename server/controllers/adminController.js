@@ -324,6 +324,20 @@ const updateProduct = async (req, res) => {
     // Remove existingImages from updateData (it's not a model field)
     delete updateData.existingImages;
 
+    // Handle stock updates - when totalStock is updated, also update remainingStock
+    if (updateData.totalStock !== undefined) {
+      const newTotalStock = parseInt(updateData.totalStock);
+      const currentSoldCount = product.soldCount || 0;
+
+      // Update remainingStock based on new totalStock and current soldCount
+      updateData.remainingStock = newTotalStock - currentSoldCount;
+
+      // Ensure remainingStock is not negative
+      if (updateData.remainingStock < 0) {
+        updateData.remainingStock = 0;
+      }
+    }
+
     // Enforce featured products limit of 4
     if (updateData.featured === true && product.featured === false) {
       const featuredCount = await Product.count({ where: { featured: true } });

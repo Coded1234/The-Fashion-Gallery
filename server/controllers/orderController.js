@@ -92,10 +92,9 @@ const createOrder = async (req, res) => {
       // Don't update stock yet - wait for payment confirmation
     }
 
-    // Clear cart after order is created
-    await CartItem.destroy({ where: { cartId: cart.id } });
-    cart.totalAmount = 0;
-    await cart.save();
+    // DON'T clear cart yet - only clear after successful payment
+    // Cart will be cleared in payment verification for online payments
+    // or manually after COD delivery confirmation
 
     // Get populated order
     const populatedOrder = await Order.findByPk(order.id, {

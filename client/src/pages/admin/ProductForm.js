@@ -248,7 +248,7 @@ const ProductForm = () => {
         await adminAPI.createProduct(submitData);
       }
 
-      navigate("/admin/products");
+      navigate("/admin/products", { state: { refresh: Date.now() } });
     } catch (err) {
       setError(err.response?.data?.message || "Failed to save product");
     } finally {
