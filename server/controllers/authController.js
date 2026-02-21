@@ -643,10 +643,203 @@ const googleLogin = async (req, res) => {
   }
 };
 
+// @desc    Facebook Login
+// @route   POST /api/auth/facebook
+const facebookLogin = async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    // Get user info from Facebook Graph API
+    const fbResponse = await axios.get(
+      `https://graph.facebook.com/me?fields=id,name,email,picture&access_token=${token}`,
+    );
+
+    const { id: facebookId, name, email, picture } = fbResponse.data;
+
+    if (!email) {
+      return res.status(400).json({
+        message:
+          "Facebook account does not have a public email. Please use a different login method.",
+      });
+    }
+
+    const [firstName, ...lastNameParts] = name.split(" ");
+    const lastName = lastNameParts.join(" ") || "";
+
+    let user = await User.findOne({ where: { email } });
+
+    if (user) {
+      if (!user.facebookId) {
+        user.facebookId = facebookId;
+        await user.save();
+      }
+    } else {
+      const randomPassword = crypto.randomBytes(16).toString("hex");
+      user = await User.create({
+        firstName,
+        lastName: lastName || "User",
+        email,
+        password: randomPassword,
+        facebookId,
+        emailVerified: true,
+        isActive: true,
+        role: "customer",
+      });
+    }
+
+    if (!user.isActive) {
+      return res.status(401).json({ message: "Account has been deactivated" });
+    }
+
+    res.json({
+      _id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.role,
+      phone: user.phone,
+      address: user.address,
+      token: generateToken(user.id),
+    });
+  } catch (error) {
+    console.error("Facebook login error:", error);
+    res
+      .status(500)
+      .json({ message: "Facebook login failed", error: error.message });
+  }
+};
+
+// @desc    Delete own account
+// @route   DELETE /api/auth/account
+const deleteAccount = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Require password confirmation (skip for OAuth-only accounts)
+    if (user.password) {
+      const { password } = req.body;
+      if (!password) {
+        return res
+          .status(400)
+          .json({ message: "Please enter your password to confirm" });
+      }
+      const isMatch = await user.comparePassword(password);
+      if (!isMatch) {
+        return res.status(401).json({ message: "Incorrect password" });
+      }
+    }
+
+    // Anonymise instead of hard-delete to preserve order history
+    await user.update({
+      firstName: "Deleted",
+      lastName: "User",
+      email: `deleted_${user.id}@deleted.invalid`,
+      phone: null,
+      googleId: null,
+      facebookId: null,
+      address: {},
+      isActive: false,
+      emailVerified: false,
+    });
+
+    res.json({ message: "Account deleted successfully" });
+  } catch (error) {
+    console.error("Delete account error:", error);
+    res
+      .status(500)
+      .json({ message: "Failed to delete account", error: error.message });
+  }
+};
+
+// @desc    Facebook Data Deletion Callback
+// @route   POST /api/auth/facebook/data-deletion
+const facebookDataDeletion = async (req, res) => {
+  try {
+    const { signed_request } = req.body;
+
+    if (!signed_request) {
+      return res.status(400).json({ message: "Missing signed_request" });
+    }
+
+    const appSecret = process.env.FACEBOOK_APP_SECRET;
+
+    // Parse the signed request
+    const [encodedSig, payload] = signed_request.split(".");
+
+    // Decode payload
+    const data = JSON.parse(
+      Buffer.from(
+        payload.replace(/-/g, "+").replace(/_/g, "/"),
+        "base64",
+      ).toString("utf8"),
+    );
+
+    // Verify signature if app secret is configured
+    if (appSecret) {
+      const expectedSig = crypto
+        .createHmac("sha256", appSecret)
+        .update(payload)
+        .digest("base64")
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=/g, "");
+
+      if (encodedSig !== expectedSig) {
+        return res.status(400).json({ message: "Invalid signature" });
+      }
+    }
+
+    const facebookUserId = data.user_id;
+
+    // Find and delete (or anonymise) the user
+    if (facebookUserId) {
+      const user = await User.findOne({
+        where: { facebookId: facebookUserId },
+      });
+      if (user) {
+        // Anonymise personal data rather than hard-delete to preserve order history integrity
+        await user.update({
+          firstName: "Deleted",
+          lastName: "User",
+          email: `deleted_fb_${facebookUserId}@deleted.invalid`,
+          phone: null,
+          facebookId: null,
+          address: {},
+          isActive: false,
+        });
+      }
+    }
+
+    // Generate a confirmation code
+    const confirmationCode = crypto
+      .randomBytes(8)
+      .toString("hex")
+      .toUpperCase();
+
+    const statusUrl = `${process.env.CLIENT_URL}/data-deletion-status?code=${confirmationCode}`;
+
+    // Facebook requires this exact JSON shape
+    return res.json({
+      url: statusUrl,
+      confirmation_code: confirmationCode,
+    });
+  } catch (error) {
+    console.error("Facebook data deletion error:", error);
+    res
+      .status(500)
+      .json({ message: "Data deletion request failed", error: error.message });
+  }
+};
+
 module.exports = {
   register,
   login,
   googleLogin,
+  facebookLogin,
+  facebookDataDeletion,
   getProfile,
   updateProfile,
   changePassword,
@@ -658,4 +851,5 @@ module.exports = {
   resetPassword,
   verifyEmail,
   resendVerificationEmail,
+  deleteAccount,
 };
