@@ -1,0 +1,4 @@
+E
+
+javascriptS7764"Prefer `globalThis` over `window`. 2
+€€ !

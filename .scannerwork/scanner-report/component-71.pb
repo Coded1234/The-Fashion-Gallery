@@ -1,0 +1,1 @@
+G 2jsXñhrserver/config/email.js

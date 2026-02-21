@@ -1,0 +1,1 @@
+v 2plsqlXhr'server/scripts/addEmailVerification.sql

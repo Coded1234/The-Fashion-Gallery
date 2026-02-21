@@ -1,0 +1,1 @@
+} 2plsqlXhr%server/scripts/migrate-production.sql
