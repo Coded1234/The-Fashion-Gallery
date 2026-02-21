@@ -280,7 +280,7 @@ const OrderSummary = () => {
                         });
                       }}
                       className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white"
-                      placeholder="+233200620026"
+                      placeholder=""
                       required
                     />
                   </div>
