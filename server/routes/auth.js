@@ -4,6 +4,9 @@ const {
   register,
   login,
   googleLogin,
+  facebookLogin,
+  facebookDataDeletion,
+  deleteAccount,
   getProfile,
   updateProfile,
   changePassword,
@@ -23,6 +26,8 @@ const { avatarUpload } = require("../config/cloudinary");
 router.post("/register", register);
 router.post("/login", login);
 router.post("/google", googleLogin);
+router.post("/facebook", facebookLogin);
+router.post("/facebook/data-deletion", facebookDataDeletion);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password/:token", resetPassword);
 router.get("/verify-email/:token", verifyEmail);
@@ -36,5 +41,6 @@ router.post("/wishlist/:productId", protect, toggleWishlist);
 router.get("/wishlist", protect, getWishlist);
 router.post("/avatar", protect, avatarUpload.single("avatar"), uploadAvatar);
 router.delete("/avatar", protect, deleteAvatar);
+router.delete("/account", protect, deleteAccount);
 
 module.exports = router;

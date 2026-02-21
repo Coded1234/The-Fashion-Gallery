@@ -33,6 +33,7 @@ import PrivacyPolicy from "./pages/customer/PrivacyPolicy";
 import TermsOfService from "./pages/customer/TermsOfService";
 import CookiePolicy from "./pages/customer/CookiePolicy";
 import Newsletter from "./pages/customer/Newsletter";
+import DataDeletionStatus from "./pages/customer/DataDeletionStatus";
 
 // Admin Pages
 import Dashboard from "./pages/admin/Dashboard";
@@ -82,6 +83,7 @@ function App() {
         <Route path="cookies" element={<CookiePolicy />} />
         <Route path="search" element={<SearchResults />} />
         <Route path="newsletter" element={<Newsletter />} />
+        <Route path="data-deletion-status" element={<DataDeletionStatus />} />
 
         {/* Protected Customer Routes */}
         <Route

@@ -31,8 +31,11 @@ api.interceptors.response.use(
       // Do not force a full redirect when the failed request is the login attempt itself.
       // This prevents the page from reloading on wrong credentials — the UI can show a toast instead.
       const reqUrl = error?.config?.url || "";
+      // Don't auto-logout for endpoints that return 401 for wrong password (not expired session)
       const isLoginCall = reqUrl.includes("/auth/login");
-      if (!isLoginCall) {
+      const isDeleteAccount = reqUrl.includes("/auth/account");
+      const isChangePassword = reqUrl.includes("/auth/change-password");
+      if (!isLoginCall && !isDeleteAccount && !isChangePassword) {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         window.location.href = "/login";
@@ -47,6 +50,7 @@ export const authAPI = {
   register: (data) => api.post("/auth/register", data),
   login: (data) => api.post("/auth/login", data),
   googleLogin: (token) => api.post("/auth/google", { token }),
+  facebookLogin: (token) => api.post("/auth/facebook", { token }),
   getProfile: () => api.get("/auth/profile"),
   updateProfile: (data) => api.put("/auth/profile", data),
   changePassword: (data) => api.put("/auth/change-password", data),

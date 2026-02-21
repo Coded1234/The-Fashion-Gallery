@@ -5,6 +5,7 @@ import {
   login,
   clearError,
   googleLogin,
+  facebookLogin,
   loadUser,
 } from "../../redux/slices/authSlice";
 import IMAGES from "../../config/images";
@@ -56,6 +57,62 @@ const Login = () => {
       toast.error("Google login failed");
     },
   });
+
+  const loadFBSdk = () =>
+    new Promise((resolve) => {
+      if (window.FB) {
+        resolve(window.FB);
+        return;
+      }
+      window.fbAsyncInit = function () {
+        window.FB.init({
+          appId: process.env.REACT_APP_FACEBOOK_APP_ID,
+          cookie: true,
+          xfbml: true,
+          version: "v18.0",
+        });
+        resolve(window.FB);
+      };
+      const s = document.createElement("script");
+      s.src = "https://connect.facebook.net/en_US/sdk.js";
+      document.body.appendChild(s);
+    });
+
+  const handleFacebookLogin = async () => {
+    if (!process.env.REACT_APP_FACEBOOK_APP_ID) {
+      toast.error("Facebook login is not configured yet");
+      return;
+    }
+    try {
+      const FB = await loadFBSdk();
+      FB.login(
+        (response) => {
+          if (response.authResponse) {
+            dispatch(facebookLogin(response.authResponse.accessToken))
+              .unwrap()
+              .then((userData) => {
+                if (
+                  !userData.user?.firstName ||
+                  !userData.user?.lastName ||
+                  !userData.user?.phone
+                ) {
+                  setShowProfileModal(true);
+                  toast.success("Welcome! Please complete your profile.");
+                } else {
+                  toast.success("Welcome!");
+                }
+              })
+              .catch(() => {});
+          } else {
+            toast.error("Facebook login was cancelled");
+          }
+        },
+        { scope: "email" },
+      );
+    } catch (err) {
+      toast.error("Facebook login failed");
+    }
+  };
 
   const from = location.state?.from || "/";
 
@@ -301,6 +358,7 @@ const Login = () => {
             </button>
             <button
               type="button"
+              onClick={handleFacebookLogin}
               className="flex items-center justify-center gap-2 py-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
             >
               <svg className="w-5 h-5" fill="#1877F2" viewBox="0 0 24 24">
