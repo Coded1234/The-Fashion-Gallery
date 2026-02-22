@@ -28,7 +28,14 @@ const defaultPromoMessages = [
 
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
-  const { unread, unreadCount, dismissAll, dismissOne, announcements, openAnnouncement } = useAnnouncements();
+  const {
+    unread,
+    unreadCount,
+    dismissAll,
+    dismissOne,
+    announcements,
+    openAnnouncement,
+  } = useAnnouncements();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -243,7 +250,10 @@ const Navbar = () => {
                     </h4>
                     {announcements.length > 0 && unreadCount > 0 && (
                       <button
-                        onClick={() => { dismissAll(); setBellOpen(false); }}
+                        onClick={() => {
+                          dismissAll();
+                          setBellOpen(false);
+                        }}
                         className="text-xs text-primary-500 hover:text-primary-700 font-medium"
                       >
                         Clear all
@@ -260,7 +270,10 @@ const Navbar = () => {
                       unread.map((a) => (
                         <div
                           key={a.id}
-                          onClick={() => { openAnnouncement(a); setBellOpen(false); }}
+                          onClick={() => {
+                            openAnnouncement(a);
+                            setBellOpen(false);
+                          }}
                           className="px-4 py-3 border-b dark:border-primary-800 last:border-0 cursor-pointer hover:bg-gray-50 dark:hover:bg-primary-900/30 transition-colors bg-blue-50 dark:bg-blue-900/20"
                         >
                           <div className="flex items-start gap-2">
@@ -274,12 +287,22 @@ const Navbar = () => {
                               </p>
                               {a.createdAt && (
                                 <p className="text-gray-400 dark:text-gray-500 text-xs mt-1">
-                                  {new Date(a.createdAt).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}
+                                  {new Date(a.createdAt).toLocaleDateString(
+                                    undefined,
+                                    {
+                                      day: "numeric",
+                                      month: "short",
+                                      year: "numeric",
+                                    },
+                                  )}
                                 </p>
                               )}
                             </div>
                             <button
-                              onClick={(e) => { e.stopPropagation(); dismissOne(a.id); }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                dismissOne(a.id);
+                              }}
                               className="ml-1 flex-shrink-0 text-gray-300 hover:text-red-500 transition-colors p-0.5 rounded"
                               aria-label="Dismiss announcement"
                             >

@@ -25,9 +25,7 @@ const ResendVerification = () => {
       setSuccess(true);
       toast.success(data.message);
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Failed to resend OTP code",
-      );
+      toast.error(error.response?.data?.message || "Failed to resend OTP code");
     } finally {
       setLoading(false);
     }

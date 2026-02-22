@@ -71,7 +71,10 @@ const VerifyEmail = () => {
     }
     setLoading(true);
     try {
-      const { data } = await axios.post("/api/auth/verify-email", { email, otp });
+      const { data } = await axios.post("/api/auth/verify-email", {
+        email,
+        otp,
+      });
       setVerified(true);
       toast.success("Email verified successfully!");
 
@@ -98,7 +101,9 @@ const VerifyEmail = () => {
     }
     setResending(true);
     try {
-      const { data } = await axios.post("/api/auth/resend-verification", { email });
+      const { data } = await axios.post("/api/auth/resend-verification", {
+        email,
+      });
       toast.success(data.message);
       setCooldown(60);
       setDigits(Array(OTP_LENGTH).fill(""));
@@ -115,8 +120,12 @@ const VerifyEmail = () => {
       <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
           <FiCheckCircle className="mx-auto text-green-500 mb-4" size={64} />
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Email Verified!</h2>
-          <p className="text-gray-500 mb-4">You're being redirected to the home page…</p>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Email Verified!
+          </h2>
+          <p className="text-gray-500 mb-4">
+            You're being redirected to the home page…
+          </p>
           <Link
             to="/"
             className="inline-block px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-xl font-medium hover:from-primary-700 hover:to-primary-800 transition-colors"
@@ -136,7 +145,9 @@ const VerifyEmail = () => {
           <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <FiMail className="text-primary-600" size={32} />
           </div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-1">Check Your Email</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-1">
+            Check Your Email
+          </h2>
           <p className="text-gray-500 text-sm">We sent a 6-digit code to</p>
           {emailFromQuery ? (
             <p className="font-semibold text-gray-800 mt-1">{emailFromQuery}</p>
@@ -194,7 +205,10 @@ const VerifyEmail = () => {
               disabled={resending}
               className="text-primary-600 hover:underline font-medium inline-flex items-center gap-1 disabled:opacity-50"
             >
-              <FiRefreshCw size={13} className={resending ? "animate-spin" : ""} />
+              <FiRefreshCw
+                size={13}
+                className={resending ? "animate-spin" : ""}
+              />
               {resending ? "Sending…" : "Resend OTP"}
             </button>
           )}
@@ -205,7 +219,10 @@ const VerifyEmail = () => {
         </p>
 
         <div className="mt-4 text-center">
-          <Link to="/login" className="text-sm text-gray-500 hover:text-primary-600">
+          <Link
+            to="/login"
+            className="text-sm text-gray-500 hover:text-primary-600"
+          >
             ← Back to Login
           </Link>
         </div>
