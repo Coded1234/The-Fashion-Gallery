@@ -1,15 +1,34 @@
 import React, { useState, useEffect } from "react";
-import { FiPlus, FiTrash2, FiEdit2, FiBell, FiCheck, FiX } from "react-icons/fi";
+import {
+  FiPlus,
+  FiTrash2,
+  FiEdit2,
+  FiBell,
+  FiCheck,
+  FiX,
+} from "react-icons/fi";
 import { announcementsAPI } from "../../utils/api";
+
+const PREVIEW_LENGTH = 60;
 
 const Announcements = () => {
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [expanded, setExpanded] = useState({});
+  const toggleExpand = (id) => setExpanded((p) => ({ ...p, [id]: !p[id] }));
   const [editing, setEditing] = useState(null);
-  const [formData, setFormData] = useState({ title: "", message: "", isActive: true });
+  const [formData, setFormData] = useState({
+    title: "",
+    message: "",
+    isActive: true,
+  });
   const [saving, setSaving] = useState(false);
-  const [notification, setNotification] = useState({ show: false, type: "", message: "" });
+  const [notification, setNotification] = useState({
+    show: false,
+    type: "",
+    message: "",
+  });
 
   useEffect(() => {
     fetchAnnouncements();
@@ -29,7 +48,10 @@ const Announcements = () => {
 
   const showNotif = (type, message) => {
     setNotification({ show: true, type, message });
-    setTimeout(() => setNotification({ show: false, type: "", message: "" }), 3000);
+    setTimeout(
+      () => setNotification({ show: false, type: "", message: "" }),
+      3000,
+    );
   };
 
   const openCreate = () => {
@@ -80,7 +102,7 @@ const Announcements = () => {
     try {
       await announcementsAPI.update(a.id, { isActive: !a.isActive });
       setAnnouncements((prev) =>
-        prev.map((x) => (x.id === a.id ? { ...x, isActive: !x.isActive } : x))
+        prev.map((x) => (x.id === a.id ? { ...x, isActive: !x.isActive } : x)),
       );
     } catch {
       showNotif("error", "Failed to update status");
@@ -88,7 +110,7 @@ const Announcements = () => {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6">
       {/* Notification */}
       {notification.show && (
         <div
@@ -101,11 +123,13 @@ const Announcements = () => {
       )}
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div className="flex items-center gap-3">
-          <FiBell size={24} className="text-primary-500" />
+          <FiBell size={24} className="text-primary-500 flex-shrink-0" />
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Announcements</h1>
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
+              Announcements
+            </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Send notices that pop up for all users on their next visit
             </p>
@@ -113,7 +137,7 @@ const Announcements = () => {
         </div>
         <button
           onClick={openCreate}
-          className="flex items-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-medium transition-colors"
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-medium transition-colors w-full sm:w-auto"
         >
           <FiPlus size={18} />
           New Announcement
@@ -135,70 +159,87 @@ const Announcements = () => {
           {announcements.map((a) => (
             <div
               key={a.id}
-              className="bg-white dark:bg-surface rounded-xl border border-gray-200 dark:border-primary-700 p-5 flex items-start gap-4"
+              className="bg-white dark:bg-surface rounded-xl border border-gray-200 dark:border-primary-700 p-4 md:p-5 flex items-start gap-3"
             >
               {/* Status dot */}
               <div
-                className={`mt-1 w-3 h-3 rounded-full flex-shrink-0 ${
+                className={`mt-1.5 w-3 h-3 rounded-full flex-shrink-0 ${
                   a.isActive ? "bg-green-500" : "bg-gray-300"
                 }`}
               />
 
-              {/* Content */}
+              {/* Content + Actions wrapper */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="font-semibold text-gray-900 dark:text-white">{a.title}</h3>
-                  <span
-                    className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                      a.isActive
-                        ? "bg-green-100 text-green-700"
-                        : "bg-gray-100 text-gray-500"
-                    }`}
-                  >
-                    {a.isActive ? "Active" : "Inactive"}
-                  </span>
-                </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 whitespace-pre-line">
-                  {a.message}
-                </p>
-                <p className="text-xs text-gray-400 mt-2">
-                  {new Date(a.createdAt).toLocaleDateString("en-GB", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </p>
-              </div>
+                {/* Title row */}
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="font-semibold text-gray-900 dark:text-white">
+                        {a.title}
+                      </h3>
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                          a.isActive
+                            ? "bg-green-100 text-green-700"
+                            : "bg-gray-100 text-gray-500"
+                        }`}
+                      >
+                        {a.isActive ? "Active" : "Inactive"}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 whitespace-pre-line">
+                      {expanded[a.id] || a.message.length <= PREVIEW_LENGTH
+                        ? a.message
+                        : a.message.slice(0, PREVIEW_LENGTH).trimEnd() + "…"}
+                    </p>
+                    {a.message.length > PREVIEW_LENGTH && (
+                      <button
+                        onClick={() => toggleExpand(a.id)}
+                        className="text-xs text-primary-500 hover:text-primary-700 font-medium mt-1"
+                      >
+                        {expanded[a.id] ? "Show less" : "Read more"}
+                      </button>
+                    )}
+                    <p className="text-xs text-gray-400 mt-2">
+                      {new Date(a.createdAt).toLocaleDateString("en-GB", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  </div>
 
-              {/* Actions */}
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <button
-                  onClick={() => toggleActive(a)}
-                  title={a.isActive ? "Deactivate" : "Activate"}
-                  className={`p-2 rounded-lg transition-colors ${
-                    a.isActive
-                      ? "bg-green-100 text-green-600 hover:bg-green-200"
-                      : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-                  }`}
-                >
-                  <FiCheck size={16} />
-                </button>
-                <button
-                  onClick={() => openEdit(a)}
-                  className="p-2 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors"
-                  title="Edit"
-                >
-                  <FiEdit2 size={16} />
-                </button>
-                <button
-                  onClick={() => handleDelete(a.id)}
-                  className="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors"
-                  title="Delete"
-                >
-                  <FiTrash2 size={16} />
-                </button>
+                  {/* Actions — top-right on all sizes */}
+                  <div className="flex items-center gap-1.5 flex-shrink-0">
+                    <button
+                      onClick={() => toggleActive(a)}
+                      title={a.isActive ? "Deactivate" : "Activate"}
+                      className={`p-2 rounded-lg transition-colors ${
+                        a.isActive
+                          ? "bg-green-100 text-green-600 hover:bg-green-200"
+                          : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                      }`}
+                    >
+                      <FiCheck size={15} />
+                    </button>
+                    <button
+                      onClick={() => openEdit(a)}
+                      className="p-2 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors"
+                      title="Edit"
+                    >
+                      <FiEdit2 size={15} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(a.id)}
+                      className="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors"
+                      title="Delete"
+                    >
+                      <FiTrash2 size={15} />
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           ))}
@@ -233,7 +274,9 @@ const Announcements = () => {
                 <input
                   type="text"
                   value={formData.title}
-                  onChange={(e) => setFormData((p) => ({ ...p, title: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((p) => ({ ...p, title: e.target.value }))
+                  }
                   placeholder="e.g. Important Update"
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-primary-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none dark:bg-gray-800 dark:text-white"
                   required
@@ -246,7 +289,9 @@ const Announcements = () => {
                 </label>
                 <textarea
                   value={formData.message}
-                  onChange={(e) => setFormData((p) => ({ ...p, message: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((p) => ({ ...p, message: e.target.value }))
+                  }
                   placeholder="Write your announcement here..."
                   rows={5}
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-primary-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none dark:bg-gray-800 dark:text-white resize-none"
@@ -259,10 +304,15 @@ const Announcements = () => {
                   type="checkbox"
                   id="isActive"
                   checked={formData.isActive}
-                  onChange={(e) => setFormData((p) => ({ ...p, isActive: e.target.checked }))}
+                  onChange={(e) =>
+                    setFormData((p) => ({ ...p, isActive: e.target.checked }))
+                  }
                   className="w-4 h-4 accent-primary-500"
                 />
-                <label htmlFor="isActive" className="text-sm text-gray-700 dark:text-gray-300">
+                <label
+                  htmlFor="isActive"
+                  className="text-sm text-gray-700 dark:text-gray-300"
+                >
                   Active (visible to users immediately)
                 </label>
               </div>
