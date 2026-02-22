@@ -34,7 +34,10 @@ const useBiometric = () => {
       const { data: options } = await authAPI.biometricRegisterChallenge();
 
       // 2. Prompt user for biometric (fingerprint / Face ID / Windows Hello)
-      const registrationResponse = await startRegistration(options);
+      // v13: startRegistration takes { optionsJSON } not the options directly
+      const registrationResponse = await startRegistration({
+        optionsJSON: options,
+      });
 
       // 3. Verify with server and save credential
       const { data: result } =
@@ -71,7 +74,10 @@ const useBiometric = () => {
         const { data: options } = await authAPI.biometricLoginChallenge(email);
 
         // 2. Prompt user for biometric
-        const authenticationResponse = await startAuthentication(options);
+        // v13: startAuthentication takes { optionsJSON } not the options directly
+        const authenticationResponse = await startAuthentication({
+          optionsJSON: options,
+        });
 
         // 3. Verify with server — returns JWT + user data
         const { data: userData } = await authAPI.biometricLoginVerify(
