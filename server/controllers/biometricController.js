@@ -89,6 +89,7 @@ const verifyBiometricRegistration = async (req, res) => {
         expectedRPID: RP_ID,
       });
     } catch (err) {
+      console.error("verifyRegistrationResponse failed:", err.message);
       return res.status(400).json({
         message: "Registration verification failed",
         error: err.message,
