@@ -1,6 +1,6 @@
 {
   "buildCommand": "next build",
-  "installCommand": "npm install",
+  "installCommand": "npm install && rm -rf server/node_modules",
   "functions": {
     "pages/api/**/*.js": {
       "includeFiles": "server/**"
