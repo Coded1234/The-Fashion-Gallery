@@ -1,4 +1,3 @@
-"use client";
 import CustomerLayout from "../../client/src/layouts/CustomerLayout";
 import PrivacyPolicy from "../../client/src/pages/customer/PrivacyPolicy";
 

@@ -58,7 +58,7 @@ const Home = () => {
     <div className="min-h-screen">
       {" "}
       {/* Hero Section */}{" "}
-      <section className="relative h-[600px] bg-gradient-to-r from-gray-900 to-gray-800 overflow-hidden">
+      <section className="relative h-[420px] sm:h-[600px] bg-gradient-to-r from-gray-900 to-gray-800 overflow-hidden">
         {" "}
         <div className="absolute inset-0">
           {" "}
@@ -72,11 +72,11 @@ const Home = () => {
           {" "}
           <div className="max-w-2xl text-white animate-fade-in">
             {" "}
-            <p className="text-primary-300 dark:text-primary-200 font-medium mb-4 tracking-wider uppercase">
+            <p className="text-primary-300 dark:text-primary-200 font-medium mb-3 tracking-wider uppercase text-xs sm:text-sm">
               {" "}
               New Collection 2026{" "}
             </p>{" "}
-            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-6 leading-tight drop-shadow-lg">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 leading-tight drop-shadow-lg">
               {" "}
               Discover Your{" "}
               <span className="block gradient-text drop-shadow-lg">
@@ -84,23 +84,23 @@ const Home = () => {
                 Perfect Style{" "}
               </span>{" "}
             </h1>{" "}
-            <p className="text-sm sm:text-base md:text-xl text-gray-100 dark:text-gold-light mb-4 drop-shadow-md">
+            <p className="text-xs sm:text-base md:text-xl text-gray-200 dark:text-gold-light mb-5 drop-shadow-md leading-relaxed">
               {" "}
               Explore our latest collection of premium clothing. Quality fashion
               for everyone.{" "}
             </p>{" "}
-            <div className="flex gap-4 flex-nowrap mt-10 md:mt-6">
+            <div className="flex gap-3 flex-wrap mt-4 sm:mt-6">
               {" "}
               <Link
                 href="/shop"
-                className="btn-gradient px-6 py-3 sm:px-8 sm:py-4 rounded-full font-semibold text-base sm:text-lg inline-flex items-center gap-4 whitespace-nowrap"
+                className="btn-gradient px-5 py-2.5 sm:px-8 sm:py-4 rounded-full font-semibold text-sm sm:text-lg inline-flex items-center gap-2 whitespace-nowrap"
               >
                 {" "}
                 Shop Now <FiArrowRight />{" "}
               </Link>{" "}
               <Link
                 href="/shop"
-                className="px-6 py-3 sm:px-8 sm:py-4 border-2 border-white text-white rounded-full font-semibold text-base sm:text-lg hover:bg-white hover:text-gray-900 transition-colors whitespace-nowrap"
+                className="px-5 py-2.5 sm:px-8 sm:py-4 border border-white/70 text-white/90 rounded-full font-medium text-sm sm:text-base hover:bg-white hover:text-gray-900 transition-colors whitespace-nowrap"
               >
                 {" "}
                 View Collection{" "}
@@ -155,7 +155,7 @@ const Home = () => {
           {" "}
           <div className="text-center mb-5">
             {" "}
-            <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-gray-800 dark:text-gold-light mb-4">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 dark:text-gold-light mb-4">
               {" "}
               Shop by Category{" "}
             </h2>{" "}
@@ -205,7 +205,7 @@ const Home = () => {
             {" "}
             <div>
               {" "}
-              <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-gray-800 dark:text-gold-light mb-2">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 dark:text-gold-light mb-2">
                 {" "}
                 Featured Products{" "}
               </h2>{" "}
@@ -278,7 +278,7 @@ const Home = () => {
                   {" "}
                   🎉 Limited Time Offer 🎉{" "}
                 </p>{" "}
-                <h2 className="text-lg sm:text-2xl md:text-5xl font-bold mb-4 whitespace-pre-line animate-pulse">
+                <h2 className="text-lg sm:text-xl md:text-3xl font-bold mb-4 whitespace-pre-line animate-pulse">
                   {" "}
                   {activeCoupon.ai_message
                     ?.split("\n")[0]
@@ -385,7 +385,7 @@ const Home = () => {
             {" "}
             <div className="text-center mb-12">
               {" "}
-              <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-gray-800 dark:text-gold-light mb-4">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 dark:text-gold-light mb-4">
                 {" "}
                 What Our Customers Say{" "}
               </h2>{" "}
@@ -453,7 +453,7 @@ const Home = () => {
           {" "}
           <div className="text-center mb-12">
             {" "}
-            <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-gray-800 mb-4">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 dark:text-gold-light mb-4">
               {" "}
               Follow Us on Instagram{" "}
             </h2>{" "}

@@ -1,6 +1,5 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import L from "leaflet";
 import { FiMapPin, FiLoader, FiSearch, FiX } from "react-icons/fi";
 
@@ -14,17 +13,69 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
 });
 
-// Component to handle map clicks
-function LocationMarker({ position, setPosition, onLocationSelect }) {
-  const map = useMapEvents({
-    click(e) {
-      setPosition(e.latlng);
-      onLocationSelect(e.latlng);
-      map.flyTo(e.latlng, map.getZoom());
-    },
-  });
+// Direct Leaflet map - immune to React Strict Mode double-invoke (no react-leaflet callback-ref stale closure)
+function LeafletMap({ center, zoom, scrollWheelZoom, style, position, onLocationSelect }) {
+  const containerRef = useRef(null);
+  const mapRef = useRef(null);
+  const markerRef = useRef(null);
 
-  return position === null ? null : <Marker position={position} />;
+  // Initialize map once. useEffect + useRef guard is NOT subject to reappearLayoutEffects.
+  useEffect(() => {
+    if (!containerRef.current || mapRef.current) return;
+    const map = L.map(containerRef.current, {
+      center,
+      zoom,
+      scrollWheelZoom: scrollWheelZoom ?? true,
+    });
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxZoom: 19,
+    }).addTo(map);
+    map.on("click", (e) => {
+      const latlng = { lat: e.latlng.lat, lng: e.latlng.lng };
+      if (markerRef.current) {
+        markerRef.current.setLatLng(e.latlng);
+      } else {
+        markerRef.current = L.marker(e.latlng).addTo(map);
+      }
+      map.flyTo(e.latlng, map.getZoom());
+      onLocationSelect?.(latlng);
+    });
+    if (position) {
+      markerRef.current = L.marker([position.lat, position.lng]).addTo(map);
+    }
+    setTimeout(() => map.invalidateSize(), 100);
+    mapRef.current = map;
+    return () => {
+      map.remove();
+      mapRef.current = null;
+      markerRef.current = null;
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Pan to new center when changed externally (e.g. search result, geolocation)
+  useEffect(() => {
+    if (mapRef.current) {
+      mapRef.current.setView(center, zoom);
+    }
+  }, [center[0], center[1], zoom]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Sync marker with external position changes
+  useEffect(() => {
+    if (!mapRef.current) return;
+    if (position) {
+      if (markerRef.current) {
+        markerRef.current.setLatLng([position.lat, position.lng]);
+      } else {
+        markerRef.current = L.marker([position.lat, position.lng]).addTo(mapRef.current);
+      }
+    } else if (markerRef.current) {
+      markerRef.current.remove();
+      markerRef.current = null;
+    }
+  }, [position?.lat, position?.lng]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  return <div ref={containerRef} style={style} />;
 }
 
 const AddressMapPicker = ({ onAddressSelect, currentPosition }) => {
@@ -99,9 +150,10 @@ const AddressMapPicker = ({ onAddressSelect, currentPosition }) => {
     [onAddressSelect],
   );
 
-  // Handle location selection
-  const handleLocationSelect = useCallback(
+  // Handle map click: update position state and geocode
+  const handleMapClick = useCallback(
     (latlng) => {
+      setPosition(latlng);
       reverseGeocode(latlng.lat, latlng.lng);
     },
     [reverseGeocode],
@@ -269,24 +321,14 @@ const AddressMapPicker = ({ onAddressSelect, currentPosition }) => {
 
           {/* Map */}
           <div className="flex-1 relative">
-            <MapContainer
+            <LeafletMap
               center={mapCenter}
               zoom={13}
               style={{ height: "100%", width: "100%" }}
               scrollWheelZoom={true}
-              zoomControl={true}
-            >
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                maxZoom={19}
-              />
-              <LocationMarker
-                position={position}
-                setPosition={setPosition}
-                onLocationSelect={handleLocationSelect}
-              />
-            </MapContainer>
+              position={position}
+              onLocationSelect={handleMapClick}
+            />
           </div>
 
           {/* Selected Address Display */}
@@ -425,28 +467,14 @@ const AddressMapPicker = ({ onAddressSelect, currentPosition }) => {
             className="border-2 border-gray-300 rounded-xl overflow-hidden relative"
             style={{ height: "400px", zIndex: 1 }}
           >
-            <MapContainer
+            <LeafletMap
               center={mapCenter}
               zoom={13}
               style={{ height: "100%", width: "100%" }}
               scrollWheelZoom={false}
-              whenCreated={(map) => {
-                setTimeout(() => {
-                  map.invalidateSize();
-                }, 100);
-              }}
-            >
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                maxZoom={19}
-              />
-              <LocationMarker
-                position={position}
-                setPosition={setPosition}
-                onLocationSelect={handleLocationSelect}
-              />
-            </MapContainer>
+              position={position}
+              onLocationSelect={handleMapClick}
+            />
           </div>
         )}
 

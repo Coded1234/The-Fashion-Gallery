@@ -164,12 +164,12 @@ const Contact = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-[var(--bg)]">
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-primary-500 to-secondary-500 py-16">
         <div className="container mx-auto px-4 text-center text-white">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Contact Us</h1>
-          <p className="text-lg text-white/80 max-w-2xl mx-auto">
+          <h1 className="text-2xl md:text-3xl font-bold mb-3">Contact Us</h1>
+          <p className="text-sm text-white/80 max-w-2xl mx-auto">
             Have a question or need help? We're here for you. Reach out and
             we'll respond as soon as we can.
           </p>
@@ -188,11 +188,11 @@ const Contact = () => {
                 <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4">
                   <info.icon className="text-primary-500" size={24} />
                 </div>
-                <h3 className="font-semibold text-gray-800 mb-2">
+                <h3 className="font-semibold text-gray-800 dark:text-gold-light mb-2">
                   {info.title}
                 </h3>
                 {info.details.map((detail, i) => (
-                  <p key={i} className="text-gray-600 text-sm">
+                  <p key={i} className="text-gray-600 dark:text-primary-300 text-sm">
                     {detail}
                   </p>
                 ))}
@@ -208,17 +208,17 @@ const Contact = () => {
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Contact Form */}
             <div className="bg-white dark:bg-surface rounded-2xl shadow-sm p-8">
-              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-2">
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 dark:text-gold-light mb-2">
                 Send us a Message
               </h2>
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-600 dark:text-primary-300 mb-6">
                 Fill out the form below and we'll get back to you shortly.
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gold mb-2">
                       Your Name <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -232,7 +232,7 @@ const Contact = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gold mb-2">
                       Email Address <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -249,7 +249,7 @@ const Contact = () => {
 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gold mb-2">
                       Phone Number
                     </label>
                     <input
@@ -262,7 +262,7 @@ const Contact = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gold mb-2">
                       Subject <span className="text-red-500">*</span>
                     </label>
                     <select
@@ -289,7 +289,7 @@ const Contact = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gold mb-2">
                     Message <span className="text-red-500">*</span>
                   </label>
                   <textarea
@@ -346,10 +346,10 @@ const Contact = () => {
             <div className="space-y-6">
               {/* FAQ Link */}
               <div className="bg-white dark:bg-surface rounded-2xl shadow-sm p-6">
-                <h3 className="font-semibold text-gray-800 mb-2">
+                <h3 className="font-semibold text-gray-800 dark:text-gold-light mb-2">
                   Looking for Quick Answers?
                 </h3>
-                <p className="text-gray-600 mb-4">
+                <p className="text-gray-600 dark:text-primary-300 mb-4">
                   Check out our FAQ page for answers to commonly asked
                   questions.
                 </p>
@@ -366,8 +366,8 @@ const Contact = () => {
 
               {/* Social Links */}
               <div className="bg-white dark:bg-surface rounded-2xl shadow-sm p-6">
-                <h3 className="font-semibold text-gray-800 mb-4">Follow Us</h3>
-                <p className="text-gray-600 mb-4">
+                <h3 className="font-semibold text-gray-800 dark:text-gold-light mb-4">Follow Us</h3>
+                <p className="text-gray-600 dark:text-primary-300 mb-4">
                   Stay connected with us on social media for updates,
                   promotions, and more.
                 </p>

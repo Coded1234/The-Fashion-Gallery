@@ -520,10 +520,10 @@ const Register = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-l from-primary-500/80 to-secondary-500/80 flex items-center justify-center">
           <div className="text-white text-center p-8 max-w-md">
-            <h2 className="text-4xl font-bold mb-4">
+            <h2 className="text-2xl font-bold mb-3">
               Join The Fashion Gallery
             </h2>
-            <p className="text-xl text-white/90 mb-8">
+            <p className="text-base text-white/90 mb-8">
               Create an account and unlock exclusive benefits
             </p>
             <div className="space-y-4 text-left">

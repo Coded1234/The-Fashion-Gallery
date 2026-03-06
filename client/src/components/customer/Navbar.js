@@ -49,8 +49,11 @@ const Navbar = () => {
   const [promoMessages, setPromoMessages] = useState(defaultPromoMessages);
   const [newsletterSubscribed, setNewsletterSubscribed] = useState(false);
   const [newsletterLoading, setNewsletterLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const dropdownRef = useRef(null);
   const bellRef = useRef(null);
+
+  useEffect(() => { setMounted(true); }, []);
 
   // Fetch active coupon and add to promo messages
   useEffect(() => {
@@ -125,7 +128,8 @@ const Navbar = () => {
       }
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Failed to update newsletter preference",
+        error.response?.data?.message ||
+          "Failed to update newsletter preference",
       );
     } finally {
       setNewsletterLoading(false);
@@ -362,7 +366,7 @@ const Navbar = () => {
               aria-label={`Shopping cart with ${items.length} items`}
             >
               <FiShoppingCart size={20} />
-              {items.length > 0 && (
+              {mounted && items.length > 0 && (
                 <span className="absolute -top-1 -right-1 bg-primary-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                   {items.length}
                 </span>
@@ -370,7 +374,9 @@ const Navbar = () => {
             </Link>
 
             {/* User Menu */}
-            {isAuthenticated ? (
+            {!mounted ? (
+              <div className="w-9 h-9" />
+            ) : isAuthenticated ? (
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -420,18 +426,28 @@ const Navbar = () => {
                       Wishlist
                     </Link>
                     <div className="flex items-center justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-opacity-10">
-                      <span className="text-sm text-gray-700 dark:text-gold-light">Newsletter</span>
+                      <span className="text-sm text-gray-700 dark:text-gold-light">
+                        Newsletter
+                      </span>
                       <button
                         onClick={handleNewsletterToggle}
                         disabled={newsletterLoading}
-                        aria-label={newsletterSubscribed ? "Unsubscribe from newsletter" : "Subscribe to newsletter"}
+                        aria-label={
+                          newsletterSubscribed
+                            ? "Unsubscribe from newsletter"
+                            : "Subscribe to newsletter"
+                        }
                         className={`relative w-9 h-5 rounded-full transition-colors flex-shrink-0 disabled:opacity-50 ${
-                          newsletterSubscribed ? "bg-primary-500" : "bg-gray-300"
+                          newsletterSubscribed
+                            ? "bg-primary-500"
+                            : "bg-gray-300"
                         }`}
                       >
                         <span
                           className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${
-                            newsletterSubscribed ? "translate-x-4" : "translate-x-0"
+                            newsletterSubscribed
+                              ? "translate-x-4"
+                              : "translate-x-0"
                           }`}
                         />
                       </button>
@@ -494,7 +510,7 @@ const Navbar = () => {
 
         {/* Slide-in Panel */}
         <div
-          className={`fixed top-0 left-0 h-full w-[280px] bg-white dark:bg-surface z-50 transform transition-transform duration-300 ease-out shadow-2xl ${
+          className={`fixed top-0 left-0 h-full w-[280px] bg-white dark:bg-surface z-50 transform transition-transform duration-300 ease-out shadow-2xl flex flex-col ${
             mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
@@ -519,8 +535,13 @@ const Navbar = () => {
             </button>
           </div>
 
+          {/* Scrollable content */}
+          <div className="flex-1 overflow-y-auto hide-scrollbar">
+
           {/* User Section */}
-          {isAuthenticated ? (
+          {!mounted ? (
+            <div className="p-4 border-b bg-white dark:bg-surface" />
+          ) : isAuthenticated ? (
             <div className="p-4 border-b bg-white dark:bg-surface">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-primary-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
@@ -574,7 +595,7 @@ const Navbar = () => {
             <p className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
               My Account
             </p>
-            {isAuthenticated && user?.role === "admin" && (
+            {mounted && isAuthenticated && user?.role === "admin" && (
               <Link
                 href="/admin"
                 className="flex items-center px-4 py-3 text-gray-700 hover:bg-primary-50 hover:text-primary-600 font-medium transition-colors"
@@ -610,7 +631,7 @@ const Navbar = () => {
               onClick={() => setMobileMenuOpen(false)}
             >
               <FiShoppingCart className="mr-2" /> Cart
-              {items.length > 0 && (
+              {mounted && items.length > 0 && (
                 <span className="ml-auto bg-primary-500 text-white text-xs px-2 py-1 rounded-full">
                   {items.length}
                 </span>
@@ -639,7 +660,7 @@ const Navbar = () => {
           </div>
 
           {/* Logout Button */}
-          {isAuthenticated && (
+          {mounted && isAuthenticated && (
             <>
               <div className="border-t my-2" />
               <div className="p-4">
@@ -656,8 +677,10 @@ const Navbar = () => {
             </>
           )}
 
+          </div>{/* end scrollable content */}
+
           {/* Contact Info */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 bg-white dark:bg-surface border-t dark:border-primary-700">
+          <div className="flex-shrink-0 p-4 bg-white dark:bg-surface border-t dark:border-primary-700">
             <div className="flex items-center justify-center gap-3 mb-1">
               <p className="text-sm text-gray-500 dark:text-gold">
                 📞 +233200620026

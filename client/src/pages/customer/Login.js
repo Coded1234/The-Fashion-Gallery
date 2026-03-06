@@ -131,8 +131,8 @@ const Login = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-r from-primary-500/80 to-secondary-500/80 flex items-center justify-center">
           <div className="text-white text-center p-8">
-            <h2 className="text-4xl font-bold mb-4">Welcome!</h2>
-            <p className="text-xl text-white/90">
+            <h2 className="text-2xl font-bold mb-3">Welcome!</h2>
+            <p className="text-base text-white/90">
               Sign in to access your account and continue shopping
             </p>
           </div>
