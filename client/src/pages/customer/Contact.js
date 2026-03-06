@@ -192,7 +192,10 @@ const Contact = () => {
                   {info.title}
                 </h3>
                 {info.details.map((detail, i) => (
-                  <p key={i} className="text-gray-600 dark:text-primary-300 text-sm">
+                  <p
+                    key={i}
+                    className="text-gray-600 dark:text-primary-300 text-sm"
+                  >
                     {detail}
                   </p>
                 ))}
@@ -366,7 +369,9 @@ const Contact = () => {
 
               {/* Social Links */}
               <div className="bg-white dark:bg-surface rounded-2xl shadow-sm p-6">
-                <h3 className="font-semibold text-gray-800 dark:text-gold-light mb-4">Follow Us</h3>
+                <h3 className="font-semibold text-gray-800 dark:text-gold-light mb-4">
+                  Follow Us
+                </h3>
                 <p className="text-gray-600 dark:text-primary-300 mb-4">
                   Stay connected with us on social media for updates,
                   promotions, and more.

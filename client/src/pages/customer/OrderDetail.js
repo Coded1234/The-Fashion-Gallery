@@ -180,28 +180,31 @@ const OrderDetail = () => {
 
   const handlePrint = () => {
     const addr = order.shippingAddress || {};
-    const orderNum = order.orderNumber || `#${(orderId || "").slice(-8).toUpperCase()}`;
+    const orderNum =
+      order.orderNumber || `#${(orderId || "").slice(-8).toUpperCase()}`;
     const placedDate = formatDate(order.createdAt);
     const placedTime = formatTime(order.createdAt);
 
-    const itemRows = items.map((item) => {
-      const name = item.product?.name || item.productName || "—";
-      const size = item.size ? `Size: ${item.size}` : "";
-      const color = item.color
-        ? `Color: ${typeof item.color === "object" ? item.color.name : item.color}`
-        : "";
-      const meta = [size, color].filter(Boolean).join(" · ");
-      const qty = item.quantity || 1;
-      const unit = parseFloat(item.price ?? 0) || 0;
-      const line = unit * qty;
-      return `
+    const itemRows = items
+      .map((item) => {
+        const name = item.product?.name || item.productName || "—";
+        const size = item.size ? `Size: ${item.size}` : "";
+        const color = item.color
+          ? `Color: ${typeof item.color === "object" ? item.color.name : item.color}`
+          : "";
+        const meta = [size, color].filter(Boolean).join(" · ");
+        const qty = item.quantity || 1;
+        const unit = parseFloat(item.price ?? 0) || 0;
+        const line = unit * qty;
+        return `
         <tr>
           <td>${name}${meta ? `<br/><small style="color:#888">${meta}</small>` : ""}</td>
           <td style="text-align:center">${qty}</td>
           <td style="text-align:right">GH₵${unit.toFixed(2)}</td>
           <td style="text-align:right">GH₵${line.toFixed(2)}</td>
         </tr>`;
-    }).join("");
+      })
+      .join("");
 
     const payLabel = paymentMethod === "cod" ? "Pay on Delivery" : "Paystack";
     const payStatusLabel = isPaid ? "PAID" : "PENDING";

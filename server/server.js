@@ -112,12 +112,10 @@ app.get("/api/health", (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res
-    .status(500)
-    .json({
-      message: "Something went wrong!",
-      error: process.env.NODE_ENV === "production" ? undefined : err.message,
-    });
+  res.status(500).json({
+    message: "Something went wrong!",
+    error: process.env.NODE_ENV === "production" ? undefined : err.message,
+  });
 });
 
 // Connect to PostgreSQL and start server

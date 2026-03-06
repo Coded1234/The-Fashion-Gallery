@@ -71,7 +71,9 @@ const ProfileNewsletter = () => {
             size={18}
             className={subscribed ? "text-green-500" : "text-gray-400"}
           />
-          <p className={`text-sm font-medium ${subscribed ? "text-green-700" : "text-gray-500"}`}>
+          <p
+            className={`text-sm font-medium ${subscribed ? "text-green-700" : "text-gray-500"}`}
+          >
             {subscribed
               ? "You're currently subscribed."
               : "You are not subscribed."}
@@ -93,7 +95,9 @@ const ProfileNewsletter = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <span className={`text-xs font-medium ${subscribed ? "text-primary-600" : "text-gray-400"}`}>
+              <span
+                className={`text-xs font-medium ${subscribed ? "text-primary-600" : "text-gray-400"}`}
+              >
                 {subscribed ? "On" : "Off"}
               </span>
               <button

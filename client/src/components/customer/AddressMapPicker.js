@@ -14,7 +14,14 @@ L.Icon.Default.mergeOptions({
 });
 
 // Direct Leaflet map - immune to React Strict Mode double-invoke (no react-leaflet callback-ref stale closure)
-function LeafletMap({ center, zoom, scrollWheelZoom, style, position, onLocationSelect }) {
+function LeafletMap({
+  center,
+  zoom,
+  scrollWheelZoom,
+  style,
+  position,
+  onLocationSelect,
+}) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const markerRef = useRef(null);
@@ -28,7 +35,8 @@ function LeafletMap({ center, zoom, scrollWheelZoom, style, position, onLocation
       scrollWheelZoom: scrollWheelZoom ?? true,
     });
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       maxZoom: 19,
     }).addTo(map);
     map.on("click", (e) => {
@@ -67,7 +75,9 @@ function LeafletMap({ center, zoom, scrollWheelZoom, style, position, onLocation
       if (markerRef.current) {
         markerRef.current.setLatLng([position.lat, position.lng]);
       } else {
-        markerRef.current = L.marker([position.lat, position.lng]).addTo(mapRef.current);
+        markerRef.current = L.marker([position.lat, position.lng]).addTo(
+          mapRef.current,
+        );
       }
     } else if (markerRef.current) {
       markerRef.current.remove();

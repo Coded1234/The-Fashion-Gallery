@@ -89,13 +89,19 @@ const ProfileInfo = () => {
 
       <div className="max-w-lg mx-auto px-4 py-6 space-y-4">
         {/* Form */}
-        <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm p-5 space-y-4">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white rounded-xl shadow-sm p-5 space-y-4"
+        >
           <div>
             <label className="block text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">
               First Name
             </label>
             <div className="relative">
-              <FiUser className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={15} />
+              <FiUser
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                size={15}
+              />
               <input
                 type="text"
                 name="firstName"
@@ -128,7 +134,10 @@ const ProfileInfo = () => {
               Email Address
             </label>
             <div className="relative">
-              <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={15} />
+              <FiMail
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                size={15}
+              />
               <input
                 type="email"
                 name="email"
@@ -146,7 +155,10 @@ const ProfileInfo = () => {
               Phone Number
             </label>
             <div className="relative">
-              <FiPhone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={15} />
+              <FiPhone
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                size={15}
+              />
               <input
                 type="tel"
                 name="phone"

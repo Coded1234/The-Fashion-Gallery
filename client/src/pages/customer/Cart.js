@@ -123,7 +123,13 @@ const Cart = () => {
     }
     // Pass coupon data to checkout
     if (typeof window !== "undefined") {
-      sessionStorage.setItem("checkoutState", JSON.stringify({ coupon: appliedCoupon, couponDiscount: couponDiscount }));
+      sessionStorage.setItem(
+        "checkoutState",
+        JSON.stringify({
+          coupon: appliedCoupon,
+          couponDiscount: couponDiscount,
+        }),
+      );
     }
     router.push("/checkout");
   };
@@ -423,8 +429,12 @@ const Cart = () => {
                     <input
                       type="text"
                       value={couponCode}
-                      onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                      onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
+                      onChange={(e) =>
+                        setCouponCode(e.target.value.toUpperCase())
+                      }
+                      onKeyDown={(e) =>
+                        e.key === "Enter" && handleApplyCoupon()
+                      }
                       placeholder="Enter coupon code"
                       className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     />
@@ -451,7 +461,9 @@ const Cart = () => {
                 {couponDiscount > 0 && (
                   <div className="flex justify-between text-green-600">
                     <span>Discount ({appliedCoupon?.code})</span>
-                    <span>-GH₵{Math.round(couponDiscount).toLocaleString()}</span>
+                    <span>
+                      -GH₵{Math.round(couponDiscount).toLocaleString()}
+                    </span>
                   </div>
                 )}
                 <div className="flex justify-between text-gray-600">
