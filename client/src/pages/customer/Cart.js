@@ -20,6 +20,8 @@ import {
   FiShoppingBag,
   FiArrowLeft,
   FiEye,
+  FiTag,
+  FiCheck,
 } from "react-icons/fi";
 
 const Cart = () => {
@@ -390,15 +392,87 @@ const Cart = () => {
               <FiArrowLeft />
               Continue Shopping
             </Link>
+          </div>
 
-            {/* Checkout Button */}
-            <button
-              onClick={handleCheckout}
-              disabled={loading}
-              className="w-full mt-6 py-3 btn-gradient rounded-xl font-semibold text-base disabled:opacity-50"
-            >
-              Checkout
-            </button>
+          {/* Order Summary Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-xl shadow-sm p-6 sticky top-24 space-y-6">
+              <h2 className="text-lg font-bold text-gray-800">Order Summary</h2>
+
+              {/* Coupon Code */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <FiTag className="inline mr-1" />
+                  Promo Code
+                </label>
+                {appliedCoupon ? (
+                  <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg px-3 py-2">
+                    <span className="text-green-700 font-medium text-sm">
+                      <FiCheck className="inline mr-1" />
+                      {appliedCoupon.code} applied
+                    </span>
+                    <button
+                      onClick={handleRemoveCoupon}
+                      className="text-red-500 hover:text-red-600 text-sm font-medium"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                      onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
+                      placeholder="Enter coupon code"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                    <button
+                      onClick={handleApplyCoupon}
+                      disabled={couponLoading}
+                      className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 disabled:opacity-50 whitespace-nowrap"
+                    >
+                      {couponLoading ? "..." : "Apply"}
+                    </button>
+                  </div>
+                )}
+                {couponError && (
+                  <p className="mt-1 text-red-500 text-xs">{couponError}</p>
+                )}
+              </div>
+
+              {/* Totals */}
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between text-gray-600">
+                  <span>Subtotal</span>
+                  <span>GH₵{Math.round(subtotal).toLocaleString()}</span>
+                </div>
+                {couponDiscount > 0 && (
+                  <div className="flex justify-between text-green-600">
+                    <span>Discount ({appliedCoupon?.code})</span>
+                    <span>-GH₵{Math.round(couponDiscount).toLocaleString()}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-gray-600">
+                  <span>Shipping</span>
+                  <span className="text-green-600">Calculated at checkout</span>
+                </div>
+                <div className="border-t pt-3 flex justify-between font-bold text-gray-900 text-base">
+                  <span>Total</span>
+                  <span>GH₵{Math.round(total).toLocaleString()}</span>
+                </div>
+              </div>
+
+              {/* Checkout Button */}
+              <button
+                onClick={handleCheckout}
+                disabled={loading}
+                className="w-full py-3 btn-gradient rounded-xl font-semibold text-base disabled:opacity-50"
+              >
+                Proceed to Checkout
+              </button>
+            </div>
           </div>
         </div>
 

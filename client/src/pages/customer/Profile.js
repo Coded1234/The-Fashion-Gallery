@@ -1,139 +1,29 @@
 "use client";
 import { useRouter } from "next/navigation";
-import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { updateProfile, logout } from "../../redux/slices/authSlice";
+import { logout } from "../../redux/slices/authSlice";
 import api from "../../utils/api";
-import { getImageUrl } from "../../utils/imageUrl";
 import toast from "react-hot-toast";
 import {
   FiUser,
-  FiMail,
-  FiPhone,
-  FiLock,
-  FiCamera,
-  FiEdit2,
-  FiSave,
-  FiX,
-  FiEye,
-  FiEyeOff,
   FiShield,
-  FiBell,
-  FiCreditCard,
+  FiMail,
   FiPackage,
   FiHeart,
   FiLogOut,
   FiTrash2,
-  FiCheckCircle,
+  FiChevronRight,
 } from "react-icons/fi";
 
 const Profile = () => {
   const dispatch = useDispatch();
   const router = useRouter();
-  const { user, loading } = useSelector((state) => state.auth);
-
-  const [activeTab, setActiveTab] = useState("profile");
-  const [isEditing, setIsEditing] = useState(false);
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const { user } = useSelector((state) => state.auth);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletePassword, setDeletePassword] = useState("");
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [newsletterSubscribed, setNewsletterSubscribed] = useState(false);
-  const [newsletterLoading, setNewsletterLoading] = useState(false);
-
-  const [profileData, setProfileData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    avatar: "",
-  });
-
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
-
-  const [notifications, setNotifications] = useState({
-    orderUpdates: true,
-    promotions: true,
-    newsletter: false,
-    smsAlerts: true,
-  });
-
-  useEffect(() => {
-    if (user) {
-      setProfileData({
-        firstName: user.firstName || "",
-        lastName: user.lastName || "",
-        email: user.email || "",
-        phone: user.phone || "",
-        avatar: user.avatar || "",
-      });
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (user?.email) {
-      api
-        .get(`/newsletter/status?email=${encodeURIComponent(user.email)}`)
-        .then(({ data }) => setNewsletterSubscribed(data.isSubscribed))
-        .catch(() => {});
-    }
-  }, [user?.email]);
-
-  const handleProfileChange = (e) => {
-    setProfileData({ ...profileData, [e.target.name]: e.target.value });
-  };
-
-  const handlePasswordChange = (e) => {
-    setPasswordData({ ...passwordData, [e.target.name]: e.target.value });
-  };
-
-  const handleProfileSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await api.put("/auth/profile", profileData);
-      dispatch(updateProfile(profileData));
-      toast.success("Profile updated successfully!");
-      setIsEditing(false);
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to update profile");
-    }
-  };
-
-  const handlePasswordSubmit = async (e) => {
-    e.preventDefault();
-
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error("Passwords do not match");
-      return;
-    }
-
-    if (passwordData.newPassword.length < 6) {
-      toast.error("Password must be at least 6 characters");
-      return;
-    }
-
-    try {
-      await api.put("/auth/change-password", {
-        currentPassword: passwordData.currentPassword,
-        newPassword: passwordData.newPassword,
-      });
-      toast.success("Password changed successfully!");
-      setPasswordData({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: "",
-      });
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to change password");
-    }
-  };
 
   const handleDeleteAccount = async () => {
     setDeleteLoading(true);
@@ -151,660 +41,109 @@ const Profile = () => {
     }
   };
 
-  const handleNotificationChange = async (key) => {
-    const updated = { ...notifications, [key]: !notifications[key] };
-    setNotifications(updated);
-    try {
-      await api.put("/auth/notifications", updated);
-      toast.success("Notification preferences updated!");
-    } catch (error) {
-      // Revert on error
-      setNotifications(notifications);
-    }
-  };
-
-  const handleNewsletterToggle = async () => {
-    if (!user?.email || newsletterLoading) return;
-    setNewsletterLoading(true);
-    try {
-      if (newsletterSubscribed) {
-        await api.post("/newsletter/unsubscribe", { email: user.email });
-        setNewsletterSubscribed(false);
-        toast.success("Unsubscribed from newsletter");
-      } else {
-        await api.post("/newsletter/subscribe", { email: user.email });
-        setNewsletterSubscribed(true);
-        toast.success("Subscribed to newsletter!");
-      }
-    } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Failed to update newsletter preference",
-      );
-    } finally {
-      setNewsletterLoading(false);
-    }
-  };
-
-  const handleAvatarUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    // Validate file type
-    const allowedTypes = [
-      "image/jpeg",
-      "image/jpg",
-      "image/png",
-      "image/webp",
-      "image/gif",
-      "image/bmp",
-      "image/heic",
-      "image/heif",
-      "image/avif",
-    ];
-    if (!allowedTypes.includes(file.type)) {
-      toast.error("Please upload a valid image file (JPEG, PNG, or WebP)");
-      return;
-    }
-
-    // Validate file size (max 2MB)
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error("Image size must be less than 2MB");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("avatar", file);
-
-    setUploadingAvatar(true);
-    try {
-      const { data } = await api.post("/auth/avatar", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      console.log("Avatar uploaded, URL:", data.avatar);
-
-      // Update local state
-      setProfileData({ ...profileData, avatar: data.avatar });
-
-      // Update Redux state
-      await dispatch(updateProfile({ avatar: data.avatar }));
-
-      // Force re-fetch user profile to ensure consistency
-      const { data: updatedUser } = await api.get("/auth/profile");
-      dispatch(updateProfile(updatedUser));
-
-      toast.success("Avatar updated successfully!");
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to upload avatar");
-    } finally {
-      setUploadingAvatar(false);
-    }
-  };
-
-  const handleDeleteAvatar = async () => {
-    if (!window.confirm("Are you sure you want to remove your avatar?")) {
-      return;
-    }
-
-    setUploadingAvatar(true);
-    try {
-      await api.delete("/auth/avatar");
-
-      // Update local state
-      setProfileData({ ...profileData, avatar: "" });
-
-      // Update Redux state
-      await dispatch(updateProfile({ avatar: "" }));
-
-      // Force re-fetch user profile
-      const { data: updatedUser } = await api.get("/auth/profile");
-      dispatch(updateProfile(updatedUser));
-
-      toast.success("Avatar removed successfully!");
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to remove avatar");
-    } finally {
-      setUploadingAvatar(false);
-    }
-  };
-
-  const tabs = [
-    { id: "profile", label: "Profile Info", icon: FiUser },
-    { id: "security", label: "Security", icon: FiShield },
-    { id: "notifications", label: "Notifications", icon: FiBell },
-    { id: "newsletter", label: "Newsletter", icon: FiMail },
+  const menuItems = [
+    {
+      href: "/profile/info",
+      icon: FiUser,
+      label: "Personal Information",
+      desc: "Name, email, phone",
+    },
+    {
+      href: "/profile/security",
+      icon: FiShield,
+      label: "Security",
+      desc: "Password & account safety",
+    },
+    {
+      href: "/profile/newsletter",
+      icon: FiMail,
+      label: "Newsletter",
+      desc: "Subscribe / unsubscribe",
+    },
+    {
+      href: "/orders",
+      icon: FiPackage,
+      label: "My Orders",
+      desc: "Track and view orders",
+    },
+    {
+      href: "/wishlist",
+      icon: FiHeart,
+      label: "Wishlist",
+      desc: "Saved items",
+    },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4">
-        <div className="max-w-5xl mx-auto">
-          {/* Header */}
-          <div className="mb-6">
-            <h1 className="text-lg font-bold text-gray-800">
-              Account Settings
-            </h1>
-            <p className="text-sm text-gray-500 mt-0.5">
-              Manage your account information and preferences
+    <div className="min-h-screen bg-gray-50 py-6">
+      <div className="max-w-lg mx-auto px-4">
+        {/* User info card */}
+        <div className="bg-white rounded-xl shadow-sm p-4 mb-4 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-full bg-primary-500 flex items-center justify-center flex-shrink-0">
+            <span className="text-white font-bold text-lg">
+              {user?.firstName?.[0]?.toUpperCase() || <FiUser size={20} />}
+            </span>
+          </div>
+          <div className="min-w-0">
+            <p className="font-semibold text-gray-900 truncate">
+              {user?.firstName} {user?.lastName}
             </p>
+            <p className="text-sm text-gray-500 truncate">{user?.email}</p>
           </div>
+        </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Sidebar - Unified Jumia-style */}
-            <div className="lg:col-span-1">
-              <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                {/* Compact user info header */}
-                <div className="p-4 bg-gray-50 border-b">
-                  <div className="flex items-center gap-3">
-                    <div className="relative flex-shrink-0">
-                      <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
-                        {uploadingAvatar ? (
-                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-500" />
-                        ) : profileData.avatar ? (
-                          <>
-                            <img
-                              src={getImageUrl(profileData.avatar)}
-                              alt="Avatar"
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                e.target.style.display = "none";
-                                e.target.nextSibling.style.display = "flex";
-                              }}
-                            />
-                            <div
-                              style={{ display: "none" }}
-                              className="w-full h-full items-center justify-center"
-                            >
-                              <FiUser className="text-gray-400" size={20} />
-                            </div>
-                          </>
-                        ) : (
-                          <FiUser className="text-gray-400" size={20} />
-                        )}
-                      </div>
-                      <label
-                        className={`absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-primary-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-primary-600 transition-colors ${
-                          uploadingAvatar ? "opacity-50 cursor-not-allowed" : ""
-                        }`}
-                      >
-                        <FiCamera className="text-white" size={10} />
-                        <input
-                          type="file"
-                          accept="image/jpeg,image/jpg,image/png,image/webp"
-                          onChange={handleAvatarUpload}
-                          className="hidden"
-                          disabled={uploadingAvatar}
-                        />
-                      </label>
-                    </div>
-                    <div className="min-w-0">
-                      <p className="font-semibold text-sm text-gray-800 truncate">
-                        {profileData.firstName} {profileData.lastName}
-                      </p>
-                      <p className="text-xs text-gray-500 truncate">
-                        {profileData.email}
-                      </p>
-                      {profileData.avatar && (
-                        <button
-                          onClick={handleDeleteAvatar}
-                          disabled={uploadingAvatar}
-                          className="text-xs text-red-500 hover:text-red-600 disabled:opacity-50 mt-0.5"
-                        >
-                          Remove photo
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Navigation tabs */}
-                <div className="py-1">
-                  {tabs.map((tab) => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm transition-colors ${
-                        activeTab === tab.id
-                          ? "bg-primary-50 text-primary-600 border-l-4 border-primary-500 font-medium"
-                          : "text-gray-600 hover:bg-gray-50"
-                      }`}
-                    >
-                      <tab.icon size={16} />
-                      {tab.label}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="border-t" />
-
-                {/* Account shortcut links */}
-                <div className="py-1">
-                  <a
-                    href="/orders"
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
-                  >
-                    <FiPackage size={16} />
-                    My Orders
-                  </a>
-                  <a
-                    href="/wishlist"
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
-                  >
-                    <FiHeart size={16} />
-                    Wishlist
-                  </a>
-                </div>
-
-                <div className="border-t" />
-
-                {/* Danger / Logout */}
-                <div className="py-1">
-                  <button
-                    onClick={() => setShowDeleteModal(true)}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
-                  >
-                    <FiTrash2 size={16} />
-                    Delete Account
-                  </button>
-                  <button
-                    onClick={() => {
-                      dispatch(logout());
-                      router.push("/");
-                    }}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                  >
-                    <FiLogOut size={16} />
-                    Sign Out
-                  </button>
-                </div>
+        {/* Menu list */}
+        <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-4">
+          {menuItems.map((item, index) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 transition-colors ${
+                index !== 0 ? "border-t border-gray-100" : ""
+              }`}
+            >
+              <div className="w-8 h-8 rounded-full bg-primary-50 flex items-center justify-center flex-shrink-0">
+                <item.icon className="text-primary-500" size={16} />
               </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-800">
+                  {item.label}
+                </p>
+                <p className="text-xs text-gray-400">{item.desc}</p>
+              </div>
+              <FiChevronRight className="text-gray-300 flex-shrink-0" size={16} />
+            </Link>
+          ))}
+        </div>
+
+        {/* Danger actions */}
+        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+          <button
+            onClick={() => setShowDeleteModal(true)}
+            className="w-full flex items-center gap-3 px-4 py-3.5 text-red-500 hover:bg-red-50 transition-colors"
+          >
+            <div className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center flex-shrink-0">
+              <FiTrash2 className="text-red-400" size={16} />
             </div>
-
-            {/* Main Content */}
-            <div className="lg:col-span-3">
-              {/* Profile Tab */}
-              {activeTab === "profile" && (
-                <div className="bg-white rounded-2xl shadow-sm p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-base font-bold text-gray-800">
-                      Personal Information
-                    </h2>
-                    {!isEditing ? (
-                      <button
-                        onClick={() => setIsEditing(true)}
-                        className="flex items-center gap-2 px-4 py-2 text-primary-500 hover:bg-primary-50 rounded-lg transition-colors"
-                      >
-                        <FiEdit2 size={18} />
-                        Edit
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => setIsEditing(false)}
-                        className="flex items-center gap-2 px-4 py-2 text-gray-500 hover:bg-gray-50 rounded-lg transition-colors"
-                      >
-                        <FiX size={18} />
-                        Cancel
-                      </button>
-                    )}
-                  </div>
-
-                  <form onSubmit={handleProfileSubmit}>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          First Name
-                        </label>
-                        <div className="relative">
-                          <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                          <input
-                            type="text"
-                            name="firstName"
-                            value={profileData.firstName}
-                            onChange={handleProfileChange}
-                            disabled={!isEditing}
-                            className={`w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white ${
-                              !isEditing ? "bg-gray-50" : ""
-                            }`}
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Last Name
-                        </label>
-                        <input
-                          type="text"
-                          name="lastName"
-                          value={profileData.lastName}
-                          onChange={handleProfileChange}
-                          disabled={!isEditing}
-                          className={`w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white ${
-                            !isEditing ? "bg-gray-50" : ""
-                          }`}
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Email Address
-                        </label>
-                        <div className="relative">
-                          <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                          <input
-                            type="email"
-                            name="email"
-                            value={profileData.email}
-                            onChange={handleProfileChange}
-                            disabled={!isEditing}
-                            className={`w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white ${
-                              !isEditing ? "bg-gray-50" : ""
-                            }`}
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Phone Number
-                        </label>
-                        <div className="relative">
-                          <FiPhone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                          <input
-                            type="tel"
-                            name="phone"
-                            value={profileData.phone}
-                            onChange={handleProfileChange}
-                            disabled={!isEditing}
-                            className={`w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 ${
-                              !isEditing ? "bg-gray-50" : ""
-                            }`}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {isEditing && (
-                      <button
-                        type="submit"
-                        disabled={loading}
-                        className="mt-6 px-6 py-3 btn-gradient rounded-xl font-semibold flex items-center gap-2"
-                      >
-                        <FiSave />
-                        Save Changes
-                      </button>
-                    )}
-                  </form>
-                </div>
-              )}
-
-              {/* Security Tab */}
-              {activeTab === "security" && (
-                <div className="space-y-6">
-                  <div className="bg-white rounded-2xl shadow-sm p-6">
-                    <h2 className="text-base font-bold text-gray-800 mb-6">
-                      Change Password
-                    </h2>
-                    <form onSubmit={handlePasswordSubmit} className="max-w-md">
-                      <div className="space-y-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Current Password
-                          </label>
-                          <div className="relative">
-                            <FiLock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                            <input
-                              type={showCurrentPassword ? "text" : "password"}
-                              name="currentPassword"
-                              value={passwordData.currentPassword}
-                              onChange={handlePasswordChange}
-                              className="w-full pl-11 pr-12 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white"
-                              required
-                            />
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setShowCurrentPassword(!showCurrentPassword)
-                              }
-                              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
-                            >
-                              {showCurrentPassword ? <FiEyeOff /> : <FiEye />}
-                            </button>
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            New Password
-                          </label>
-                          <div className="relative">
-                            <FiLock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                            <input
-                              type={showNewPassword ? "text" : "password"}
-                              name="newPassword"
-                              value={passwordData.newPassword}
-                              onChange={handlePasswordChange}
-                              className="w-full pl-11 pr-12 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white"
-                              required
-                            />
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setShowNewPassword(!showNewPassword)
-                              }
-                              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
-                            >
-                              {showNewPassword ? <FiEyeOff /> : <FiEye />}
-                            </button>
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Confirm New Password
-                          </label>
-                          <div className="relative">
-                            <FiLock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                            <input
-                              type={showConfirmPassword ? "text" : "password"}
-                              name="confirmPassword"
-                              value={passwordData.confirmPassword}
-                              onChange={handlePasswordChange}
-                              className="w-full pl-11 pr-12 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white"
-                              required
-                            />
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setShowConfirmPassword(!showConfirmPassword)
-                              }
-                              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
-                            >
-                              {showConfirmPassword ? <FiEyeOff /> : <FiEye />}
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-
-                      <button
-                        type="submit"
-                        className="mt-6 px-6 py-3 btn-gradient rounded-xl font-semibold flex items-center gap-2"
-                      >
-                        <FiShield />
-                        Update Password
-                      </button>
-                    </form>
-                  </div>
-
-                  {/* Danger Zone */}
-                  <div className="bg-white rounded-2xl shadow-sm p-6 border-2 border-red-100">
-                    {" "}
-                    <h2 className="text-base font-bold text-red-600 mb-4">
-                      Danger Zone
-                    </h2>
-                    <p className="text-gray-600 mb-4">
-                      Once you delete your account, there is no going back.
-                      Please be certain.
-                    </p>
-                    <button
-                      onClick={() => setShowDeleteModal(true)}
-                      className="px-6 py-3 bg-red-500 text-white rounded-xl font-semibold flex items-center gap-2 hover:bg-red-600 transition-colors"
-                    >
-                      <FiTrash2 />
-                      Delete Account
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Notifications Tab */}
-              {activeTab === "notifications" && (
-                <div className="bg-white rounded-2xl shadow-sm p-6">
-                  <h2 className="text-base font-bold text-gray-800 mb-6">
-                    Notification Preferences
-                  </h2>
-                  <div className="space-y-4">
-                    {[
-                      {
-                        key: "orderUpdates",
-                        title: "Order Updates",
-                        description:
-                          "Get notified about your order status changes",
-                        icon: FiPackage,
-                      },
-                      {
-                        key: "promotions",
-                        title: "Promotions & Offers",
-                        description:
-                          "Receive updates about sales and special offers",
-                        icon: FiCreditCard,
-                      },
-                      {
-                        key: "newsletter",
-                        title: "Newsletter",
-                        description: "Weekly fashion tips and new arrivals",
-                        icon: FiMail,
-                      },
-                      {
-                        key: "smsAlerts",
-                        title: "SMS Alerts",
-                        description: "Get order updates via SMS",
-                        icon: FiPhone,
-                      },
-                    ].map((item) => (
-                      <div
-                        key={item.key}
-                        className="flex items-center justify-between p-4 border border-gray-200 rounded-xl hover:border-primary-300 transition-colors"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className="p-3 bg-gray-100 rounded-xl">
-                            <item.icon className="text-gray-600" size={20} />
-                          </div>
-                          <div>
-                            <h3 className="font-semibold text-gray-800">
-                              {item.title}
-                            </h3>
-                            <p className="text-sm text-gray-500">
-                              {item.description}
-                            </p>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => handleNotificationChange(item.key)}
-                          className={`relative w-12 h-6 rounded-full transition-colors ${
-                            notifications[item.key]
-                              ? "bg-primary-500"
-                              : "bg-gray-300"
-                          }`}
-                        >
-                          <span
-                            className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${
-                              notifications[item.key]
-                                ? "translate-x-6"
-                                : "translate-x-0"
-                            }`}
-                          />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Newsletter Tab */}
-              {activeTab === "newsletter" && (
-                <div className="bg-white rounded-2xl shadow-sm p-6">
-                  <h2 className="text-lg font-bold text-gray-800 mb-1">
-                    Newsletter
-                  </h2>
-                  <p className="text-sm text-gray-500 mb-6">
-                    Get weekly fashion tips, new arrivals and exclusive deals
-                    straight to your inbox.
-                  </p>
-                  <div className="flex items-center justify-between p-4 border border-gray-200 rounded-xl hover:border-primary-300 transition-colors">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 bg-gray-100 rounded-xl">
-                        <FiMail className="text-gray-600" size={20} />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-sm text-gray-800">
-                          Email Newsletter
-                        </h3>
-                        <p className="text-xs text-gray-500 mt-0.5">
-                          {profileData.email}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span
-                        className={`text-xs font-medium ${
-                          newsletterSubscribed
-                            ? "text-primary-600"
-                            : "text-gray-400"
-                        }`}
-                      >
-                        {newsletterSubscribed ? "On" : "Off"}
-                      </span>
-                      <button
-                        onClick={handleNewsletterToggle}
-                        disabled={newsletterLoading}
-                        aria-label={
-                          newsletterSubscribed
-                            ? "Unsubscribe from newsletter"
-                            : "Subscribe to newsletter"
-                        }
-                        className={`relative w-12 h-6 rounded-full transition-colors disabled:opacity-50 ${
-                          newsletterSubscribed ? "bg-primary-500" : "bg-gray-300"
-                        }`}
-                      >
-                        <span
-                          className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${
-                            newsletterSubscribed
-                              ? "translate-x-6"
-                              : "translate-x-0"
-                          }`}
-                        />
-                      </button>
-                    </div>
-                  </div>
-                  <p
-                    className={`mt-4 text-sm flex items-center gap-2 ${
-                      newsletterSubscribed ? "text-green-600" : "text-gray-400"
-                    }`}
-                  >
-                    <FiCheckCircle size={14} />
-                    {newsletterSubscribed
-                      ? "You're subscribed. We'll send updates to your inbox."
-                      : "Toggle the switch above to subscribe."}
-                  </p>
-                </div>
-              )}
+            <span className="text-sm font-medium">Delete Account</span>
+          </button>
+          <div className="border-t border-gray-100" />
+          <button
+            onClick={() => {
+              dispatch(logout());
+              router.push("/");
+            }}
+            className="w-full flex items-center gap-3 px-4 py-3.5 text-red-600 hover:bg-red-50 transition-colors"
+          >
+            <div className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center flex-shrink-0">
+              <FiLogOut className="text-red-500" size={16} />
             </div>
-          </div>
+            <span className="text-sm font-medium">Sign Out</span>
+          </button>
         </div>
       </div>
 
-      {/* Delete Account Confirmation Modal */}
+      {/* Delete Account Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
           <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
@@ -816,13 +155,10 @@ const Profile = () => {
                 Delete Account
               </h2>
             </div>
-
             <p className="text-gray-600 text-sm mb-4">
               This action is <strong>permanent and cannot be undone</strong>.
               All your personal data will be removed.
             </p>
-
-            {/* Password confirmation — required for all users */}
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Confirm your password
@@ -835,7 +171,6 @@ const Profile = () => {
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400 text-gray-900"
               />
             </div>
-
             <div className="flex gap-3">
               <button
                 onClick={() => {
@@ -853,7 +188,7 @@ const Profile = () => {
               >
                 {deleteLoading ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />{" "}
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     Deleting...
                   </>
                 ) : (

@@ -1,4 +1,3 @@
-"use client";
 import CustomerLayout from "../../client/src/layouts/CustomerLayout";
 import FAQ from "../../client/src/pages/customer/FAQ";
 

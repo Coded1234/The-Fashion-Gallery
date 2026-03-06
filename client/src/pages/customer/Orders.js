@@ -13,7 +13,6 @@ import {
   FiChevronRight,
   FiSearch,
   FiFilter,
-  FiCalendar,
   FiShoppingBag,
   FiEye,
   FiRefreshCw,
@@ -230,48 +229,24 @@ const Orders = () => {
                   className="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow"
                 >
                   {/* Order Header */}
-                  <div className="p-4 md:p-6 border-b border-gray-100">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                      <div className="flex items-start gap-4">
-                        <div
-                          className={`p-2 rounded-xl ${getStatusColor(
-                            order.status,
-                          )}`}
-                        >
-                          <StatusIcon size={18} />
+                  <div className="px-4 md:px-6 pt-4 pb-3 border-b border-gray-100">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className={`p-2 rounded-xl ${getStatusColor(order.status)}`}>
+                          <StatusIcon size={16} />
                         </div>
                         <div>
-                          <p className="text-xs text-gray-500">Order Number</p>
-                          <p className="font-bold text-gray-800 text-xs break-all">
-                            {order.orderNumber ||
-                              `#${order.id.slice(-8).toUpperCase()}`}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-wrap items-center gap-4 md:gap-8">
-                        <div>
-                          <p className="text-xs text-gray-500">Date</p>
-                          <p className="font-medium text-gray-800 flex items-center gap-1 text-xs">
-                            <FiCalendar size={12} />
-                            {formatDate(order.createdAt)}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500">Total</p>
                           <p className="font-bold text-gray-800 text-xs">
-                            {formatPrice(order.totalAmount)}
+                            {order.orderNumber || `#${order.id.slice(-8).toUpperCase()}`}
+                            <span className="font-normal text-gray-400 mx-1.5">·</span>
+                            <span className="font-normal text-gray-500">{formatDate(order.createdAt)}</span>
                           </p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500 mb-1">Status</p>
-                          <span
-                            className={`px-2 py-0.5 rounded-full text-xs font-medium capitalize ${getStatusColor(
-                              order.status,
-                            )}`}
-                          >
-                            {order.status}
-                          </span>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span className="font-bold text-gray-800 text-sm">{formatPrice(order.totalAmount)}</span>
+                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium capitalize ${getStatusColor(order.status)}`}>
+                              {order.status}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -330,76 +305,7 @@ const Orders = () => {
                     </div>
                   </Link>
 
-                  {/* Order Progress */}
-                  <div className="px-4 md:px-6 pb-4">
-                    {order.status === "cancelled" ? (
-                      // Cancelled order progress
-                      <div>
-                        <div className="flex items-center gap-2 pt-4 px-2">
-                          <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
-                          <div className="flex-1 h-0.5 rounded bg-red-500" />
-                          <div className="w-2.5 h-2.5 rounded-full bg-red-500 ring-3 ring-red-100" />
-                          <div className="flex-1 h-0.5 rounded bg-gray-200" />
-                          <div className="w-2.5 h-2.5 rounded-full bg-gray-200" />
-                        </div>
-                        <div className="flex justify-between mt-2.5 text-[10px] text-gray-500 px-1">
-                          <span>Confirmed</span>
-                          <span className="text-red-500 font-medium">
-                            Cancelled
-                          </span>
-                          <span>Delivered</span>
-                        </div>
-                      </div>
-                    ) : (
-                      // Normal order progress
-                      <div>
-                        <div className="flex items-center gap-2 pt-4 px-2">
-                          {["confirmed", "shipped", "delivered"].map(
-                            (step, index) => {
-                              const steps = [
-                                "pending",
-                                "confirmed",
-                                "shipped",
-                                "delivered",
-                              ];
-                              const currentIndex = steps.indexOf(order.status);
-                              const stepIndex = steps.indexOf(step);
-                              const isCompleted = stepIndex <= currentIndex;
-                              const isCurrent = stepIndex === currentIndex;
 
-                              return (
-                                <React.Fragment key={step}>
-                                  <div
-                                    className={`w-2.5 h-2.5 rounded-full transition-all ${
-                                      isCompleted
-                                        ? "bg-primary-500"
-                                        : "bg-gray-200"
-                                    } ${
-                                      isCurrent ? "ring-3 ring-primary-100" : ""
-                                    }`}
-                                  />
-                                  {index < 2 && (
-                                    <div
-                                      className={`flex-1 h-0.5 rounded ${
-                                        stepIndex < currentIndex
-                                          ? "bg-primary-500"
-                                          : "bg-gray-200"
-                                      }`}
-                                    />
-                                  )}
-                                </React.Fragment>
-                              );
-                            },
-                          )}
-                        </div>
-                        <div className="flex justify-between mt-2.5 text-[10px] text-gray-500 px-1">
-                          <span>Confirmed</span>
-                          <span>Shipped</span>
-                          <span>Delivered</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
                 </div>
               );
             })}

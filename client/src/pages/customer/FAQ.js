@@ -228,14 +228,14 @@ const FAQ = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-[var(--bg)] py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gold-light mb-3">
             Frequently Asked Questions
           </h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-gray-600 dark:text-primary-300 max-w-2xl mx-auto">
             Find answers to common questions about orders, shipping, returns,
             payments, and more. Can't find what you're looking for? Contact our
             support team.

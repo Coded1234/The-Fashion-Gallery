@@ -68,10 +68,10 @@ const Newsletter = () => {
             >
               <FiBell className="text-primary-500" size={40} />
             </motion.div>
-            <h1 className="text-4xl font-bold text-white mb-4">
+            <h1 className="text-2xl md:text-3xl font-bold text-white mb-3">
               Stay in the Loop
             </h1>
-            <p className="text-primary-100 text-lg max-w-2xl mx-auto">
+            <p className="text-primary-100 text-sm max-w-2xl mx-auto">
               Subscribe to our newsletter and be the first to know about new
               arrivals, exclusive deals, and fashion tips.
             </p>
@@ -145,6 +145,35 @@ const Newsletter = () => {
                       </p>
                     </div>
                   </div>
+                </div>
+
+                {/* What to Expect */}
+                <div className="mb-8 bg-primary-50 dark:bg-primary-900/20 rounded-xl p-5">
+                  <h2 className="text-base font-bold text-gray-900 dark:text-white mb-3">
+                    What you'll receive
+                  </h2>
+                  <ul className="space-y-2 text-sm text-gray-700 dark:text-primary-200">
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary-500 font-bold mt-0.5">✓</span>
+                      <span>Early access to new collections before anyone else</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary-500 font-bold mt-0.5">✓</span>
+                      <span>Members-only promo codes and flash sale alerts</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary-500 font-bold mt-0.5">✓</span>
+                      <span>Weekly style guides and seasonal outfit ideas</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary-500 font-bold mt-0.5">✓</span>
+                      <span>Behind-the-scenes content and brand news</span>
+                    </li>
+                  </ul>
+                  <p className="mt-4 text-xs text-gray-500 dark:text-primary-400 flex items-center gap-1.5">
+                    <span>📅</span>
+                    <span>We send 2–4 emails per month — no spam, ever. Unsubscribe in one click.</span>
+                  </p>
                 </div>
 
                 {/* Subscription Form */}
