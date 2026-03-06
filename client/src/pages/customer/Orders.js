@@ -232,18 +232,29 @@ const Orders = () => {
                   <div className="px-4 md:px-6 pt-4 pb-3 border-b border-gray-100">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-xl ${getStatusColor(order.status)}`}>
+                        <div
+                          className={`p-2 rounded-xl ${getStatusColor(order.status)}`}
+                        >
                           <StatusIcon size={16} />
                         </div>
                         <div>
                           <p className="font-bold text-gray-800 text-xs">
-                            {order.orderNumber || `#${order.id.slice(-8).toUpperCase()}`}
-                            <span className="font-normal text-gray-400 mx-1.5">·</span>
-                            <span className="font-normal text-gray-500">{formatDate(order.createdAt)}</span>
+                            {order.orderNumber ||
+                              `#${order.id.slice(-8).toUpperCase()}`}
+                            <span className="font-normal text-gray-400 mx-1.5">
+                              ·
+                            </span>
+                            <span className="font-normal text-gray-500">
+                              {formatDate(order.createdAt)}
+                            </span>
                           </p>
                           <div className="flex items-center gap-2 mt-0.5">
-                            <span className="font-bold text-gray-800 text-sm">{formatPrice(order.totalAmount)}</span>
-                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium capitalize ${getStatusColor(order.status)}`}>
+                            <span className="font-bold text-gray-800 text-sm">
+                              {formatPrice(order.totalAmount)}
+                            </span>
+                            <span
+                              className={`px-2 py-0.5 rounded-full text-xs font-medium capitalize ${getStatusColor(order.status)}`}
+                            >
                               {order.status}
                             </span>
                           </div>
@@ -304,8 +315,6 @@ const Orders = () => {
                       </div>
                     </div>
                   </Link>
-
-
                 </div>
               );
             })}

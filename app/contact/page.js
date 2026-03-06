@@ -6,7 +6,9 @@ import Contact from "../../client/src/pages/customer/Contact";
 export default function ContactPage() {
   return (
     <CustomerLayout>
-      <Suspense><Contact /></Suspense>
+      <Suspense>
+        <Contact />
+      </Suspense>
     </CustomerLayout>
   );
 }

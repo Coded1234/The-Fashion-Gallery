@@ -5,16 +5,16 @@ import { ThemeProvider } from "../client/src/context/ThemeContext";
 import { AnnouncementsProvider } from "../client/src/context/AnnouncementsContext";
 import { store } from "../client/src/redux/store";
 
-const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "744124620366-lpmacc6siit1fud76trnd2frmdfq0q29.apps.googleusercontent.com";
+const googleClientId =
+  process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ||
+  "744124620366-lpmacc6siit1fud76trnd2frmdfq0q29.apps.googleusercontent.com";
 
 export function Providers({ children }) {
   return (
     <GoogleOAuthProvider clientId={googleClientId}>
       <Provider store={store}>
         <ThemeProvider>
-          <AnnouncementsProvider>
-            {children}
-          </AnnouncementsProvider>
+          <AnnouncementsProvider>{children}</AnnouncementsProvider>
         </ThemeProvider>
       </Provider>
     </GoogleOAuthProvider>

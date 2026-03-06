@@ -148,7 +148,9 @@ const SizeGuidePage = () => {
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gold-light mb-3">Size Guide</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gold-light mb-3">
+            Size Guide
+          </h1>
           <p className="text-gray-600 dark:text-primary-300 max-w-2xl mx-auto">
             Find your perfect fit with our comprehensive size charts. Measure
             yourself and compare to our guides for the best fit.

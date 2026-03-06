@@ -155,7 +155,7 @@ const Home = () => {
           {" "}
           <div className="text-center mb-5">
             {" "}
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 dark:text-gold-light mb-4">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 dark:text-gold-light mb-4">
               {" "}
               Shop by Category{" "}
             </h2>{" "}
@@ -453,7 +453,7 @@ const Home = () => {
           {" "}
           <div className="text-center mb-12">
             {" "}
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 dark:text-gold-light mb-4">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 dark:text-gold-light mb-4">
               {" "}
               Follow Us on Instagram{" "}
             </h2>{" "}

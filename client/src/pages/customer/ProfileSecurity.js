@@ -14,13 +14,23 @@ import {
   FiChevronLeft,
 } from "react-icons/fi";
 
-const PasswordField = ({ label, name, show, onToggle, passwordData, onChange }) => (
+const PasswordField = ({
+  label,
+  name,
+  show,
+  onToggle,
+  passwordData,
+  onChange,
+}) => (
   <div>
     <label className="block text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">
       {label}
     </label>
     <div className="relative">
-      <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={15} />
+      <FiLock
+        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+        size={15}
+      />
       <input
         type={show ? "text" : "password"}
         name={name}
@@ -78,7 +88,11 @@ const ProfileSecurity = () => {
         newPassword: passwordData.newPassword,
       });
       toast.success("Password changed successfully!");
-      setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
+      setPasswordData({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to change password");
     }
@@ -120,7 +134,9 @@ const ProfileSecurity = () => {
         <div className="bg-white rounded-xl shadow-sm p-5">
           <div className="flex items-center gap-2 mb-4">
             <FiShield className="text-primary-500" size={18} />
-            <h2 className="text-sm font-semibold text-gray-800">Change Password</h2>
+            <h2 className="text-sm font-semibold text-gray-800">
+              Change Password
+            </h2>
           </div>
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
             <PasswordField
@@ -159,9 +175,12 @@ const ProfileSecurity = () => {
 
         {/* Danger Zone */}
         <div className="bg-white rounded-xl shadow-sm p-5 border border-red-100">
-          <h2 className="text-sm font-semibold text-red-600 mb-1">Danger Zone</h2>
+          <h2 className="text-sm font-semibold text-red-600 mb-1">
+            Danger Zone
+          </h2>
           <p className="text-xs text-gray-500 mb-4">
-            Once you delete your account, there is no going back. Please be certain.
+            Once you delete your account, there is no going back. Please be
+            certain.
           </p>
           <button
             onClick={() => setShowDeleteModal(true)}
@@ -181,10 +200,13 @@ const ProfileSecurity = () => {
               <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center shrink-0">
                 <FiTrash2 className="text-red-600" size={18} />
               </div>
-              <h2 className="text-lg font-bold text-gray-900">Delete Account</h2>
+              <h2 className="text-lg font-bold text-gray-900">
+                Delete Account
+              </h2>
             </div>
             <p className="text-gray-600 text-sm mb-4">
-              This action is <strong>permanent and cannot be undone</strong>. All your data will be removed.
+              This action is <strong>permanent and cannot be undone</strong>.
+              All your data will be removed.
             </p>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -200,7 +222,10 @@ const ProfileSecurity = () => {
             </div>
             <div className="flex gap-3">
               <button
-                onClick={() => { setShowDeleteModal(false); setDeletePassword(""); }}
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setDeletePassword("");
+                }}
                 className="flex-1 py-3 border border-gray-300 rounded-xl font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
               >
                 Cancel
@@ -211,7 +236,10 @@ const ProfileSecurity = () => {
                 className="flex-1 py-3 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {deleteLoading ? (
-                  <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Deleting...</>
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />{" "}
+                    Deleting...
+                  </>
                 ) : (
                   <>Delete My Account</>
                 )}

@@ -154,25 +154,40 @@ const Newsletter = () => {
                   </h2>
                   <ul className="space-y-2 text-sm text-gray-700 dark:text-primary-200">
                     <li className="flex items-start gap-2">
-                      <span className="text-primary-500 font-bold mt-0.5">✓</span>
-                      <span>Early access to new collections before anyone else</span>
+                      <span className="text-primary-500 font-bold mt-0.5">
+                        ✓
+                      </span>
+                      <span>
+                        Early access to new collections before anyone else
+                      </span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-primary-500 font-bold mt-0.5">✓</span>
-                      <span>Members-only promo codes and flash sale alerts</span>
+                      <span className="text-primary-500 font-bold mt-0.5">
+                        ✓
+                      </span>
+                      <span>
+                        Members-only promo codes and flash sale alerts
+                      </span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-primary-500 font-bold mt-0.5">✓</span>
+                      <span className="text-primary-500 font-bold mt-0.5">
+                        ✓
+                      </span>
                       <span>Weekly style guides and seasonal outfit ideas</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-primary-500 font-bold mt-0.5">✓</span>
+                      <span className="text-primary-500 font-bold mt-0.5">
+                        ✓
+                      </span>
                       <span>Behind-the-scenes content and brand news</span>
                     </li>
                   </ul>
                   <p className="mt-4 text-xs text-gray-500 dark:text-primary-400 flex items-center gap-1.5">
                     <span>📅</span>
-                    <span>We send 2–4 emails per month — no spam, ever. Unsubscribe in one click.</span>
+                    <span>
+                      We send 2–4 emails per month — no spam, ever. Unsubscribe
+                      in one click.
+                    </span>
                   </p>
                 </div>
 
