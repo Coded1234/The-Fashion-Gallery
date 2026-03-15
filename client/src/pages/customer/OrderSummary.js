@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { fetchCart } from "../../redux/slices/cartSlice";
 import { getImageUrl } from "../../utils/imageUrl";
 import api from "../../utils/api";
+import { isGreaterAccra } from "../../utils/deliveryRegion";
 import toast from "react-hot-toast";
 import {
   FiArrowLeft,
@@ -41,10 +42,22 @@ const OrderSummary = () => {
     phone: orderData?.shippingAddress?.phone || "",
   });
 
-  // Payment method state
-  const [paymentMethod, setPaymentMethod] = useState(
-    orderData?.paymentMethod || "paystack",
-  );
+  // Pay on Delivery only available in Greater Accra
+  const codAvailable = isGreaterAccra(orderData?.shippingAddress);
+
+  // Payment method state (default paystack if COD not available)
+  const [paymentMethod, setPaymentMethod] = useState(() => {
+    const preferred = orderData?.paymentMethod || "paystack";
+    if (preferred === "cod" && !codAvailable) return "paystack";
+    return preferred;
+  });
+
+  // If COD not available and user had cod selected, keep paystack
+  React.useEffect(() => {
+    if (!codAvailable && paymentMethod === "cod") {
+      setPaymentMethod("paystack");
+    }
+  }, [codAvailable, paymentMethod]);
 
   // If no data, redirect back to checkout
   if (!orderData || !items) {
@@ -356,31 +369,39 @@ const OrderSummary = () => {
                   <FiShield className="text-green-500" size={24} />
                 </label>
 
-                {/* Pay on Delivery */}
-                <label
-                  className={`flex items-center gap-4 p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                    paymentMethod === "cod"
-                      ? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
-                      : "border-gray-300 hover:border-gray-400"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="cod"
-                    checked={paymentMethod === "cod"}
-                    onChange={(e) => setPaymentMethod(e.target.value)}
-                    className="w-5 h-5 text-primary-500"
-                  />
-                  <div className="flex-1">
-                    <p className="font-semibold text-gray-900 dark:text-gold-light">
-                      Pay on Delivery
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Pay when you receive your order
+                {/* Pay on Delivery — only for Greater Accra */}
+                {codAvailable ? (
+                  <label
+                    className={`flex items-center gap-4 p-4 border-2 rounded-xl cursor-pointer transition-all ${
+                      paymentMethod === "cod"
+                        ? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
+                        : "border-gray-300 hover:border-gray-400"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="cod"
+                      checked={paymentMethod === "cod"}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                      className="w-5 h-5 text-primary-500"
+                    />
+                    <div className="flex-1">
+                      <p className="font-semibold text-gray-900 dark:text-gold-light">
+                        Pay on Delivery
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Pay when you receive your order (Greater Accra only)
+                      </p>
+                    </div>
+                  </label>
+                ) : (
+                  <div className="p-4 border-2 border-gray-200 rounded-xl bg-gray-50 dark:bg-surface">
+                    <p className="text-sm text-gray-600 dark:text-primary-300">
+                      Pay on Delivery is only available for addresses in Greater Accra. For your location we accept Paystack (card or mobile money) above.
                     </p>
                   </div>
-                </label>
+                )}
               </div>
             </div>
 
@@ -526,7 +547,7 @@ const OrderSummary = () => {
                   <>
                     <FiCheckCircle className="w-5 h-5" />
                     <span>
-                      {orderData.paymentMethod === "paystack"
+                      {paymentMethod === "paystack"
                         ? "Pay Now"
                         : "Place Order"}
                     </span>
@@ -537,13 +558,13 @@ const OrderSummary = () => {
               {/* Payment Method Info */}
               <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                 <p className="text-xs text-gray-600 text-center">
-                  {orderData.paymentMethod === "paystack" && (
+                  {paymentMethod === "paystack" && (
                     <>
                       You will be redirected to Paystack secure payment gateway
                       to complete your payment.
                     </>
                   )}
-                  {orderData.paymentMethod === "cod" && (
+                  {paymentMethod === "cod" && (
                     <>Please have exact cash ready when your order arrives.</>
                   )}
                 </p>

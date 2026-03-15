@@ -424,21 +424,22 @@ async function getYangoDeliveryOptions(origin, destination) {
 }
 
 /**
- * Calculate shipping price based on distance (in GHS)
+ * Calculate shipping price based on distance (in GHS).
+ * First 3 km are free; fee is calculated on (distance - 3) km.
  */
 function calculatePriceByDistance(distanceKm) {
-  // Base pricing structure for Ghana
+  const effectiveKm = Math.max(0, distanceKm - 3); // Deduct 3 km before calculating fee
   const basePrice = 15; // GHS
   const pricePerKm = 2; // GHS per km
 
-  if (distanceKm <= 5) {
+  if (effectiveKm <= 5) {
     return Math.round(basePrice);
-  } else if (distanceKm <= 20) {
-    return Math.round(basePrice + distanceKm * pricePerKm);
-  } else if (distanceKm <= 50) {
-    return Math.round(basePrice + distanceKm * 1.8);
+  } else if (effectiveKm <= 20) {
+    return Math.round(basePrice + effectiveKm * pricePerKm);
+  } else if (effectiveKm <= 50) {
+    return Math.round(basePrice + effectiveKm * 1.8);
   } else {
-    return Math.round(basePrice + distanceKm * 1.5);
+    return Math.round(basePrice + effectiveKm * 1.5);
   }
 }
 

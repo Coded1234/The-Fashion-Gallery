@@ -141,10 +141,12 @@ const AddressMapPicker = ({ onAddressSelect, currentPosition }) => {
 
           setAddress(formattedAddress || data.display_name);
 
-          // Pass address data to parent
+          // Pass address data to parent (region = state in Ghana, e.g. Greater Accra)
+          const region = addr.state || addr.state_district || "";
           onAddressSelect({
             address: formattedAddress || data.display_name,
             city: addr.city || addr.town || addr.state || "Accra",
+            region: region,
             latitude: lat,
             longitude: lng,
             fullAddress: data.display_name,

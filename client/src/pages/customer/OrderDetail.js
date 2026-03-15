@@ -4,6 +4,7 @@ import Link from "next/link";
 import React, { useState, useEffect, useCallback } from "react";
 import api from "../../utils/api";
 import { getImageUrl } from "../../utils/imageUrl";
+import { isGreaterAccra } from "../../utils/deliveryRegion";
 import toast from "react-hot-toast";
 import {
   FiArrowLeft,
@@ -416,6 +417,41 @@ const OrderDetail = () => {
           </div>
         </div>
 
+        {/* Expected Delivery - show for all non-delivered, non-cancelled orders (including pending) */}
+        {status !== "cancelled" && status !== "delivered" && (
+          <div className="mb-6 p-4 bg-blue-50 rounded-xl border border-blue-100 flex items-center gap-3">
+            <FiCalendar className="text-blue-600 shrink-0" size={22} />
+            <p className="text-sm text-blue-800">
+              <strong>Expected delivery:</strong>{" "}
+              {isGreaterAccra(order.shippingAddress)
+                ? (() => {
+                    const orderDate = new Date(order.createdAt);
+                    const day = orderDate.getDay(); // 0 = Sunday, 6 = Saturday
+                    const hour = orderDate.getHours();
+                    let deliveryDate = new Date(orderDate);
+                    const isWeekend = day === 0 || day === 6;
+                    if (isWeekend) {
+                      if (hour < 6 || hour >= 12) {
+                        deliveryDate.setDate(orderDate.getDate() + 1);
+                      }
+                    } else {
+                      if (hour >= 6 && hour < 18) {
+                        deliveryDate.setDate(orderDate.getDate() + 1);
+                      } else if (hour >= 18) {
+                        deliveryDate.setDate(orderDate.getDate() + 1);
+                      }
+                    }
+                    return deliveryDate.toLocaleDateString("en-GH", {
+                      weekday: "long",
+                      month: "long",
+                      day: "numeric",
+                    });
+                  })()
+                : "Within 3 to 5 business days"}
+            </p>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
@@ -480,43 +516,6 @@ const OrderDetail = () => {
                     })}
                   </div>
                 </div>
-
-                {/* Estimated Delivery */}
-                {status !== "delivered" && (
-                  <div className="mt-8 p-4 bg-blue-50 rounded-xl">
-                    <p className="text-sm text-blue-800">
-                      <strong>Estimated Delivery:</strong>{" "}
-                      {(() => {
-                        const orderDate = new Date(order.createdAt);
-                        const day = orderDate.getDay(); // 0 = Sunday, 6 = Saturday
-                        const hour = orderDate.getHours();
-
-                        let deliveryDate = new Date(orderDate);
-
-                        // Weekend logic (Saturday = 6, Sunday = 0)
-                        if (day === 0 || day === 6) {
-                          // Orders between 12am and 2pm on weekends → same day
-                          if (hour < 14) {
-                            // Same day delivery
-                            deliveryDate = orderDate;
-                          } else {
-                            // After 2pm → next day
-                            deliveryDate.setDate(orderDate.getDate() + 1);
-                          }
-                        } else {
-                          // Weekdays → next day delivery
-                          deliveryDate.setDate(orderDate.getDate() + 1);
-                        }
-
-                        return deliveryDate.toLocaleDateString("en-GH", {
-                          weekday: "long",
-                          month: "long",
-                          day: "numeric",
-                        });
-                      })()}
-                    </p>
-                  </div>
-                )}
               </div>
             )}
 
