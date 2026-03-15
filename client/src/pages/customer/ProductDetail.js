@@ -2,6 +2,7 @@
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import React, { useEffect, useState, useCallback } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchProductById,
@@ -322,11 +323,18 @@ const ProductDetail = ({
                 }
               }}
             >
-              <img
-                src={getProductImage(product, selectedImage)}
-                alt={product.name}
-                className="w-full h-full object-cover"
-              />
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={`${product.id || "product"}-${selectedImage}`}
+                  src={getProductImage(product, selectedImage)}
+                  alt={product.name}
+                  initial={{ opacity: 0.18, scale: 1.01 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.32, ease: "easeInOut" }}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              </AnimatePresence>
               {discountPercent > 0 && (
                 <span className="absolute top-4 left-4 bg-red-500 text-white text-sm font-medium px-3 py-1 rounded-full">
                   -{discountPercent}% OFF
