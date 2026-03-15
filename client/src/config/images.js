@@ -25,6 +25,20 @@ const IMAGES = {
     women: "/images/women.jpg?w=500",
   },
 
+  // Rotating category card images (homepage)
+  categorySlides: {
+    men: [
+      "/images/men.jpg?w=500",
+      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500",
+      "https://images.unsplash.com/photo-1516257984-b1b4d707412e?w=500",
+    ],
+    women: [
+      "/images/women.jpg?w=500",
+      "https://images.unsplash.com/photo-1485230895905-ec40ba36b9bc?w=500",
+      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500",
+    ],
+  },
+
   // Trending section images
   trending: {
     small: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=500",

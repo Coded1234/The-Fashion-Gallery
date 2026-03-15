@@ -101,8 +101,6 @@ const Footer = () => {
                 href="https://www.instagram.com/diamondvoguegallery/?hl=it"
                 target="_blank"
                 rel="noopener noreferrer"
-                target="_blank"
-                rel="noopener noreferrer"
                 className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-primary-500 transition-colors"
                 aria-label="Instagram"
               >

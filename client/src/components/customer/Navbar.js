@@ -194,28 +194,36 @@ const Navbar = () => {
   return (
     <nav className="bg-white dark:bg-surface shadow-md sticky top-0 z-50">
       {/* Top Bar */}
-      <div className="bg-gray-900 text-white text-sm py-2 overflow-hidden">
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <div className="relative h-5 flex-1 overflow-hidden">
-            <AnimatePresence mode="wait">
-              <motion.p
-                key={promoIndex}
-                initial={{ x: 100, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: -100, opacity: 0 }}
-                transition={{ duration: 0.5, ease: "easeInOut" }}
-                className="absolute whitespace-nowrap"
-              >
-                {promoMessages[promoIndex]}
-              </motion.p>
-            </AnimatePresence>
+      <div className="bg-[linear-gradient(120deg,#0b1326_0%,#101113_50%,#1b1608_100%)] border-b border-amber-200/15 text-white overflow-hidden">
+        <div className="container mx-auto px-3 sm:px-4 py-1.5 sm:py-2 flex items-center justify-between gap-3">
+          <div className="flex items-center min-w-0 flex-1 gap-2 sm:gap-3">
+            <span className="inline-flex h-6 items-center rounded-full border border-amber-300/40 bg-amber-300/10 px-2.5 text-[10px] sm:text-[11px] font-semibold tracking-[0.14em] uppercase text-amber-200 flex-shrink-0">
+              News
+            </span>
+            <div className="relative h-5 flex-1 overflow-hidden">
+              <AnimatePresence mode="wait">
+                <motion.p
+                  key={promoIndex}
+                  initial={{ y: 8, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -8, opacity: 0 }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
+                  className="absolute inset-0 flex items-center text-xs sm:text-sm text-white/90 truncate"
+                >
+                  {promoMessages[promoIndex]}
+                </motion.p>
+              </AnimatePresence>
+            </div>
           </div>
-          <div className="hidden md:flex gap-4 flex-shrink-0 ml-4">
-            <Link href="/orders" className="hover:text-primary-400">
+          <div className="hidden md:flex items-center gap-4 text-xs text-white/80 flex-shrink-0">
+            <Link
+              href="/orders"
+              className="hover:text-amber-200 transition-colors"
+            >
               Track Order
             </Link>
-            <span>|</span>
-            <span>📞 +233200620026</span>
+            <span className="text-white/40">|</span>
+            <span>+233200620026</span>
           </div>
         </div>
       </div>

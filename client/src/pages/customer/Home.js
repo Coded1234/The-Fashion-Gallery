@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchFeaturedProducts } from "../../redux/slices/productSlice";
 import ProductCard from "../../components/customer/ProductCard";
@@ -16,10 +17,15 @@ import {
 import api from "../../utils/api";
 const Home = () => {
   const dispatch = useDispatch();
+  const shouldReduceMotion = useReducedMotion();
   const { featuredProducts, loading } = useSelector((state) => state.products);
   const [testimonials, setTestimonials] = useState([]);
   const [testimonialsLoading, setTestimonialsLoading] = useState(true);
   const [activeCoupon, setActiveCoupon] = useState(null);
+  const [categoryImageIndexes, setCategoryImageIndexes] = useState({
+    Men: 0,
+    Women: 0,
+  });
   useEffect(() => {
     dispatch(fetchFeaturedProducts());
     fetchTestimonials();
@@ -46,9 +52,35 @@ const Home = () => {
     }
   };
   const categories = [
-    { name: "Men", image: IMAGES.categories.men, path: "/shop/men" },
-    { name: "Women", image: IMAGES.categories.women, path: "/shop/women" },
+    {
+      name: "Men",
+      images: IMAGES.categorySlides?.men || [IMAGES.categories.men],
+      path: "/shop/men",
+    },
+    {
+      name: "Women",
+      images: IMAGES.categorySlides?.women || [IMAGES.categories.women],
+      path: "/shop/women",
+    },
   ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCategoryImageIndexes((prev) => {
+        const nextIndexes = { ...prev };
+        categories.forEach((category) => {
+          const totalImages = category.images.length;
+          if (totalImages > 1) {
+            nextIndexes[category.name] =
+              ((prev[category.name] || 0) + 1) % totalImages;
+          }
+        });
+        return nextIndexes;
+      });
+    }, 3500);
+
+    return () => clearInterval(interval);
+  }, []);
   const features = [
     { icon: FiTruck, title: "Free Shipping", desc: "On orders over GH₵1,000" },
     { icon: FiShield, title: "Secure Payment", desc: "100% secure checkout" },
@@ -58,95 +90,70 @@ const Home = () => {
     <div className="min-h-screen">
       {" "}
       {/* Hero Section */}{" "}
-      <section className="relative h-[420px] sm:h-[600px] bg-gradient-to-r from-gray-900 to-gray-800 overflow-hidden">
-        {" "}
+      <section className="relative min-h-[440px] sm:min-h-[620px] overflow-hidden bg-[#111111]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_24%,rgba(250,204,21,0.18),transparent_40%),radial-gradient(circle_at_84%_20%,rgba(234,179,8,0.16),transparent_36%),linear-gradient(120deg,#111111_0%,#181818_52%,#252525_100%)]"></div>
         <div className="absolute inset-0">
-          {" "}
           <img
             src={IMAGES.hero.main}
             alt="Hero"
-            className="w-full h-full object-cover opacity-40"
-          />{" "}
-        </div>{" "}
-        <div className="relative container mx-auto px-4 h-full flex items-center">
-          {" "}
-          <div className="max-w-2xl text-white animate-fade-in">
-            {" "}
-            <p className="text-primary-300 dark:text-primary-200 font-medium mb-3 tracking-wider uppercase text-xs sm:text-sm">
-              {" "}
-              New Collection 2026{" "}
-            </p>{" "}
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 leading-tight drop-shadow-lg">
-              {" "}
-              Discover Your{" "}
-              <span className="block gradient-text drop-shadow-lg">
-                {" "}
-                Perfect Style{" "}
-              </span>{" "}
-            </h1>{" "}
-            <p className="text-xs sm:text-base md:text-xl text-gray-200 dark:text-gold-light mb-5 drop-shadow-md leading-relaxed">
-              {" "}
-              Explore our latest collection of premium clothing. Quality fashion
-              for everyone.{" "}
-            </p>{" "}
-            <div className="flex gap-3 flex-wrap mt-4 sm:mt-6">
-              {" "}
+            className="w-full h-full object-cover opacity-30"
+          />
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-transparent"></div>
+        <div className="relative container mx-auto px-4 py-12 sm:py-16 min-h-[440px] sm:min-h-[620px] flex items-center">
+          <div className="max-w-2xl text-white animate-reveal">
+            <span className="inline-flex items-center rounded-full border border-amber-300/35 bg-amber-200/10 px-3 py-1 text-[11px] sm:text-xs font-semibold tracking-[0.14em] uppercase text-amber-200 mb-4">
+              New Collection 2026
+            </span>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 leading-tight">
+              Discover Your
+              <span className="block text-amber-200">Perfect Style</span>
+            </h1>
+            <p className="text-sm sm:text-base md:text-lg text-white/80 mb-7 leading-relaxed max-w-xl">
+              Explore our latest collection of premium clothing curated for
+              modern everyday wear.
+            </p>
+            <div className="flex flex-wrap items-center gap-3">
               <Link
                 href="/shop"
-                className="btn-gradient px-5 py-2.5 sm:px-8 sm:py-4 rounded-full font-semibold text-sm sm:text-lg inline-flex items-center gap-2 whitespace-nowrap"
+                className="inline-flex items-center gap-2 bg-white text-gray-900 px-5 py-3 sm:px-7 sm:py-3.5 rounded-full font-semibold text-sm sm:text-base hover:bg-amber-100 transition-colors"
               >
-                {" "}
-                Shop Now <FiArrowRight />{" "}
-              </Link>{" "}
+                Shop Now <FiArrowRight />
+              </Link>
               <Link
                 href="/shop"
-                className="px-5 py-2.5 sm:px-8 sm:py-4 border border-white/70 text-white/90 rounded-full font-medium text-sm sm:text-base hover:bg-white hover:text-gray-900 transition-colors whitespace-nowrap"
+                className="inline-flex items-center border border-white/35 bg-white/[0.04] text-white/90 px-5 py-3 sm:px-7 sm:py-3.5 rounded-full font-medium text-sm sm:text-base hover:bg-white/10 transition-colors"
               >
-                {" "}
-                View Collection{" "}
-              </Link>{" "}
-            </div>{" "}
-          </div>{" "}
-        </div>{" "}
-        {/* Decorative Elements */}{" "}
-        {/* Removed bottom white overlay to avoid extra white space under buttons */}{" "}
-        <div className="absolute bottom-0 left-0 right-0 h-0 bg-gradient-to-t from-white to-transparent"></div>{" "}
+                View Collection
+              </Link>
+            </div>
+          </div>
+        </div>
       </section>{" "}
       {/* Features Bar (centered) */}{" "}
-      <section className="bg-white dark:bg-secondary-500 py-6 border-b dark:border-secondary-600">
-        {" "}
-        <div className="container mx-auto px-4">
-          {" "}
-          <div className="grid grid-cols-3 gap-4 justify-items-center max-w-3xl mx-auto">
-            {" "}
+      <section className="relative py-8 bg-[#111111] overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(250,204,21,0.1),transparent_35%),radial-gradient(circle_at_88%_82%,rgba(234,179,8,0.08),transparent_40%)]"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid grid-cols-3 gap-3 sm:gap-4 max-w-5xl mx-auto motion-safe-stagger">
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="flex flex-col items-center gap-4 text-center p-2"
+                className="rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-sm p-3 sm:p-4 text-center"
+                style={{ "--reveal-delay": `${index * 90}ms` }}
               >
-                {" "}
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
-                  {" "}
-                  <feature.icon
-                    className="text-primary-500 dark:text-primary-300"
-                    size={18}
-                  />{" "}
-                </div>{" "}
-                <div>
-                  {" "}
-                  <h4 className="font-semibold text-sm sm:text-base whitespace-nowrap text-gray-800 dark:text-gold-light">
-                    {" "}
-                    {feature.title}{" "}
-                  </h4>{" "}
-                  <p className="text-xs sm:text-sm text-gray-500 dark:text-primary-300">
-                    {" "}
-                    {feature.desc}{" "}
-                  </p>{" "}
-                </div>{" "}
+                <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto rounded-full bg-amber-200/10 border border-amber-200/30 flex items-center justify-center mb-3">
+                  <feature.icon className="text-amber-200" size={18} />
+                </div>
+                <h4 className="font-semibold text-[13px] sm:text-base text-white leading-tight">
+                  {feature.title}
+                </h4>
+                <p className="text-[10px] sm:text-sm text-white/65 mt-1">
+                  {feature.desc}
+                </p>
               </div>
-            ))}{" "}
-          </div>{" "}
-        </div>{" "}
+            ))}
+          </div>
+        </div>
       </section>{" "}
       {/* Categories */}{" "}
       <section className="py-10 bg-gray-50 dark:bg-secondary-500">
@@ -164,20 +171,33 @@ const Home = () => {
               Browse our wide selection of clothing for men and women{" "}
             </p>{" "}
           </div>{" "}
-          <div className="grid grid-cols-2 gap-4 max-w-4xl mx-auto">
+          <div className="grid grid-cols-2 gap-4 max-w-4xl mx-auto motion-safe-stagger">
             {" "}
-            {categories.map((category) => (
+            {categories.map((category, index) => (
               <Link
                 key={category.name}
                 href={category.path}
                 className="group relative h-80 rounded-2xl overflow-hidden card-hover"
+                style={{ "--reveal-delay": `${index * 120}ms` }}
               >
-                {" "}
-                <img
-                  src={category.image}
-                  alt={category.name}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />{" "}
+                <div className="absolute inset-0">
+                  {category.images.map((image, index) => {
+                    const isActive =
+                      index ===
+                      categoryImageIndexes[category.name] %
+                        category.images.length;
+                    return (
+                      <img
+                        key={`${category.name}-${index}`}
+                        src={image}
+                        alt={category.name}
+                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out group-hover:scale-110 ${
+                          isActive ? "opacity-100" : "opacity-0"
+                        }`}
+                      />
+                    );
+                  })}
+                </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>{" "}
                 <div className="absolute bottom-0 left-0 right-0 p-6">
                   {" "}
@@ -259,235 +279,279 @@ const Home = () => {
       </section>{" "}
       {/* Promotional Banner / Coupon Section */}{" "}
       {activeCoupon && (
-        <section className="py-16 bg-gradient-to-r from-primary-500 to-secondary-500 relative overflow-hidden">
-          {" "}
-          {/* Animated background elements */}{" "}
-          <div className="absolute inset-0 opacity-20">
-            {" "}
-            <div className="absolute top-10 left-10 w-32 h-32 bg-white rounded-full animate-pulse"></div>{" "}
-            <div className="absolute bottom-10 right-10 w-40 h-40 bg-white rounded-full animate-bounce"></div>{" "}
-            <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-white/50 rounded-full animate-ping"></div>{" "}
-          </div>{" "}
+        <section className="py-10 sm:py-12 md:py-16 bg-gray-950 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_20%,rgba(255,214,102,0.22),transparent_42%),radial-gradient(circle_at_84%_22%,rgba(250,204,21,0.18),transparent_38%),linear-gradient(120deg,#121212_0%,#191919_48%,#242424_100%)]"></div>
           <div className="container mx-auto px-4 relative z-10">
-            {" "}
-            <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-              {" "}
-              <div className="text-white text-center md:text-left">
-                {" "}
-                <p className="text-white/80 font-medium mb-2 text-sm md:text-base animate-bounce">
-                  {" "}
-                  🎉 Limited Time Offer 🎉{" "}
-                </p>{" "}
-                <h2 className="text-lg sm:text-xl md:text-3xl font-bold mb-4 whitespace-pre-line animate-pulse">
-                  {" "}
-                  {activeCoupon.ai_message
-                    ?.split("\n")[0]
-                    ?.replace(/(\d+)\.\d+%/g, "$1%")
-                    .replace(/GH₵(\d+)\.\d+/g, "GH₵$1") ||
-                    `Get ${activeCoupon.discount_type === "percentage" ? Math.round(activeCoupon.discount_value) + "%" : "GH₵" + Math.round(activeCoupon.discount_value)} Off ${activeCoupon.description || "Your Purchase"}`}{" "}
-                </h2>{" "}
-                <p className="text-white/80 text-base md:text-lg mb-6">
-                  {" "}
-                  {activeCoupon.ai_message?.split("\n")[1] ||
-                    `Use code ${activeCoupon.code} at checkout`}{" "}
-                </p>{" "}
-                <Link
-                  href="/shop"
-                  className="inline-flex items-center gap-4 bg-white text-primary-500 px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold hover:bg-gray-100 hover:scale-105 transition-all duration-300 text-sm md:text-base shadow-xl animate-bounce"
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.7, ease: "easeOut" }}
+              whileHover={{
+                scale: 1.02,
+                boxShadow: "0 25px 50px -12px rgba(250, 204, 21, 0.15)",
+              }}
+              className="ios-glass-card rounded-2xl sm:rounded-3xl border border-white/15 bg-white/[0.06] p-4 sm:p-8 md:p-10"
+            >
+              <div className="ios-sheen" />
+              <motion.div
+                animate={
+                  shouldReduceMotion
+                    ? { y: 0, rotate: 0 }
+                    : { y: [0, -3, 0], rotate: [0, 0.12, 0] }
+                }
+                transition={
+                  shouldReduceMotion
+                    ? { duration: 0 }
+                    : { duration: 5.2, repeat: Infinity, ease: "easeInOut" }
+                }
+                className="grid grid-cols-1 lg:grid-cols-[1.25fr_0.75fr] gap-5 sm:gap-8 lg:gap-10 items-center"
+              >
+                <div className="text-center lg:text-left">
+                  <motion.span
+                    animate={
+                      shouldReduceMotion
+                        ? { scale: 1, opacity: 1 }
+                        : { scale: 1, opacity: [0.92, 1, 0.92] }
+                    }
+                    transition={
+                      shouldReduceMotion
+                        ? { duration: 0 }
+                        : { duration: 3.2, repeat: Infinity, ease: "easeInOut" }
+                    }
+                    className="inline-flex items-center rounded-full border border-amber-300/35 bg-amber-200/10 px-3 py-1 text-[11px] sm:text-xs font-semibold tracking-[0.14em] uppercase text-amber-200 mb-3 sm:mb-4"
+                  >
+                    Limited Time Offer
+                  </motion.span>
+                  <h2 className="text-xl sm:text-3xl md:text-4xl font-bold text-white leading-tight">
+                    {activeCoupon.ai_message
+                      ?.split("\n")[0]
+                      ?.replace(/(\d+)\.\d+%/g, "$1%")
+                      .replace(/GH₵(\d+)\.\d+/g, "GH₵$1") ||
+                      `Get ${activeCoupon.discount_type === "percentage" ? Math.round(activeCoupon.discount_value) + "%" : "GH₵" + Math.round(activeCoupon.discount_value)} Off ${activeCoupon.description || "Your Purchase"}`}
+                  </h2>
+                  <p className="mt-2.5 sm:mt-4 text-sm sm:text-base text-white/75 max-w-xl mx-auto lg:mx-0">
+                    {activeCoupon.ai_message?.split("\n")[1] ||
+                      `Use code ${activeCoupon.code} at checkout`}
+                  </p>
+                  <motion.div
+                    animate={
+                      shouldReduceMotion
+                        ? { x: 0 }
+                        : { x: [0, 6, 0], opacity: [0.95, 1, 0.95] }
+                    }
+                    transition={
+                      shouldReduceMotion
+                        ? { duration: 0 }
+                        : { duration: 2.8, repeat: Infinity, ease: "easeInOut" }
+                    }
+                    className="mt-3.5 sm:mt-5 inline-flex items-center rounded-xl border border-white/20 bg-white/[0.08] px-3.5 sm:px-4 py-2 sm:py-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.24)]"
+                  >
+                    <span className="text-[11px] sm:text-xs uppercase tracking-[0.12em] text-white/60 mr-3">
+                      Code
+                    </span>
+                    <span className="text-lg sm:text-lg font-semibold text-amber-200 leading-none">
+                      {activeCoupon.code}
+                    </span>
+                  </motion.div>
+                  <div className="mt-2 sm:mt-4" />
+                </div>
+
+                <motion.div
+                  whileHover={{ scale: 1.05, rotate: 1 }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                  className="relative hidden lg:block"
                 >
-                  {" "}
-                  Shop Now <FiArrowRight className="animate-pulse" />{" "}
-                </Link>{" "}
-              </div>{" "}
-              <div className="hidden md:block">
-                {" "}
-                <img
-                  src={IMAGES.trending.small}
-                  alt="Promo"
-                  className="w-80 h-80 object-cover rounded-2xl shadow-2xl transform rotate-3 hover:rotate-0 hover:scale-110 transition-all duration-500 animate-pulse"
-                />{" "}
-              </div>{" "}
-            </div>{" "}
-          </div>{" "}
+                  <div className="absolute -inset-3 rounded-2xl bg-gradient-to-br from-amber-300/20 to-transparent blur-xl"></div>
+                  <div className="relative rounded-2xl overflow-hidden border border-white/15">
+                    <img
+                      src={IMAGES.trending.small}
+                      alt="Promotion"
+                      className="w-full h-72 object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent"></div>
+                  </div>
+                </motion.div>
+              </motion.div>
+            </motion.div>
+          </div>
         </section>
       )}{" "}
       {/* New Arrivals */}{" "}
-      <section className="py-16 bg-gray-50 dark:bg-secondary-500">
-        {" "}
-        <div className="container mx-auto px-4">
-          {" "}
-          <div className="grid grid-cols-2 gap-4 md:gap-8 max-w-4xl mx-auto">
-            {" "}
-            {/* New Arrivals Card */}{" "}
-            <div className="relative h-80 rounded-xl md:rounded-2xl overflow-hidden group">
-              {" "}
+      <section className="py-16 bg-[#111111] relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_24%_26%,rgba(250,204,21,0.12),transparent_42%),radial-gradient(circle_at_82%_74%,rgba(234,179,8,0.1),transparent_40%)]"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white">
+              Trending Highlights
+            </h2>
+            <p className="text-white/70 mt-2 text-sm sm:text-base">
+              Fresh picks and top-rated styles curated for you
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-4 md:gap-8 max-w-5xl mx-auto motion-safe-stagger">
+            <div
+              className="relative h-80 rounded-2xl overflow-hidden group border border-white/10"
+              style={{ "--reveal-delay": "0ms" }}
+            >
               <img
                 src={IMAGES.trending.large1}
                 alt="New Arrivals"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />{" "}
-              <div className="absolute inset-0 bg-black/40"></div>{" "}
-              <div className="absolute inset-0 flex flex-col justify-center items-center text-white text-center p-3 md:p-8">
-                {" "}
-                <p className="text-[10px] md:text-sm uppercase tracking-widest mb-1 md:mb-2">
-                  {" "}
-                  Just Arrived{" "}
-                </p>{" "}
-                <h3 className="text-sm md:text-3xl font-bold mb-2 md:mb-4">
-                  {" "}
-                  New Arrivals{" "}
-                </h3>{" "}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent"></div>
+              <div className="absolute inset-0 flex flex-col justify-end text-white p-4 md:p-7">
+                <p className="text-[10px] md:text-xs uppercase tracking-[0.18em] text-amber-200 mb-2">
+                  Just Arrived
+                </p>
+                <h3 className="text-base md:text-3xl font-bold mb-3 md:mb-4">
+                  New Arrivals
+                </h3>
                 <Link
                   href="/shop?sort=newest"
-                  className="px-3 py-1.5 md:px-6 md:py-3 text-xs md:text-base border-2 border-white rounded-full font-medium hover:bg-white hover:text-gray-900 transition-colors"
+                  className="inline-flex w-fit items-center gap-2 px-4 py-2 md:px-5 md:py-2.5 text-xs md:text-sm rounded-full bg-white text-gray-900 font-semibold hover:bg-amber-100 transition-colors"
                 >
-                  {" "}
-                  Explore Now{" "}
-                </Link>{" "}
-              </div>{" "}
-            </div>{" "}
-            {/* Best Sellers Card */}{" "}
-            <div className="relative h-80 rounded-xl md:rounded-2xl overflow-hidden group">
-              {" "}
+                  Explore Now <FiArrowRight />
+                </Link>
+              </div>
+            </div>
+            <div
+              className="relative h-80 rounded-2xl overflow-hidden group border border-white/10"
+              style={{ "--reveal-delay": "130ms" }}
+            >
               <img
                 src={IMAGES.trending.large2}
                 alt="Best Sellers"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />{" "}
-              <div className="absolute inset-0 bg-black/40"></div>{" "}
-              <div className="absolute inset-0 flex flex-col justify-center items-center text-white text-center p-3 md:p-8">
-                {" "}
-                <p className="text-[10px] md:text-sm uppercase tracking-widest mb-1 md:mb-2">
-                  {" "}
-                  Top Rated{" "}
-                </p>{" "}
-                <h3 className="text-sm md:text-3xl font-bold mb-2 md:mb-4">
-                  {" "}
-                  Best Sellers{" "}
-                </h3>{" "}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent"></div>
+              <div className="absolute inset-0 flex flex-col justify-end text-white p-4 md:p-7">
+                <p className="text-[10px] md:text-xs uppercase tracking-[0.18em] text-amber-200 mb-2">
+                  Top Rated
+                </p>
+                <h3 className="text-base md:text-3xl font-bold mb-3 md:mb-4">
+                  Best Sellers
+                </h3>
                 <Link
                   href="/shop?sort=rating"
-                  className="px-3 py-1.5 md:px-6 md:py-3 text-xs md:text-base border-2 border-white rounded-full font-medium hover:bg-white hover:text-gray-900 transition-colors"
+                  className="inline-flex w-fit items-center gap-2 px-4 py-2 md:px-5 md:py-2.5 text-xs md:text-sm rounded-full bg-white text-gray-900 font-semibold hover:bg-amber-100 transition-colors"
                 >
-                  {" "}
-                  Shop Now{" "}
-                </Link>{" "}
-              </div>{" "}
-            </div>{" "}
-          </div>{" "}
-        </div>{" "}
+                  Shop Now <FiArrowRight />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>{" "}
       {/* Testimonials */}{" "}
       {!testimonialsLoading && testimonials.length > 0 && (
-        <section className="py-16">
-          {" "}
-          <div className="container mx-auto px-4">
-            {" "}
-            <div className="text-center mb-12">
-              {" "}
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 dark:text-gold-light mb-4">
-                {" "}
-                What Our Customers Say{" "}
-              </h2>{" "}
-              <p className="text-gray-600 dark:text-gold">
-                {" "}
-                Real reviews from real customers{" "}
-              </p>{" "}
-            </div>{" "}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-4">
-              {" "}
-              {testimonials.slice(0, 4).map((testimonial) => (
+        <section className="py-16 bg-[#111111] relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(250,204,21,0.1),transparent_40%),radial-gradient(circle_at_82%_90%,rgba(234,179,8,0.08),transparent_42%)]"></div>
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="text-center mb-10">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3">
+                What Our Customers Say
+              </h2>
+              <p className="text-white/70 text-sm sm:text-base">
+                Trusted feedback from verified shoppers
+              </p>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 motion-safe-stagger">
+              {testimonials.slice(0, 4).map((testimonial, index) => (
                 <div
                   key={testimonial.id}
-                  className="bg-white dark:bg-surface p-4 md:p-6 rounded-xl md:rounded-2xl shadow-sm border border-gray-100"
+                  className="rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-sm p-4 md:p-5"
+                  style={{ "--reveal-delay": `${index * 100}ms` }}
                 >
-                  {" "}
-                  <div className="hidden md:flex gap-0.5 mb-3">
-                    {" "}
+                  <div className="flex gap-0.5 mb-3">
                     {[...Array(testimonial.rating)].map((_, i) => (
                       <span
                         key={`${testimonial.id}-star-${i}`}
-                        className="text-yellow-400 text-sm"
+                        className="text-amber-300 text-xs md:text-sm"
                       >
-                        {" "}
-                        ★{" "}
+                        ★
                       </span>
-                    ))}{" "}
-                  </div>{" "}
-                  <p className="text-gray-600 dark:text-gold text-xs md:text-sm mb-4 italic line-clamp-3">
-                    {" "}
-                    "{testimonial.comment || testimonial.title}"{" "}
-                  </p>{" "}
-                  <div className="flex items-center gap-4 md:gap-3">
-                    {" "}
-                    <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center text-white font-bold text-xs md:text-sm">
-                      {" "}
-                      {testimonial.user?.firstName?.[0] || "C"}{" "}
-                    </div>{" "}
+                    ))}
+                  </div>
+                  <p className="text-white/75 text-xs md:text-sm mb-4 italic line-clamp-3 min-h-[60px]">
+                    "{testimonial.comment || testimonial.title}"
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-amber-200/15 border border-amber-200/30 flex items-center justify-center text-amber-200 font-bold text-xs md:text-sm">
+                      {testimonial.user?.firstName?.[0] || "C"}
+                    </div>
                     <div>
-                      {" "}
-                      <h4 className="font-semibold text-gray-800 dark:text-gold-light text-xs md:text-sm line-clamp-1">
-                        {" "}
+                      <h4 className="font-semibold text-white text-xs md:text-sm line-clamp-1">
                         {testimonial.user
                           ? `${testimonial.user.firstName} ${testimonial.user.lastName}`
-                          : "Happy Customer"}{" "}
-                      </h4>{" "}
-                      <p className="text-[10px] md:text-xs text-gray-500 dark:text-primary-300">
-                        {" "}
+                          : "Happy Customer"}
+                      </h4>
+                      <p className="text-[10px] md:text-xs text-white/55">
                         {testimonial.isVerifiedPurchase
                           ? "Verified Buyer"
-                          : "Customer"}{" "}
-                      </p>{" "}
-                    </div>{" "}
-                  </div>{" "}
+                          : "Customer"}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              ))}{" "}
-            </div>{" "}
-          </div>{" "}
+              ))}
+            </div>
+          </div>
         </section>
       )}{" "}
       {/* Instagram Feed Placeholder */}{" "}
-      <section className="py-16 bg-gray-50">
-        {" "}
-        <div className="container mx-auto px-4">
-          {" "}
-          <div className="text-center mb-12">
-            {" "}
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 dark:text-gold-light mb-4">
-              {" "}
-              Follow Us on Instagram{" "}
-            </h2>{" "}
+      <section className="py-16 bg-[#111111] relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_16%_18%,rgba(250,204,21,0.1),transparent_36%),radial-gradient(circle_at_86%_84%,rgba(234,179,8,0.08),transparent_40%)]"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-10">
+            <span className="inline-flex items-center rounded-full border border-amber-300/35 bg-amber-200/10 px-3 py-1 text-[11px] sm:text-xs font-semibold tracking-[0.14em] uppercase text-amber-200 mb-4">
+              Social Edit
+            </span>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3">
+              Follow Us on Instagram
+            </h2>
             <a
               href="https://www.instagram.com/diamondvoguegallery/?hl=it"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-600 hover:text-pink-500 transition-colors"
+              className="inline-flex items-center text-white/75 hover:text-amber-200 transition-colors text-sm sm:text-base"
             >
               @diamondvoguegallery
-            </a>{" "}
-          </div>{" "}
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {" "}
-            {IMAGES.instagram.map((img, index) => (
+            </a>
+          </div>
+
+          <div className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-sm p-4 sm:p-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 motion-safe-stagger">
+              {IMAGES.instagram.map((img, index) => (
+                <a
+                  key={`instagram-${index}`}
+                  href="https://www.instagram.com/diamondvoguegallery/?hl=it"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`aspect-square rounded-xl overflow-hidden group relative ${index >= 4 ? "hidden md:block" : ""}`}
+                  style={{ "--reveal-delay": `${index * 70}ms` }}
+                >
+                  <img
+                    src={img}
+                    alt={`Instagram ${index + 1}`}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors"></div>
+                </a>
+              ))}
+            </div>
+            <div className="mt-6 text-center">
               <a
-                key={`instagram-${index}`}
                 href="https://www.instagram.com/diamondvoguegallery/?hl=it"
                 target="_blank"
                 rel="noopener noreferrer"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`aspect-square rounded-xl overflow-hidden group ${index >= 4 ? "hidden md:block" : ""}`}
+                className="inline-flex items-center gap-2 bg-white text-gray-900 px-5 py-2.5 rounded-full font-semibold text-sm hover:bg-amber-100 transition-colors"
               >
-                {" "}
-                <img
-                  src={img}
-                  alt={`Instagram ${index + 1}`}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                />{" "}
+                View Instagram <FiArrowRight />
               </a>
-            ))}{" "}
-          </div>{" "}
-        </div>{" "}
+            </div>
+          </div>
+        </div>
       </section>{" "}
     </div>
   );
