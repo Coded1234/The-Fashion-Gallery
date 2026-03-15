@@ -58,6 +58,7 @@ const Checkout = () => {
   const [shippingDetails, setShippingDetails] = useState(null);
   const [shippingCalculated, setShippingCalculated] = useState(false);
   const [city, setCity] = useState("");
+  const [region, setRegion] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [selectedLocation, setSelectedLocation] = useState(null);
 
@@ -168,6 +169,7 @@ const Checkout = () => {
       address: addressData.address,
     }));
     setCity(addressData.city);
+    setRegion(addressData.region || "");
     setSelectedLocation({
       latitude: addressData.latitude,
       longitude: addressData.longitude,
@@ -260,6 +262,7 @@ const Checkout = () => {
               shippingAddress: {
                 ...shippingInfo,
                 city,
+                region,
                 postalCode,
               },
               couponId: appliedCoupon?.id || null,
@@ -293,6 +296,7 @@ const Checkout = () => {
         shippingAddress: {
           ...shippingInfo,
           city,
+          region,
           postalCode,
         },
         paymentMethod: paymentMethod,

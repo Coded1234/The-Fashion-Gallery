@@ -31,9 +31,20 @@ const getDashboardStats = async (req, res) => {
     const totalOrders = await Order.count();
     const totalCustomers = await User.count({ where: { role: "customer" } });
 
+    // Sales: paid orders OR COD orders that are confirmed/shipped/delivered
+    const salesWhere = {
+      [Op.or]: [
+        { paymentStatus: "paid" },
+        {
+          paymentMethod: "cod",
+          status: { [Op.in]: ["confirmed", "shipped", "delivered"] },
+        },
+      ],
+    };
+
     // Revenue
     const revenueResult = await Order.findAll({
-      where: { paymentStatus: "paid" },
+      where: salesWhere,
       attributes: [
         [sequelize.fn("SUM", sequelize.col("total_amount")), "total"],
       ],
@@ -48,7 +59,7 @@ const getDashboardStats = async (req, res) => {
 
     const monthlyRevenueResult = await Order.findAll({
       where: {
-        paymentStatus: "paid",
+        ...salesWhere,
         createdAt: { [Op.gte]: startOfMonth },
       },
       attributes: [
@@ -61,7 +72,7 @@ const getDashboardStats = async (req, res) => {
     // Last month for comparison
     const lastMonthRevenueResult = await Order.findAll({
       where: {
-        paymentStatus: "paid",
+        ...salesWhere,
         createdAt: { [Op.between]: [startOfLastMonth, endOfLastMonth] },
       },
       attributes: [
@@ -865,10 +876,36 @@ const getSalesReport = async (req, res) => {
       }
     }
 
-    const orderWhere = {
-      paymentStatus: "paid",
-      ...dateWhere,
-    };
+    // Include paid orders OR COD orders that are confirmed/shipped/delivered
+    const orderWhere =
+      Object.keys(dateWhere).length > 0
+        ? {
+            [Op.and]: [
+              dateWhere,
+              {
+                [Op.or]: [
+                  { paymentStatus: "paid" },
+                  {
+                    paymentMethod: "cod",
+                    status: {
+                      [Op.in]: ["confirmed", "shipped", "delivered"],
+                    },
+                  },
+                ],
+              },
+            ],
+          }
+        : {
+            [Op.or]: [
+              { paymentStatus: "paid" },
+              {
+                paymentMethod: "cod",
+                status: {
+                  [Op.in]: ["confirmed", "shipped", "delivered"],
+                },
+              },
+            ],
+          };
 
     // 1. Summary
     const summaryData = await Order.findOne({

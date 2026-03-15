@@ -8,6 +8,19 @@ const {
 } = require("../models");
 const { sendEmail, emailTemplates } = require("../config/email");
 
+// Pay on Delivery is only allowed for Greater Accra
+const GREATER_ACCRA_REGIONS = ["greater accra", "greater accra region", "accra"];
+const GREATER_ACCRA_CITIES = ["accra", "tema", "achiaman", "adenta", "madina", "dodowa", "weija", "gbawe"];
+
+function isGreaterAccra(address) {
+  if (!address) return false;
+  const region = (address.region || "").toLowerCase().trim();
+  const city = (address.city || "").toLowerCase().trim();
+  if (region && GREATER_ACCRA_REGIONS.some((r) => region.includes(r))) return true;
+  if (city && GREATER_ACCRA_CITIES.some((c) => city.includes(c) || c.includes(city))) return true;
+  return false;
+}
+
 // @desc    Create new order
 // @route   POST /api/orders
 const createOrder = async (req, res) => {
@@ -34,6 +47,14 @@ const createOrder = async (req, res) => {
 
     if (!cart || !cart.items || cart.items.length === 0) {
       return res.status(400).json({ message: "Cart is empty" });
+    }
+
+    // Pay on Delivery only for Greater Accra
+    if (paymentMethod === "cod" && !isGreaterAccra(shippingAddress)) {
+      return res.status(400).json({
+        message:
+          "Pay on Delivery is only available for addresses in Greater Accra. Please use Paystack for other regions.",
+      });
     }
 
     // Calculate totals

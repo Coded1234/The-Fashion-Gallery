@@ -65,7 +65,7 @@ const FAQ = () => {
       category: "shipping",
       question: "What are the shipping options and costs?",
       answer:
-        "We offer standard shipping at GH₵ 15.00 for orders under GH₵ 500. Orders above GH₵ 500 qualify for free shipping. Standard delivery typically takes 3-5 business days within Ghana. Express shipping options may be available at checkout for faster delivery.",
+        "We offer standard shipping for orders within Ghana. Orders under GH₵ 1,000 are charged a shipping fee (the exact amount is shown at checkout and may vary by location). Orders of GH₵ 1,000 or more qualify for free shipping. The shipping rate at checkout may be calculated based on your delivery address.",
     },
     {
       id: 6,
@@ -79,7 +79,7 @@ const FAQ = () => {
       category: "shipping",
       question: "How long does delivery take?",
       answer:
-        "Standard delivery within Accra takes 1-2 business days. Delivery to other major cities typically takes 2-4 business days. Rural areas may take 4-7 business days. Please note that these are estimates and actual delivery times may vary.",
+        "For Greater Accra: orders placed on weekdays between 6am and 6pm are delivered the next business day; orders placed on weekends between 6am and 12pm are delivered the same day. For addresses outside Greater Accra, delivery takes 3 to 5 business days. Times may vary slightly by location.",
     },
     {
       id: 8,
@@ -125,7 +125,7 @@ const FAQ = () => {
       category: "payment",
       question: "What payment methods do you accept?",
       answer:
-        "We accept Pay on Delivery (Cash on Delivery) for your convenience. You can pay with cash or mobile money when your order arrives. We're working on adding online payment options including mobile money (MTN MoMo, Vodafone Cash, AirtelTigo Money) and card payments soon.",
+        "We accept Pay on Delivery (cash or mobile money when your order arrives) and online payment via Paystack. With Paystack you can pay by card or mobile money (MTN MoMo, Vodafone Cash, AirtelTigo Money) at checkout. Choose your preferred option when placing your order.",
     },
     {
       id: 14,
@@ -146,7 +146,7 @@ const FAQ = () => {
       category: "payment",
       question: "Is Pay on Delivery available for all locations?",
       answer:
-        "Pay on Delivery is available for most locations within Ghana. However, some remote areas may have restrictions. You'll see the available payment options for your delivery address during checkout.",
+        "Pay on Delivery is only available for delivery addresses within the Greater Accra region. For orders outside Greater Accra, please pay online with Paystack (card or mobile money) at checkout. The available payment options are shown based on your delivery address.",
     },
 
     // Account & Profile
@@ -199,14 +199,14 @@ const FAQ = () => {
       category: "security",
       question: "Can I delete my account?",
       answer:
-        "Yes, you can request account deletion by contacting our customer support. Please note that we may retain certain information for legal and business purposes, but your personal data will be anonymized.",
+        "Yes. You can delete your account yourself from your Profile: go to your account or Security settings and choose \"Delete Account\". Once deleted, your account cannot be recovered. We may retain some anonymized information for legal purposes.",
     },
     {
       id: 24,
       category: "security",
       question: "How can I unsubscribe from promotional emails?",
       answer:
-        'Every promotional email we send includes an "Unsubscribe" link at the bottom. Click it to opt out of marketing emails. You\'ll still receive important transactional emails like order confirmations and shipping updates.',
+        "You can unsubscribe from newsletter and promotional emails in your account: go to your Profile and turn off the newsletter subscription, or use the \"Unsubscribe\" link at the bottom of our promotional emails. You will still receive important transactional emails like order confirmations and shipping updates.",
     },
   ];
 

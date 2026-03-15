@@ -8,6 +8,9 @@ import {
   FiDownload,
   FiRefreshCw,
   FiBarChart2,
+  FiPackage,
+  FiPieChart,
+  FiLayers,
 } from "react-icons/fi";
 import { adminAPI } from "../../utils/api";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
@@ -35,7 +38,7 @@ const Reports = () => {
       setReportData(data);
     } catch (error) {
       console.error("Failed to fetch report:", error);
-      toast.error("Failed to load live report data");
+      toast.error("Failed to load report data");
     } finally {
       setLoading(false);
     }
@@ -52,338 +55,372 @@ const Reports = () => {
   const handleCustomDateSubmit = () => {
     if (startDate && endDate) {
       fetchReport();
+    } else {
+      toast.error("Please select start and end dates");
     }
   };
 
   const exportReport = () => {
-    // Create CSV content
+    if (!reportData) return;
     let csv = "Sales Report\n\n";
     csv += "Summary\n";
     csv += `Total Revenue,${reportData?.summary?.totalRevenue || 0}\n`;
     csv += `Total Orders,${reportData?.summary?.totalOrders || 0}\n`;
-    csv += `Average Order Value,${
-      reportData?.summary?.averageOrderValue || 0
-    }\n`;
+    csv += `Average Order Value,${reportData?.summary?.averageOrderValue || 0}\n`;
     csv += `Total Items Sold,${reportData?.summary?.totalItemsSold || 0}\n\n`;
-
     csv += "Top Products\n";
     csv += "Product,Sold,Revenue\n";
     reportData?.topProducts?.forEach((p) => {
       csv += `${p.name},${p.sold},${p.revenue}\n`;
     });
-
-    // Download
     const blob = new Blob([csv], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
     a.download = `sales-report-${new Date().toISOString().split("T")[0]}.csv`;
     a.click();
+    window.URL.revokeObjectURL(url);
   };
 
-  if (loading) {
+  if (loading && !reportData) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="flex items-center justify-center min-h-[400px]">
         <LoadingSpinner size="large" />
       </div>
     );
   }
 
+  const rangeOptions = [
+    { value: "week", label: "Week" },
+    { value: "month", label: "Month" },
+    { value: "quarter", label: "Quarter" },
+    { value: "year", label: "Year" },
+    { value: "custom", label: "Custom" },
+  ];
+
+  const maxRevenue =
+    reportData?.revenueByDay?.length &&
+    Math.max(...reportData.revenueByDay.map((d) => d.revenue));
+  const maxCategoryRevenue =
+    reportData?.categoryBreakdown?.length &&
+    Math.max(...reportData.categoryBreakdown.map((c) => c.revenue));
+
+  const statusColors = {
+    pending: "from-amber-500 to-amber-600",
+    confirmed: "from-blue-500 to-blue-600",
+    processing: "from-indigo-500 to-indigo-600",
+    shipped: "from-violet-500 to-violet-600",
+    delivered: "from-emerald-500 to-emerald-600",
+    cancelled: "from-red-500 to-red-600",
+  };
+
   return (
-    <div className="space-y-4 md:space-y-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="space-y-6 md:space-y-8">
+      {/* Page header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-xl md:text-2xl font-bold text-gray-800">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
             Sales Reports
           </h1>
-          <p className="text-xs md:text-sm text-gray-600">
-            View and analyze your sales performance
+          <p className="mt-1 text-sm text-gray-500">
+            Performance and analytics for your store
           </p>
         </div>
-        <div className="flex gap-2 md:gap-3">
+        <div className="flex items-center gap-2">
           <button
             onClick={fetchReport}
-            className="flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50"
+            disabled={loading}
+            className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 transition-all"
           >
-            <FiRefreshCw size={16} className="md:w-[18px] md:h-[18px]" />
-            <span className="hidden sm:inline">Refresh</span>
+            <FiRefreshCw
+              size={18}
+              className={loading ? "animate-spin" : ""}
+            />
+            Refresh
           </button>
           <button
             onClick={exportReport}
-            className="flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600"
+            disabled={!reportData}
+            className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl hover:from-primary-600 hover:to-primary-700 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 shadow-sm disabled:opacity-50 transition-all"
           >
-            <FiDownload size={16} className="md:w-[18px] md:h-[18px]" />
-            <span className="hidden sm:inline">Export CSV</span>
-            <span className="sm:hidden">Export</span>
+            <FiDownload size={18} />
+            Export CSV
           </button>
         </div>
       </div>
 
-      {/* Date Range Filter */}
-      <div className="bg-white rounded-lg md:rounded-xl p-3 md:p-4 shadow-sm">
-        <div className="flex flex-wrap items-center gap-2 md:gap-4">
-          <div className="flex items-center gap-2">
-            <FiCalendar className="text-gray-400" size={16} />
-            <span className="text-xs md:text-sm font-medium text-gray-700">
-              Date Range:
-            </span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {[
-              { value: "week", label: "This Week" },
-              { value: "month", label: "This Month" },
-              { value: "quarter", label: "This Quarter" },
-              { value: "year", label: "This Year" },
-              { value: "custom", label: "Custom" },
-            ].map((option) => (
-              <button
-                key={option.value}
-                onClick={() => setDateRange(option.value)}
-                className={`px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-colors ${
-                  dateRange === option.value
-                    ? "bg-primary-500 text-white"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                }`}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-          {dateRange === "custom" && (
-            <div className="flex items-center gap-2 ml-auto">
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
-              />
-              <span className="text-gray-500">to</span>
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
-              />
-              <button
-                onClick={handleCustomDateSubmit}
-                className="px-4 py-2 bg-primary-500 text-white rounded-lg text-sm hover:bg-primary-600"
-              >
-                Apply
-              </button>
+      {/* Date range */}
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2 text-gray-600">
+              <FiCalendar size={18} />
+              <span className="text-sm font-medium">Period</span>
             </div>
-          )}
+            <div className="flex flex-wrap gap-1.5">
+              {rangeOptions.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => setDateRange(option.value)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    dateRange === option.value
+                      ? "bg-primary-500 text-white shadow-sm"
+                      : "bg-white text-gray-600 border border-gray-200 hover:border-primary-300 hover:text-primary-600"
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+            {dateRange === "custom" && (
+              <div className="flex flex-wrap items-center gap-2 ml-auto">
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                />
+                <span className="text-gray-400">→</span>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                />
+                <button
+                  onClick={handleCustomDateSubmit}
+                  className="px-4 py-2 bg-primary-500 text-white rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors"
+                >
+                  Apply
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
-        <div className="bg-white rounded-lg md:rounded-xl p-3 md:p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-3 md:mb-4">
-            <div className="p-2 md:p-3 bg-green-100 rounded-lg">
-              <FiDollarSign className="text-green-600 w-5 h-5 md:w-6 md:h-6" />
+      {/* Summary KPIs */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          {
+            label: "Total Revenue",
+            value: formatCurrency(reportData?.summary?.totalRevenue || 0),
+            icon: FiDollarSign,
+            bg: "bg-emerald-500",
+            light: "bg-emerald-50",
+            iconColor: "text-emerald-600",
+          },
+          {
+            label: "Total Orders",
+            value: reportData?.summary?.totalOrders ?? "—",
+            icon: FiShoppingBag,
+            bg: "bg-blue-500",
+            light: "bg-blue-50",
+            iconColor: "text-blue-600",
+          },
+          {
+            label: "Avg. Order Value",
+            value: formatCurrency(reportData?.summary?.averageOrderValue || 0),
+            icon: FiTrendingUp,
+            bg: "bg-violet-500",
+            light: "bg-violet-50",
+            iconColor: "text-violet-600",
+          },
+          {
+            label: "Items Sold",
+            value: reportData?.summary?.totalItemsSold ?? "—",
+            icon: FiPackage,
+            bg: "bg-amber-500",
+            light: "bg-amber-50",
+            iconColor: "text-amber-600",
+          },
+        ].map((stat) => (
+          <div
+            key={stat.label}
+            className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 hover:shadow-md transition-shadow"
+          >
+            <div className={`inline-flex p-2.5 rounded-xl ${stat.light}`}>
+              <stat.icon size={22} className={stat.iconColor} />
             </div>
-            <FiTrendingUp className="text-green-500 w-4 h-4 md:w-5 md:h-5" />
+            <p className="mt-3 text-sm font-medium text-gray-500">{stat.label}</p>
+            <p className="mt-1 text-xl md:text-2xl font-bold text-gray-900">
+              {stat.value}
+            </p>
           </div>
-          <p className="text-gray-500 text-xs md:text-sm">Total Revenue</p>
-          <p className="text-lg md:text-2xl font-bold text-gray-800">
-            {formatCurrency(reportData?.summary?.totalRevenue || 0)}
-          </p>
-        </div>
-
-        <div className="bg-white rounded-lg md:rounded-xl p-3 md:p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-3 md:mb-4">
-            <div className="p-2 md:p-3 bg-blue-100 rounded-lg">
-              <FiShoppingBag className="text-blue-600 w-5 h-5 md:w-6 md:h-6" />
-            </div>
-          </div>
-          <p className="text-gray-500 text-xs md:text-sm">Total Orders</p>
-          <p className="text-lg md:text-2xl font-bold text-gray-800">
-            {reportData?.summary?.totalOrders || 0}
-          </p>
-        </div>
-
-        <div className="bg-white rounded-lg md:rounded-xl p-3 md:p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-3 md:mb-4">
-            <div className="p-2 md:p-3 bg-purple-100 rounded-lg">
-              <FiBarChart2 className="text-purple-600 w-5 h-5 md:w-6 md:h-6" />
-            </div>
-          </div>
-          <p className="text-gray-500 text-xs md:text-sm">
-            Average Order Value
-          </p>
-          <p className="text-lg md:text-2xl font-bold text-gray-800">
-            {formatCurrency(reportData?.summary?.averageOrderValue || 0)}
-          </p>
-        </div>
-
-        <div className="bg-white rounded-lg md:rounded-xl p-3 md:p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-3 md:mb-4">
-            <div className="p-2 md:p-3 bg-orange-100 rounded-lg">
-              <FiShoppingBag className="text-orange-600 w-5 h-5 md:w-6 md:h-6" />
-            </div>
-          </div>
-          <p className="text-gray-500 text-xs md:text-sm">Items Sold</p>
-          <p className="text-lg md:text-2xl font-bold text-gray-800">
-            {reportData?.summary?.totalItemsSold || 0}
-          </p>
-        </div>
+        ))}
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-4 md:gap-6">
-        {/* Revenue Chart Placeholder */}
-        <div className="bg-white rounded-lg md:rounded-xl p-4 md:p-6 shadow-sm">
-          <h3 className="font-semibold text-gray-800 mb-3 md:mb-4 text-sm md:text-base">
-            Revenue Over Time
-          </h3>
-          <div className="space-y-3 md:space-y-4">
-            {reportData?.revenueByDay?.map((day, index) => (
-              <div key={index} className="flex items-center gap-2 md:gap-4">
-                <span className="text-xs md:text-sm text-gray-500 w-16 md:w-24">
-                  {new Date(day.date).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                  })}
-                </span>
-                <div className="flex-1 bg-gray-100 rounded-full h-5 md:h-6 overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-end pr-1 md:pr-2"
-                    style={{
-                      width: `${
-                        (day.revenue /
-                          Math.max(
-                            ...reportData.revenueByDay.map((d) => d.revenue)
-                          )) *
-                        100
-                      }%`,
-                    }}
+      <div className="grid lg:grid-cols-2 gap-6">
+        {/* Revenue over time */}
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-2">
+            <FiBarChart2 className="text-primary-500" size={20} />
+            <h2 className="font-semibold text-gray-900">Revenue Over Time</h2>
+          </div>
+          <div className="p-5">
+            {reportData?.revenueByDay?.length ? (
+              <div className="space-y-4">
+                {reportData.revenueByDay.map((day, index) => (
+                  <div key={index} className="group">
+                    <div className="flex items-center justify-between text-sm mb-1.5">
+                      <span className="text-gray-600 font-medium">
+                        {new Date(day.date).toLocaleDateString("en-GB", {
+                          weekday: "short",
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </span>
+                      <span className="text-gray-500">
+                        {day.orders} orders · {formatCurrency(day.revenue)}
+                      </span>
+                    </div>
+                    <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-primary-500 to-primary-600 rounded-full transition-all duration-500 min-w-[4px]"
+                        style={{
+                          width: maxRevenue
+                            ? `${Math.max(
+                                4,
+                                (day.revenue / maxRevenue) * 100
+                              )}%`
+                            : "0%",
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="py-12 text-center text-gray-400 text-sm">
+                No revenue data for this period
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Top products */}
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-2">
+            <FiLayers className="text-primary-500" size={20} />
+            <h2 className="font-semibold text-gray-900">Top Selling Products</h2>
+          </div>
+          <div className="p-5">
+            {reportData?.topProducts?.length ? (
+              <ul className="space-y-3">
+                {reportData.topProducts.map((product, index) => (
+                  <li
+                    key={index}
+                    className="flex items-center justify-between p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
                   >
-                    <span className="text-xs text-white font-medium hidden md:inline">
-                      {formatCurrency(day.revenue)}
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span
+                        className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm ${
+                          index === 0
+                            ? "bg-amber-500"
+                            : index === 1
+                            ? "bg-gray-400"
+                            : index === 2
+                            ? "bg-amber-700"
+                            : "bg-gray-300"
+                        }`}
+                      >
+                        {index + 1}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="font-medium text-gray-900 truncate">
+                          {product.name}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {product.sold} sold
+                        </p>
+                      </div>
+                    </div>
+                    <span className="flex-shrink-0 ml-2 font-semibold text-gray-900">
+                      {formatCurrency(product.revenue)}
                     </span>
-                  </div>
-                </div>
-                <span className="text-xs md:text-sm text-gray-600 w-12 md:w-16 text-right">
-                  {day.orders} <span className="hidden md:inline">orders</span>
-                </span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="py-12 text-center text-gray-400 text-sm">
+                No product data for this period
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Top Products */}
-        <div className="bg-white rounded-lg md:rounded-xl p-4 md:p-6 shadow-sm">
-          <h3 className="font-semibold text-gray-800 mb-3 md:mb-4 text-sm md:text-base">
-            Top Selling Products
-          </h3>
-          <div className="space-y-3 md:space-y-4">
-            {reportData?.topProducts?.map((product, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between p-2 md:p-3 bg-gray-50 rounded-lg"
-              >
-                <div className="flex items-center gap-2 md:gap-3">
-                  <span
-                    className={`w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center text-white font-bold text-xs md:text-sm ${
-                      index === 0
-                        ? "bg-yellow-500"
-                        : index === 1
-                        ? "bg-gray-400"
-                        : index === 2
-                        ? "bg-orange-400"
-                        : "bg-gray-300"
-                    }`}
-                  >
-                    {index + 1}
-                  </span>
-                  <div>
-                    <p className="font-medium text-gray-800 text-xs md:text-sm">
-                      {product.name}
-                    </p>
-                    <p className="text-xs text-gray-500">{product.sold} sold</p>
-                  </div>
-                </div>
-                <p className="font-semibold text-gray-800 text-xs md:text-sm">
-                  {formatCurrency(product.revenue)}
-                </p>
-              </div>
-            ))}
+            )}
           </div>
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-4 md:gap-6">
-        {/* Category Breakdown */}
-        <div className="bg-white rounded-lg md:rounded-xl p-4 md:p-6 shadow-sm">
-          <h3 className="font-semibold text-gray-800 mb-3 md:mb-4 text-sm md:text-base">
-            Sales by Category
-          </h3>
-          <div className="space-y-3 md:space-y-4">
-            {reportData?.categoryBreakdown?.map((cat, index) => (
-              <div key={index}>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs md:text-sm font-medium text-gray-700">
-                    {cat.category}
-                  </span>
-                  <span className="text-xs md:text-sm text-gray-500">
-                    {cat.orders}{" "}
-                    <span className="hidden sm:inline">orders</span>
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 md:gap-3">
-                  <div className="flex-1 bg-gray-100 rounded-full h-2.5 md:h-3 overflow-hidden">
-                    <div
-                      className="h-full bg-primary-500 rounded-full"
-                      style={{
-                        width: `${
-                          (cat.revenue /
-                            Math.max(
-                              ...reportData.categoryBreakdown.map(
-                                (c) => c.revenue
-                              )
-                            )) *
-                          100
-                        }%`,
-                      }}
-                    />
+      <div className="grid lg:grid-cols-2 gap-6">
+        {/* Sales by category */}
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-2">
+            <FiPieChart className="text-primary-500" size={20} />
+            <h2 className="font-semibold text-gray-900">Sales by Category</h2>
+          </div>
+          <div className="p-5">
+            {reportData?.categoryBreakdown?.length ? (
+              <div className="space-y-4">
+                {reportData.categoryBreakdown.map((cat, index) => (
+                  <div key={index}>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-gray-700">
+                        {cat.category}
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        {formatCurrency(cat.revenue)} · {cat.orders} orders
+                      </span>
+                    </div>
+                    <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-primary-500 rounded-full transition-all duration-500"
+                        style={{
+                          width: maxCategoryRevenue
+                            ? `${(cat.revenue / maxCategoryRevenue) * 100}%`
+                            : "0%",
+                        }}
+                      />
+                    </div>
                   </div>
-                  <span className="text-xs md:text-sm font-medium text-gray-800 w-20 md:w-28 text-right">
-                    {formatCurrency(cat.revenue)}
-                  </span>
-                </div>
+                ))}
               </div>
-            ))}
+            ) : (
+              <div className="py-12 text-center text-gray-400 text-sm">
+                No category data for this period
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Orders by Status */}
-        <div className="bg-white rounded-lg md:rounded-xl p-4 md:p-6 shadow-sm">
-          <h3 className="font-semibold text-gray-800 mb-3 md:mb-4 text-sm md:text-base">
-            Orders by Status
-          </h3>
-          <div className="grid grid-cols-2 gap-3 md:gap-4">
-            {Object.entries(reportData?.ordersByStatus || {}).map(
-              ([status, count]) => {
-                const colors = {
-                  pending: "bg-yellow-100 text-yellow-800",
-                  confirmed: "bg-blue-100 text-blue-800",
-                  processing: "bg-indigo-100 text-indigo-800",
-                  shipped: "bg-purple-100 text-purple-800",
-                  delivered: "bg-green-100 text-green-800",
-                  cancelled: "bg-red-100 text-red-800",
-                };
-                return (
-                  <div
-                    key={status}
-                    className={`p-3 md:p-4 rounded-lg ${
-                      colors[status] || "bg-gray-100 text-gray-800"
-                    }`}
-                  >
-                    <p className="text-xl md:text-2xl font-bold">{count}</p>
-                    <p className="text-xs md:text-sm capitalize">{status}</p>
-                  </div>
-                );
-              }
+        {/* Orders by status */}
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-2">
+            <FiBarChart2 className="text-primary-500" size={20} />
+            <h2 className="font-semibold text-gray-900">Orders by Status</h2>
+          </div>
+          <div className="p-5">
+            {reportData?.ordersByStatus &&
+            Object.keys(reportData.ordersByStatus).length > 0 ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {Object.entries(reportData.ordersByStatus).map(
+                  ([status, count]) => (
+                    <div
+                      key={status}
+                      className={`p-4 rounded-xl bg-gradient-to-br ${
+                        statusColors[status] || "from-gray-400 to-gray-500"
+                      } text-white shadow-sm`}
+                    >
+                      <p className="text-2xl font-bold">{count}</p>
+                      <p className="text-sm font-medium capitalize opacity-90">
+                        {status}
+                      </p>
+                    </div>
+                  )
+                )}
+              </div>
+            ) : (
+              <div className="py-12 text-center text-gray-400 text-sm">
+                No order status data for this period
+              </div>
             )}
           </div>
         </div>
