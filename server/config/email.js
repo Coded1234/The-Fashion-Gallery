@@ -42,9 +42,11 @@ const htmlToText = (html) => {
 
 const sendEmail = async (to, subject, html, options = {}) => {
   try {
-    const fromValue =
-      process.env.EMAIL_FROM ||
-      `"Diamond Aura Gallery" <${process.env.EMAIL_USER}>`;
+    let fromEmail = process.env.EMAIL_FROM || process.env.EMAIL_USER;
+    const match = fromEmail.match(/<([^>]+)>/);
+    if (match) fromEmail = match[1];
+
+    const fromValue = `"Diamond Aura Gallery" <${fromEmail}>`;
     const replyToValue = process.env.EMAIL_REPLY_TO || process.env.EMAIL_USER;
 
     const mailOptions = {
@@ -74,6 +76,11 @@ const sendBulkEmail = async (recipients, subject, html) => {
   try {
     if (!recipients) return;
 
+    let fromEmail = process.env.EMAIL_FROM || process.env.EMAIL_USER;
+    const match = fromEmail.match(/<([^>]+)>/);
+    if (match) fromEmail = match[1];
+    const fromValue = `"Diamond Aura Gallery" <${fromEmail}>`;
+
     // Send in batches to avoid overwhelming the server/SMTP
     const batchSize = 20;
     // Ensure recipients is an array
@@ -83,7 +90,7 @@ const sendBulkEmail = async (recipients, subject, html) => {
       const batch = recipientList.slice(i, i + batchSize);
       const promises = batch.map((email) => {
         const mailOptions = {
-          from: `"Diamond Aura Gallery" <${process.env.EMAIL_USER}>`,
+          from: fromValue,
           to: email,
           subject,
           html,
