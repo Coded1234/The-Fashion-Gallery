@@ -17,9 +17,28 @@ const api = axios.create({
   },
 });
 
+let csrfTokenPromise = null;
+
+const getCsrfToken = async () => {
+  if (!csrfTokenPromise) {
+    csrfTokenPromise = axios.get(`${getBaseURL()}/csrf-token`, { withCredentials: true })
+      .then(res => res.data.csrfToken)
+      .catch(err => null);
+  }
+  return csrfTokenPromise;
+};
+
 // Request interceptor to add auth token
 api.interceptors.request.use(
-  (config) => {
+  async (config) => {
+    // Add CSRF token for state-changing requests
+    if (["post", "put", "patch", "delete"].includes(config.method?.toLowerCase())) {
+      const csrfToken = await getCsrfToken();
+      if (csrfToken) {
+        config.headers["X-CSRF-Token"] = csrfToken;
+      }
+    }
+
     // Note: HttpOnly cookie will be automatically sent with requests
     // We still keep Authorization header for backwards compatibility if a token exists in localStorage 
     // from an old session, but new sessions use cookies heavily.

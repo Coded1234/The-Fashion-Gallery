@@ -18,6 +18,7 @@ const {
   resetPassword,
   verifyEmail,
   resendVerificationEmail,
+  logout,
 } = require("../controllers/authController");
 const { protect } = require("../middleware/auth");
 const { avatarUpload } = require("../config/cloudinary");
@@ -25,6 +26,7 @@ const { avatarUpload } = require("../config/cloudinary");
 // Public routes
 router.post("/register", register);
 router.post("/login", login);
+router.post("/logout", logout);
 router.post("/google", googleLogin);
 router.post("/facebook", facebookLogin);
 router.post("/facebook/data-deletion", facebookDataDeletion);

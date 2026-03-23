@@ -14,9 +14,27 @@ const api = axios.create({
   },
 });
 
+let csrfTokenPromise = null;
+
+const getCsrfToken = async () => {
+  if (!csrfTokenPromise) {
+    csrfTokenPromise = axios.get(`${API_URL}/csrf-token`, { withCredentials: true })
+      .then(res => res.data.csrfToken)
+      .catch(err => null);
+  }
+  return csrfTokenPromise;
+};
+
 // Request interceptor to add auth token
 api.interceptors.request.use(
-  (config) => {
+  async (config) => {
+    if (["post", "put", "patch", "delete"].includes(config.method?.toLowerCase())) {
+      const csrfToken = await getCsrfToken();
+      if (csrfToken) {
+        config.headers["X-CSRF-Token"] = csrfToken;
+      }
+    }
+
     const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
