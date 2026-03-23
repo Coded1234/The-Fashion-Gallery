@@ -63,7 +63,7 @@ const VerifyEmail = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center flex flex-col items-center">
-          <FiMail className="text-primary-600 mb-4" size/{64} />
+          <FiMail className="text-primary-600 mb-4" size={64} />
           <h2 className="text-2xl font-bold text-gray-800 mb-2">Check your email</h2>
           <p className="text-gray-500 mb-6">
             We've sent a verification link to <strong>{emailFromQuery}</strong>. Please check your inbox and click the link to activate your account.
