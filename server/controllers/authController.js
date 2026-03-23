@@ -148,7 +148,16 @@ const login = async (req, res) => {
       role: user.role,
       phone: user.phone,
       address: user.address,
-      token: (function(){ const t = generateToken(user.id); res.cookie("token", t, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: 7 * 24 * 60 * 60 * 1000 }); return t; })(),
+      token: (function () {
+        const t = generateToken(user.id);
+        res.cookie("token", t, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+        return t;
+      })(),
     });
   } catch (error) {
     console.error("Login error:", error);
@@ -718,7 +727,16 @@ const googleLogin = async (req, res) => {
       role: user.role,
       phone: user.phone,
       address: user.address,
-      token: (function(){ const t = generateToken(user.id); res.cookie("token", t, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: 7 * 24 * 60 * 60 * 1000 }); return t; })(),
+      token: (function () {
+        const t = generateToken(user.id);
+        res.cookie("token", t, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+        return t;
+      })(),
     });
   } catch (error) {
     console.error("Google login error:", error);
@@ -784,7 +802,16 @@ const facebookLogin = async (req, res) => {
       role: user.role,
       phone: user.phone,
       address: user.address,
-      token: (function(){ const t = generateToken(user.id); res.cookie("token", t, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: 7 * 24 * 60 * 60 * 1000 }); return t; })(),
+      token: (function () {
+        const t = generateToken(user.id);
+        res.cookie("token", t, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+        return t;
+      })(),
     });
   } catch (error) {
     console.error("Facebook login error:", error);
@@ -921,5 +948,8 @@ module.exports = {
   verifyEmail,
   resendVerificationEmail,
   deleteAccount,
-  logout: (req, res) => { res.cookie('token', '', { httpOnly: true, expires: new Date(0) }); res.json({ message: 'Logged out successfully' }); },
+  logout: (req, res) => {
+    res.cookie("token", "", { httpOnly: true, expires: new Date(0) });
+    res.json({ message: "Logged out successfully" });
+  },
 };

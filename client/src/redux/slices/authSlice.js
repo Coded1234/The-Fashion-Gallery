@@ -2,9 +2,10 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { authAPI } from "../../utils/api";
 
 // Load user from localStorage
-const userFromStorage = typeof window !== "undefined" && localStorage.getItem("user")
-  ? JSON.parse(localStorage.getItem("user"))
-  : null;
+const userFromStorage =
+  typeof window !== "undefined" && localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user"))
+    : null;
 
 const initialState = {
   user: userFromStorage,
@@ -112,8 +113,8 @@ const authSlice = createSlice({
     logout: (state) => {
       // Send logout request to backend to clear HttpOnly cookie
       try {
-        authAPI.logout().catch(err => console.error(err));
-      } catch(e) {}
+        authAPI.logout().catch((err) => console.error(err));
+      } catch (e) {}
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       state.user = null;
@@ -207,4 +208,3 @@ const authSlice = createSlice({
 
 export const { logout, clearError, setCredentials } = authSlice.actions;
 export default authSlice.reducer;
-
