@@ -45,7 +45,23 @@ if (isCloudinaryConfigured) {
     },
   });
 
-  upload = multer({ storage: storage });
+  const fileFilter = (req, file, cb) => {
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(
+        new Error("Invalid file type. Only JPEG, PNG and WebP are allowed."),
+        false,
+      );
+    }
+  };
+
+  upload = multer({ 
+    storage: storage,
+    fileFilter: fileFilter,
+    limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+  });
 
   // Avatar storage for Cloudinary
   avatarStorage = new CloudinaryStorage({
@@ -57,11 +73,6 @@ if (isCloudinaryConfigured) {
         "jpeg",
         "png",
         "webp",
-        "gif",
-        "bmp",
-        "heic",
-        "heif",
-        "avif",
       ],
       transformation: [
         { width: 200, height: 200, crop: "fill", gravity: "face" },
@@ -69,7 +80,11 @@ if (isCloudinaryConfigured) {
     },
   });
 
-  avatarUpload = multer({ storage: avatarStorage });
+  avatarUpload = multer({ 
+    storage: avatarStorage,
+    fileFilter: fileFilter,
+    limits: { fileSize: 2 * 1024 * 1024 } // 2MB limit
+  });
 } else {
   // Use local disk storage as fallback
   console.log("⚠️ Cloudinary not configured - using local file storage");

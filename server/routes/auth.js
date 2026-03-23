@@ -21,19 +21,20 @@ const {
   logout,
 } = require("../controllers/authController");
 const { protect } = require("../middleware/auth");
+const { authLimiter } = require("../middleware/rateLimiter");
 const { avatarUpload } = require("../config/cloudinary");
 
 // Public routes
-router.post("/register", register);
-router.post("/login", login);
+router.post("/register", authLimiter, register);
+router.post("/login", authLimiter, login);
 router.post("/logout", logout);
-router.post("/google", googleLogin);
-router.post("/facebook", facebookLogin);
+router.post("/google", authLimiter, googleLogin);
+router.post("/facebook", authLimiter, facebookLogin);
 router.post("/facebook/data-deletion", facebookDataDeletion);
-router.post("/forgot-password", forgotPassword);
-router.post("/reset-password/:token", resetPassword);
-router.post("/verify-email", verifyEmail);
-router.post("/resend-verification", resendVerificationEmail);
+router.post("/forgot-password", authLimiter, forgotPassword);
+router.post("/reset-password/:token", authLimiter, resetPassword);
+router.post("/verify-email", authLimiter, verifyEmail);
+router.post("/resend-verification", authLimiter, resendVerificationEmail);
 
 // Protected routes
 router.get("/profile", protect, getProfile);

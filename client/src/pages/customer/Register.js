@@ -1,5 +1,5 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -41,6 +41,15 @@ const Register = () => {
 
   const dispatch = useDispatch();
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Pre-fill email from URL if provided (e.g. from failed login redirect)
+  useEffect(() => {
+    const emailParam = searchParams.get("email");
+    if (emailParam) {
+      setFormData((prev) => ({ ...prev, email: emailParam }));
+    }
+  }, [searchParams]);
 
   const { user, isAuthenticated, error } = useSelector((state) => state.auth);
 
@@ -168,7 +177,8 @@ const Register = () => {
     }
 
     if (!STRONG_PASSWORD_REGEX.test(formData.password)) {
-      toast.error(STRONG_PASSWORD_MESSAGE);
+      // Intentionally not showing a toast here. The error will render under the input.
+      document.querySelector('input[name="password"]')?.focus();
       return;
     }
 
@@ -251,6 +261,11 @@ const Register = () => {
 
       if (status === 400 && /invalid phone/i.test(message)) {
         toast.error("Please enter a valid phone number");
+        return;
+      }
+
+      if (status === 400 && message === STRONG_PASSWORD_MESSAGE) {
+        document.querySelector('input[name="password"]')?.focus();
         return;
       }
 
@@ -420,7 +435,7 @@ const Register = () => {
 
                 {/* Password Strength Indicator */}
                 {formData.password && (
-                  <div className="mt-2">
+                  <div className="mt-2 text-left">
                     <div className="flex gap-1 mb-1">
                       {[...Array(5)].map((_, i) => (
                         <div
@@ -444,6 +459,11 @@ const Register = () => {
                     >
                       {strengthLabels[passwordStrength - 1] || "Too short"}
                     </p>
+                    {!STRONG_PASSWORD_REGEX.test(formData.password) && (
+                      <p className="text-xs text-red-500 mt-2 font-medium">
+                        {STRONG_PASSWORD_MESSAGE}
+                      </p>
+                    )}
                   </div>
                 )}
               </div>

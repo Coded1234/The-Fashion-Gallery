@@ -1,4 +1,4 @@
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const validator = require('validator');
 
 const GMAIL_DOMAIN = "@gmail.com";
 const ALLOWED_SIGNUP_EMAIL_DOMAINS = new Set([
@@ -35,7 +35,7 @@ const isValidEmail = (value) => {
   // Basic hardening: disallow control characters (header injection etc.)
   if (/[^\x20-\x7E]/.test(email) || /[\r\n\0]/.test(email)) return false;
 
-  if (!EMAIL_REGEX.test(email)) return false;
+  if (!validator.isEmail(email)) return false;
 
   return true;
 };
@@ -90,7 +90,7 @@ const isValidGmailEmail = (value) => {
   // Basic hardening: disallow control characters (header injection etc.)
   if (/[\r\n\0]/.test(email)) return false;
 
-  if (!EMAIL_REGEX.test(email)) return false;
+  if (!validator.isEmail(email)) return false;
   if (!email.endsWith(GMAIL_DOMAIN)) return false;
 
   return true;

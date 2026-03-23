@@ -18,17 +18,25 @@ const ResetPassword = () => {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
 
+  const STRONG_PASSWORD_REGEX =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
+  const STRONG_PASSWORD_MESSAGE =
+    "Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character.";
+
   const passwordRequirements = [
-    { text: "At least 6 characters", met: password.length >= 6 },
+    { text: "At least 8 characters", met: password.length >= 8 },
+    { text: "Contains lowercase letter", met: /[a-z]/.test(password) },
+    { text: "Contains uppercase letter", met: /[A-Z]/.test(password) },
     { text: "Contains a number", met: /\d/.test(password) },
-    { text: "Contains a letter", met: /[a-zA-Z]/.test(password) },
+    { text: "Contains a special character", met: /[^A-Za-z0-9]/.test(password) },
   ];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (password.length < 6) {
-      toast.error("Password must be at least 6 characters");
+    if (!STRONG_PASSWORD_REGEX.test(password)) {
+      // Focus field instead of toast
+      document.querySelector('input[type="password"]')?.focus();
       return;
     }
 
@@ -51,8 +59,12 @@ const ResetPassword = () => {
       }, 3000);
     } catch (err) {
       const message = err.response?.data?.message || "Failed to reset password";
-      setError(message);
-      toast.error(message);
+      if (err.response?.status === 400 && message === STRONG_PASSWORD_MESSAGE) {
+        document.querySelector('input[type="password"]')?.focus();
+      } else {
+        setError(message);
+        toast.error(message);
+      }
     } finally {
       setLoading(false);
     }
@@ -141,7 +153,7 @@ const ResetPassword = () => {
               </div>
 
               {/* Password Requirements */}
-              <div className="mt-3 space-y-2">
+              <div className="mt-3 space-y-2 text-left">
                 {passwordRequirements.map((req, index) => (
                   <div key={index} className="flex items-center gap-2 text-sm">
                     {req.met ? (
@@ -156,6 +168,11 @@ const ResetPassword = () => {
                     </span>
                   </div>
                 ))}
+                {password && !STRONG_PASSWORD_REGEX.test(password) && (
+                  <p className="text-xs text-red-500 mt-2 font-medium">
+                    {STRONG_PASSWORD_MESSAGE}
+                  </p>
+                )}
               </div>
             </div>
 

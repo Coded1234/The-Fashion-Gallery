@@ -275,49 +275,50 @@ const Navbar = () => {
             </button>
 
             {/* Announcements Bell */}
-            <div className="relative" ref={bellRef}>
-              <button
-                onClick={() => setBellOpen(!bellOpen)}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-opacity-10 rounded-full transition-colors relative"
-                aria-label="Announcements"
-              >
-                <FiBell size={20} />
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
-                    {unreadCount > 9 ? "9+" : unreadCount}
-                  </span>
-                )}
-              </button>
+            {isAuthenticated && (
+              <div className="relative" ref={bellRef}>
+                <button
+                  onClick={() => setBellOpen(!bellOpen)}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-opacity-10 rounded-full transition-colors relative"
+                  aria-label="Announcements"
+                >
+                  <FiBell size={20} />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
+                  )}
+                </button>
 
-              {/* Bell dropdown */}
-              {bellOpen && (
-                <div className="fixed left-2 right-2 mt-2 md:absolute md:left-auto md:right-0 md:w-80 top-[60px] md:top-auto bg-white dark:bg-surface rounded-xl shadow-xl border border-gray-100 dark:border-primary-700 z-50 overflow-hidden">
-                  <div className="flex items-center justify-between px-4 py-3 border-b dark:border-primary-700">
-                    <h4 className="font-semibold text-gray-800 dark:text-gold-light text-sm">
-                      Announcements
-                    </h4>
-                    {announcements.length > 0 && unreadCount > 0 && (
-                      <button
-                        onClick={() => {
-                          dismissAll();
-                          setBellOpen(false);
-                        }}
-                        className="text-xs text-primary-500 hover:text-primary-700 font-medium"
-                      >
-                        Clear all
-                      </button>
-                    )}
-                  </div>
+                {/* Bell dropdown */}
+                {bellOpen && (
+                  <div className="fixed left-2 right-2 mt-2 md:absolute md:left-auto md:right-0 md:w-80 top-[60px] md:top-auto bg-white dark:bg-surface rounded-xl shadow-xl border border-gray-100 dark:border-primary-700 z-50 overflow-hidden">
+                    <div className="flex items-center justify-between px-4 py-3 border-b dark:border-primary-700">
+                      <h4 className="font-semibold text-gray-800 dark:text-gold-light text-sm">
+                        Announcements
+                      </h4>
+                      {announcements.length > 0 && unreadCount > 0 && (
+                        <button
+                          onClick={() => {
+                            dismissAll();
+                            setBellOpen(false);
+                          }}
+                          className="text-xs text-primary-500 hover:text-primary-700 font-medium"
+                        >
+                          Clear all
+                        </button>
+                      )}
+                    </div>
 
-                  <div className="max-h-72 overflow-y-auto">
-                    {unread.length === 0 ? (
-                      <div className="px-4 py-6 text-center text-gray-400 text-sm">
-                        No announcements
-                      </div>
-                    ) : (
-                      unread.map((a) => (
-                        <div
-                          key={a.id}
+                    <div className="max-h-72 overflow-y-auto">
+                      {unread.length === 0 ? (
+                        <div className="px-4 py-6 text-center text-gray-400 text-sm">
+                          No announcements
+                        </div>
+                      ) : (
+                        unread.map((a) => (
+                          <div
+                            key={a.id}
                           onClick={() => {
                             openAnnouncement(a);
                             setBellOpen(false);
@@ -363,7 +364,8 @@ const Navbar = () => {
                   </div>
                 </div>
               )}
-            </div>
+              </div>
+            )}
 
             {/* Cart */}
             <Link

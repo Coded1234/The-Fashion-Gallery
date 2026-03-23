@@ -20,6 +20,7 @@ const Login = () => {
     email: "",
     password: "",
   });
+  const [formError, setFormError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -80,13 +81,23 @@ const Login = () => {
 
   useEffect(() => {
     if (error) {
-      toast.error(error);
+      const isFormError =
+        typeof error === "string" &&
+        (error.includes("We don't recognize this email") ||
+          error.toLowerCase().includes("invalid email") ||
+          error.toLowerCase().includes("incorrect password") ||
+          error.toLowerCase().includes("invalid credentials"));
+
+      if (!isFormError) {
+        toast.error(error);
+      }
       dispatch(clearError());
     }
   }, [error, dispatch]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (formError) setFormError("");
   };
 
   const handleSubmit = async (e) => {
@@ -127,8 +138,22 @@ const Login = () => {
           </div>,
           { duration: 6000 },
         );
+      } else if (
+        errMsg &&
+        (errMsg.includes("We don't recognize this email") ||
+          errMsg.toLowerCase().includes("invalid email") ||
+          errMsg.toLowerCase().includes("incorrect password") ||
+          errMsg.toLowerCase().includes("invalid credentials"))
+      ) {
+        setFormError(errMsg);
+        if (errMsg.includes("We don't recognize this email")) {
+          setTimeout(() => {
+            router.push(`/register?email=${encodeURIComponent(formData.email)}`);
+          }, 3000);
+        }
+      } else {
+        toast.error(errMsg);
       }
-      // Other errors handled by useEffect
     }
   };
 
@@ -195,11 +220,20 @@ const Login = () => {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="Enter your email"
-                  className="w-full pl-12 pr-4 py-4 border border-gray-300 rounded-xl placeholder-black focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                  className={`w-full pl-12 pr-4 py-4 border ${
+                    formError && (formError.includes("email") || formError.includes("email or password"))
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:ring-primary-500"
+                  } rounded-xl placeholder-black focus:outline-none focus:ring-2 focus:border-transparent transition-all`}
                   style={{ backgroundColor: "white", color: "black" }}
                   required
                 />
               </div>
+              {formError &&
+                (formError.includes("We don't recognize this email") ||
+                  formError.toLowerCase() === "invalid email") && (
+                  <p className="mt-2 text-sm text-red-500 font-medium">{formError}</p>
+                )}
             </div>
 
             {/* Password */}
@@ -218,7 +252,11 @@ const Login = () => {
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="Enter your password"
-                  className="w-full pl-12 pr-12 py-4 border border-gray-300 rounded-xl placeholder-black focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                  className={`w-full pl-12 pr-12 py-4 border ${
+                    formError && (formError.toLowerCase().includes("password") || formError.toLowerCase().includes("credentials"))
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:ring-primary-500"
+                  } rounded-xl placeholder-black focus:outline-none focus:ring-2 focus:border-transparent transition-all`}
                   style={{ backgroundColor: "white", color: "black" }}
                   required
                 />
@@ -230,6 +268,12 @@ const Login = () => {
                   {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
                 </button>
               </div>
+              {formError &&
+                (formError.toLowerCase().includes("password") ||
+                  formError.toLowerCase().includes("credentials") ||
+                  formError.toLowerCase() === "invalid email or password") && (
+                  <p className="mt-2 text-sm text-red-500 font-medium">{formError}</p>
+                )}
             </div>
 
             {/* Remember Me & Forgot Password */}

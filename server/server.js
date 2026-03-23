@@ -7,6 +7,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpecs = require("./config/swagger");
+const logger = require("./config/logger");
 
 // Load environment variables
 dotenv.config();
@@ -30,6 +31,7 @@ const couponRoutes = require("./routes/coupons");
 const categoryRoutes = require("./routes/categories");
 const shippingRoutes = require("./routes/shipping");
 const announcementRoutes = require("./routes/announcements");
+const xssMiddleware = require("./middleware/xss");
 
 const app = express();
 
@@ -37,10 +39,38 @@ const app = express();
 // so express-rate-limit can read the real client IP from X-Forwarded-For
 app.set("trust proxy", 1);
 
+// Enforce HTTPS in production
+if (process.env.NODE_ENV === "production" && process.env.VERCEL !== "1") {
+  app.use((req, res, next) => {
+    if (req.header("x-forwarded-proto") !== "https") {
+      res.redirect(301, `https://${req.header("host")}${req.url}`);
+    } else {
+      next();
+    }
+  });
+}
+
 // Security headers
 app.use(
   helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.jsdelivr.net"],
+        imgSrc: ["'self'", "data:", "https:", "res.cloudinary.com"],
+        connectSrc: ["'self'", "https://api.paystack.co", "https://api.cloudinary.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        frameSrc: ["'self'"],
+      },
+    },
+    hsts: {
+      maxAge: 31536000,
+      includeSubDomains: true,
+      preload: true,
+    },
     crossOriginResourcePolicy: { policy: "cross-origin" }, // allow static uploads to load
+    noSniff: true,
   }),
 );
 
@@ -94,6 +124,7 @@ app.use(
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
+app.use(xssMiddleware());
 
 const csrf = require("csurf");
 const csrfProtection = csrf({
@@ -106,22 +137,43 @@ const csrfProtection = csrf({
 
 app.use((req, res, next) => {
   // Exclude webhooks from CSRF checks
-  if (req.path === "/api/payment/webhook" || req.path === "/api/webhook") {
+  if (req.path === "/api/v1/payment/webhook" || req.path === "/api/webhook") {
     return next();
   }
+  
+  // Allow Swagger API docs to bypass CSRF for testing purposes
+  if (req.headers.referer && req.headers.referer.includes("/api-docs")) {
+    return next();
+  }
+  
   csrfProtection(req, res, next);
-});
-
-app.get("/api/csrf-token", (req, res) => {
-  res.json({ csrfToken: req.csrfToken() });
 });
 
 // Serve uploaded files statically
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+// Protect API docs with basic authentication
+const swaggerBasicAuth = (req, res, next) => {
+  const auth = Buffer.from((req.headers.authorization || '').replace('Basic ', ''), 'base64').toString();
+  const [user, pass] = auth.split(':');
+  
+  // NEVER hardcode credentials directly in the codebase for production!
+  // These are now required to be configured in your .env file
+  const expectedUser = process.env.SWAGGER_USER;
+  const expectedPass = process.env.SWAGGER_PASSWORD;
+  
+  // If either credential isn't set, block access entirely as a fail-safe
+  if (!expectedUser || !expectedPass || user !== expectedUser || pass !== expectedPass) {
+    res.setHeader('WWW-Authenticate', 'Basic realm="API Docs"');
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+  next();
+};
+
 // Swagger API Documentation
 app.use(
   "/api-docs",
+  swaggerBasicAuth,
   swaggerUi.serve,
   swaggerUi.setup(swaggerSpecs, {
     customCss: ".swagger-ui .topbar { display: none }",
@@ -129,30 +181,44 @@ app.use(
   }),
 );
 
-// Routes
-app.use("/api/auth", authLimiter, authRoutes);
-app.use("/api/products", productRoutes);
-app.use("/api/cart", cartRoutes);
-app.use("/api/orders", orderRoutes);
-app.use("/api/reviews", reviewRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/payment", paymentRoutes);
-app.use("/api/newsletter", newsletterRoutes);
-app.use("/api/contact", contactRoutes);
-app.use("/api/settings", settingsRoutes);
-app.use("/api/coupons", couponRoutes);
-app.use("/api/categories", categoryRoutes);
-app.use("/api/shipping", shippingRoutes);
-app.use("/api/announcements", announcementRoutes);
+// API Versioning prefix
+const API_PREFIX = "/api/v1";
 
-// Health check
+app.get(`${API_PREFIX}/csrf-token`, (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});
+
+// Routes
+app.use(`${API_PREFIX}/auth`, authLimiter, authRoutes);
+app.use(`${API_PREFIX}/products`, productRoutes);
+app.use(`${API_PREFIX}/cart`, cartRoutes);
+app.use(`${API_PREFIX}/orders`, orderRoutes);
+app.use(`${API_PREFIX}/reviews`, reviewRoutes);
+app.use(`${API_PREFIX}/admin`, adminRoutes);
+app.use(`${API_PREFIX}/payment`, paymentRoutes);
+app.use(`${API_PREFIX}/newsletter`, newsletterRoutes);
+app.use(`${API_PREFIX}/contact`, contactRoutes);
+app.use(`${API_PREFIX}/settings`, settingsRoutes);
+app.use(`${API_PREFIX}/coupons`, couponRoutes);
+app.use(`${API_PREFIX}/categories`, categoryRoutes);
+app.use(`${API_PREFIX}/shipping`, shippingRoutes);
+app.use(`${API_PREFIX}/announcements`, announcementRoutes);
+
+// Keep old unversioned health endpoint or map it
 app.get("/api/health", (req, res) => {
   res.json({ status: "Server is running!" });
+});
+app.get(`${API_PREFIX}/health`, (req, res) => {
+  res.json({ status: "Server is running (v1)!" });
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  if (err.code === 'EBADCSRFTOKEN') {
+    return res.status(403).json({ message: "Invalid CSRF Token. Please refresh the page and try again." });
+  }
+
+  logger.error(err.stack);
   res.status(500).json({
     message: "Something went wrong!",
     error: process.env.NODE_ENV === "production" ? undefined : err.message,
@@ -166,10 +232,10 @@ const startServer = async () => {
   try {
     await connectDB();
     app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+      logger.info(`Server running on port ${PORT}`);
     });
   } catch (error) {
-    console.error("Failed to start server:", error);
+    logger.error("Failed to start server:", error);
     process.exit(1);
   }
 };
@@ -179,8 +245,7 @@ if (process.env.VERCEL !== "1") {
   startServer();
 } else {
   // Connect to database in serverless mode
-  connectDB().catch((err) => console.error("Database connection error:", err));
+  connectDB().catch((err) => logger.error("Database connection error:", err));
 }
 
-// Export for Vercel serverless
 module.exports = app;

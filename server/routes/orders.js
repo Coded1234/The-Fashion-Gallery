@@ -8,11 +8,12 @@ const {
   trackOrder,
 } = require("../controllers/orderController");
 const { protect } = require("../middleware/auth");
+const { orderLimiter } = require("../middleware/rateLimiter");
 
 // All routes are protected
 router.use(protect);
 
-router.post("/", createOrder);
+router.post("/", orderLimiter, createOrder);
 router.get("/", getUserOrders);
 router.get("/:id", getOrderById);
 router.put("/:id/cancel", cancelOrder);

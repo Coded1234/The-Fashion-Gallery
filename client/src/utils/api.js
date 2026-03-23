@@ -1,10 +1,10 @@
 import axios from "axios";
 
-// Use relative "/api" in the browser so it always hits the same domain (Vercel).
+// Use relative "/api/v1" in the browser so it always hits the same domain (Vercel)
 // REACT_APP_API_URL can override this for local dev pointing at a separate server.
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ||
-  (typeof window !== "undefined" ? "/api" : "http://localhost:5000/api");
+  (typeof window !== "undefined" ? "/api/v1" : "http://localhost:5000/api/v1");
 
 const api = axios.create({
   baseURL: API_URL,

@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import React, { useState } from "react";
-import axios from "axios";
+import api from "../../utils/api";
 import toast from "react-hot-toast";
 import { FiMail, FiCheckCircle } from "react-icons/fi";
 
@@ -20,7 +20,7 @@ const ResendVerification = () => {
 
     setLoading(true);
     try {
-      const { data } = await axios.post("/api/auth/resend-verification", {
+      const { data } = await api.post("/auth/resend-verification", {
         email,
       });
       setSuccess(true);
