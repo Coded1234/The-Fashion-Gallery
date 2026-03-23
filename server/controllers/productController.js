@@ -14,7 +14,6 @@ const getProducts = async (req, res) => {
       maxPrice,
       size,
       color,
-      brand,
       sort,
       search,
       featured,
@@ -24,7 +23,6 @@ const getProducts = async (req, res) => {
     const where = { isActive: true };
 
     if (category) where.category = category;
-    if (brand) where.brand = brand;
     if (featured === "true") where.featured = true;
 
     if (minPrice || maxPrice) {
@@ -51,7 +49,6 @@ const getProducts = async (req, res) => {
       where[Op.or] = [
         { name: { [Op.iLike]: `%${search}%` } },
         { description: { [Op.iLike]: `%${search}%` } },
-        { brand: { [Op.iLike]: `%${search}%` } },
       ];
     }
 
@@ -190,7 +187,6 @@ const searchProducts = async (req, res) => {
         [Op.or]: [
           { name: { [Op.iLike]: `%${q}%` } },
           { description: { [Op.iLike]: `%${q}%` } },
-          { brand: { [Op.iLike]: `%${q}%` } },
         ],
         isActive: true,
       },
