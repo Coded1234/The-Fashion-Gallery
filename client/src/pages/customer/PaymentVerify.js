@@ -2,7 +2,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { clearCart } from "../../redux/slices/cartSlice";
 import api from "../../utils/api";
 import {
@@ -18,6 +18,7 @@ const PaymentVerify = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector((state) => state.auth);
 
   const [status, setStatus] = useState("verifying"); // verifying, success, failed
   const [order, setOrder] = useState(null);
@@ -25,8 +26,26 @@ const PaymentVerify = () => {
 
   const reference = searchParams.get("reference");
   const trxref = searchParams.get("trxref");
+  const method = searchParams.get("method");
+  const urlOrderId = searchParams.get("order_id");
+  const urlOrderNumber = searchParams.get("order_number");
+  const urlAmount = searchParams.get("amount");
+  const urlItemsCount = searchParams.get("items_count");
 
   useEffect(() => {
+    if (method === "cod") {
+      setStatus("success");
+      setOrder({
+        id: urlOrderId,
+        totalAmount: urlAmount,
+        orderNumber: urlOrderNumber || urlOrderId,
+        itemsCount: urlItemsCount || 0,
+      });
+      setMessage("Order Confirmed");
+      dispatch(clearCart());
+      return;
+    }
+
     const verifyPayment = async () => {
       const paymentRef = reference || trxref;
 
@@ -59,7 +78,16 @@ const PaymentVerify = () => {
     };
 
     verifyPayment();
-  }, [reference, trxref, dispatch]);
+  }, [
+    reference,
+    trxref,
+    method,
+    urlOrderId,
+    urlOrderNumber,
+    urlAmount,
+    urlItemsCount,
+    dispatch,
+  ]);
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("en-GH", {
@@ -103,7 +131,7 @@ const PaymentVerify = () => {
               <FiCheckCircle className="text-green-500" size={48} />
             </div>
             <h1 className="text-3xl font-bold text-gray-800 mb-2">
-              Payment Successful!
+              {method === "cod" ? "Order Confirmed!" : "Payment Successful!"}
             </h1>
             <p className="text-gray-600">
               Thank you for your purchase. Your order has been confirmed.
@@ -139,8 +167,11 @@ const PaymentVerify = () => {
               <div className="flex items-center gap-3 text-gray-600">
                 <FiShoppingBag size={18} />
                 <span>
-                  {order?.orderItems?.length || order?.totalItems || 0} item(s)
-                  in your order
+                  {order?.itemsCount ||
+                    order?.orderItems?.length ||
+                    order?.totalItems ||
+                    0}{" "}
+                  item(s) in your order
                 </span>
               </div>
             </div>
@@ -179,19 +210,20 @@ const PaymentVerify = () => {
             <ul className="space-y-2 text-blue-700 text-sm">
               <li>• You'll receive an email confirmation shortly</li>
               <li>• We'll notify you when your order ships</li>
-              <li>• Track your order anytime from your account</li>
             </ul>
           </div>
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4">
-            <Link
-              href="/orders"
-              className="flex-1 py-3 btn-gradient rounded-xl font-semibold text-center flex items-center justify-center gap-2"
-            >
-              <FiShoppingBag />
-              View Order
-            </Link>
+            {isAuthenticated && (
+              <Link
+                href="/orders"
+                className="flex-1 py-3 btn-gradient rounded-xl font-semibold text-center flex items-center justify-center gap-2"
+              >
+                <FiShoppingBag />
+                View Order
+              </Link>
+            )}
             <Link
               href="/"
               className="flex-1 py-3 border-2 border-gray-300 rounded-xl font-semibold text-gray-700 text-center flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors"

@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { fetchCart } from "../../redux/slices/cartSlice";
 import { getImageUrl } from "../../utils/imageUrl";
 import api from "../../utils/api";
@@ -22,6 +22,7 @@ import {
 const OrderSummary = () => {
   const router = useRouter();
   const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const _oState =
     typeof window !== "undefined"
       ? JSON.parse(sessionStorage.getItem("orderSummaryState") || "{}")
@@ -93,20 +94,31 @@ const OrderSummary = () => {
       toast.error("Please enter your last name");
       return;
     }
-    if (!personalInfo.email || personalInfo.email.trim() === "") {
-      toast.error("Please enter your email address");
-      return;
-    }
-    if (!/^\S+@\S+\.\S+$/.test(personalInfo.email)) {
-      toast.error("Please enter a valid email address");
-      return;
+    if (isAuthenticated) {
+      if (!personalInfo.email || personalInfo.email.trim() === "") {
+        toast.error("Please enter your email address");
+        return;
+      }
+      if (!/^\S+@\S+\.\S+$/.test(personalInfo.email)) {
+        toast.error("Please enter a valid email address");
+        return;
+      }
     }
     if (!personalInfo.phone || personalInfo.phone.trim() === "") {
       toast.error("Please enter your phone number");
       return;
     }
-    if (personalInfo.phone.trim().length < 10) {
-      toast.error("Please enter a valid phone number");
+
+    // Strict pattern for Ghana phone networks (10 digits starting with specific prefixes)
+    // MTN (024, 025, 053, 054, 055, 059)
+    // Vodafone/Telecel (020, 050)
+    // AT (027, 057, 026, 056)
+    // Glo (023)
+    const phoneRegex = /^(02[0345678]|05[0345679])\d{7}$/;
+    const phoneStr = personalInfo.phone.trim().replace(/\s+/g, "");
+
+    if (!phoneRegex.test(phoneStr)) {
+      toast.error("Invalid number format");
       return;
     }
 
@@ -152,8 +164,9 @@ const OrderSummary = () => {
       // Handle payment based on method
       if (paymentMethod === "paystack") {
         // Initialize Paystack payment
+        const guestEmail = `guest-${Date.now()}@yoursite.com`;
         const paymentResponse = await api.post("/payment/initialize", {
-          email: personalInfo.email,
+          email: isAuthenticated ? personalInfo.email : guestEmail,
           amount: finalTotal,
           metadata: {
             order_id: order.id,
@@ -177,7 +190,15 @@ const OrderSummary = () => {
         // For COD and Bank Transfer, just refresh cart and redirect
         await dispatch(fetchCart());
         toast.success("Order confirmed successfully!");
-        router.push("/orders");
+        if (order.id) {
+          const itemsCount =
+            items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+          router.push(
+            `/payment/verify?method=cod&order_id=${order.id}&order_number=${order.orderNumber || ""}&amount=${finalTotal}&items_count=${itemsCount}`,
+          );
+        } else {
+          router.push("/");
+        }
       }
     } catch (error) {
       console.error("Order error:", error);
@@ -239,7 +260,7 @@ const OrderSummary = () => {
                         });
                       }}
                       className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white"
-                      placeholder="John"
+                      placeholder="Enter First Name"
                       required
                     />
                   </div>
@@ -259,32 +280,34 @@ const OrderSummary = () => {
                       });
                     }}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white"
-                    placeholder="Doe"
+                    placeholder="Enter Last Name"
                     required
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gold mb-2">
-                    Email Address *
-                  </label>
-                  <div className="relative">
-                    <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input
-                      type="email"
-                      name="email"
-                      value={personalInfo.email}
-                      onChange={(e) => {
-                        setPersonalInfo({
-                          ...personalInfo,
-                          email: e.target.value,
-                        });
-                      }}
-                      className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white"
-                      placeholder="john@example.com"
-                      required
-                    />
+                {isAuthenticated && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gold mb-2">
+                      Email Address *
+                    </label>
+                    <div className="relative">
+                      <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <input
+                        type="email"
+                        name="email"
+                        value={personalInfo.email}
+                        onChange={(e) => {
+                          setPersonalInfo({
+                            ...personalInfo,
+                            email: e.target.value,
+                          });
+                        }}
+                        className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white"
+                        placeholder="john@example.com"
+                        required={isAuthenticated}
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gold mb-2">
                     Phone Number *
@@ -302,7 +325,7 @@ const OrderSummary = () => {
                         });
                       }}
                       className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 dark:text-white"
-                      placeholder=""
+                      placeholder="Enter a valid phone number"
                       required
                     />
                   </div>

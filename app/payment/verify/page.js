@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 export const dynamic = "force-dynamic";
 import CustomerLayout from "../../../client/src/layouts/CustomerLayout";
-import ProtectedRoute from "../../../client/src/components/ProtectedRoute";
 import PaymentVerify from "../../../client/src/pages/customer/PaymentVerify";
 
 export const metadata = {
@@ -12,11 +11,9 @@ export const metadata = {
 export default function PaymentVerifyPage() {
   return (
     <CustomerLayout>
-      <ProtectedRoute>
-        <Suspense>
-          <PaymentVerify />
-        </Suspense>
-      </ProtectedRoute>
+      <Suspense>
+        <PaymentVerify />
+      </Suspense>
     </CustomerLayout>
   );
 }

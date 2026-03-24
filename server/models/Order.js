@@ -16,7 +16,19 @@ const Order = sequelize.define(
     },
     userId: {
       type: DataTypes.UUID,
-      allowNull: false,
+      allowNull: true,
+    },
+    sessionId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    guestEmail: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    guestName: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     shippingAddress: {
       type: DataTypes.JSONB,

@@ -7,13 +7,15 @@ const {
   cancelOrder,
   trackOrder,
 } = require("../controllers/orderController");
-const { protect } = require("../middleware/auth");
+const { protect, optionalAuth } = require("../middleware/auth");
 const { orderLimiter } = require("../middleware/rateLimiter");
 
-// All routes are protected
+// Create Order allows guests, others require auth
+router.post("/", optionalAuth, orderLimiter, createOrder);
+
+// All other routes are protected
 router.use(protect);
 
-router.post("/", orderLimiter, createOrder);
 router.get("/", getUserOrders);
 router.get("/:id", getOrderById);
 router.put("/:id/cancel", cancelOrder);

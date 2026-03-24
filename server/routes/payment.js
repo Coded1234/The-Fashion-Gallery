@@ -5,10 +5,10 @@ const {
   verifyPayment,
   paystackWebhook,
 } = require("../controllers/paymentController");
-const { protect } = require("../middleware/auth");
+const { protect, optionalAuth } = require("../middleware/auth");
 
-router.post("/initialize", protect, initializePayment);
-router.get("/verify/:reference", protect, verifyPayment);
+router.post("/initialize", optionalAuth, initializePayment);
+router.get("/verify/:reference", optionalAuth, verifyPayment);
 router.post("/webhook", paystackWebhook);
 
 module.exports = router;

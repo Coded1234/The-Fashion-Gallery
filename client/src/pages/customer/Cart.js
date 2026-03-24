@@ -41,10 +41,8 @@ const Cart = () => {
   const [editingQuantity, setEditingQuantity] = useState({});
 
   useEffect(() => {
-    if (isAuthenticated) {
-      dispatch(fetchCart());
-    }
-  }, [dispatch, isAuthenticated]);
+    dispatch(fetchCart());
+  }, [dispatch]);
 
   // Load recently viewed products
   useEffect(() => {
@@ -116,12 +114,13 @@ const Cart = () => {
   };
 
   const handleCheckout = () => {
-    if (!isAuthenticated) {
-      toast.error("Please login to checkout");
-      router.push("/login?from=/checkout");
-      return;
-    }
-    // Pass coupon data to checkout
+    // If not authenticated, we still let them proceed to checkout route,
+    // which will route them to login since /checkout is protected.
+    // However, if we want Guest Checkout, we should remove the trap there too!
+    // But for now, let's keep the Redirect logic, but actually `/checkout`
+    // redirects to `/login` via ProtectedRoute.
+    // To enable Guest Checkout, we must remove ProtectedRoute from `/checkout`!
+
     if (typeof window !== "undefined") {
       sessionStorage.setItem(
         "checkoutState",
@@ -183,32 +182,6 @@ const Cart = () => {
   const total = subtotal - couponDiscount + shippingFee;
 
   // Empty cart state
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-[var(--bg)] py-16">
-        <div className="container mx-auto px-4">
-          <div className="max-w-md mx-auto text-center">
-            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <FiShoppingBag className="text-gray-400" size={40} />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">
-              Your Cart is Empty
-            </h2>
-            <p className="text-gray-600 mb-8">
-              Please login to view your cart and start shopping!
-            </p>
-            <Link
-              href="/login"
-              className="inline-flex items-center gap-2 px-8 py-3 btn-gradient rounded-full font-semibold"
-            >
-              Login to Continue
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-[var(--bg)] py-16">
@@ -217,10 +190,10 @@ const Cart = () => {
             <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <FiShoppingBag className="text-gray-400" size={40} />
             </div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4 cursor-default">
               Your Cart is Empty
             </h2>
-            <p className="text-gray-600 mb-8">
+            <p className="text-gray-600 mb-8 cursor-default">
               Looks like you haven't added any items to your cart yet.
             </p>
             <Link

@@ -9,6 +9,7 @@ import {
   googleLogin,
   loadUser,
 } from "../../redux/slices/authSlice";
+import { mergeCart } from "../../redux/slices/cartSlice";
 import IMAGES from "../../config/images";
 import toast from "react-hot-toast";
 import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight } from "react-icons/fi";
@@ -48,6 +49,10 @@ const Login = () => {
       dispatch(googleLogin(tokenResponse.access_token))
         .unwrap()
         .then((userData) => {
+          // Merge cart
+          if (localStorage.getItem("sessionId")) {
+            dispatch(mergeCart());
+          }
           // Server returns flat object: { firstName, lastName, phone, ... }
           const u = userData.user || userData;
           if (!u?.firstName || !u?.lastName || !u?.phone) {
@@ -108,6 +113,10 @@ const Login = () => {
 
     try {
       await dispatch(login(formData)).unwrap();
+      // Merge cart
+      if (localStorage.getItem("sessionId")) {
+        dispatch(mergeCart());
+      }
       if (rememberMe) {
         localStorage.setItem("rememberedEmail", formData.email);
       } else {
@@ -254,7 +263,9 @@ const Login = () => {
                   placeholder="Enter your password"
                   className={`w-full pl-12 pr-12 py-4 border ${
                     formError &&
-                    formError.toLowerCase().includes("invalid email or password")
+                    formError
+                      .toLowerCase()
+                      .includes("invalid email or password")
                       ? "border-red-500 focus:ring-red-500"
                       : "border-gray-300 focus:ring-primary-500"
                   } rounded-xl placeholder-black focus:outline-none focus:ring-2 focus:border-transparent transition-all`}
@@ -270,7 +281,9 @@ const Login = () => {
                 </button>
               </div>
               {formError &&
-                formError.toLowerCase().includes("invalid email or password") && (
+                formError
+                  .toLowerCase()
+                  .includes("invalid email or password") && (
                   <p className="mt-2 text-sm text-red-500 font-medium">
                     {formError}
                   </p>

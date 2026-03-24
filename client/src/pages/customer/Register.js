@@ -8,6 +8,7 @@ import {
   googleLogin,
   loadUser,
 } from "../../redux/slices/authSlice";
+import { mergeCart } from "../../redux/slices/cartSlice";
 import IMAGES from "../../config/images";
 import toast from "react-hot-toast";
 import api from "../../utils/api";
@@ -60,6 +61,10 @@ const Register = () => {
       dispatch(googleLogin(tokenResponse.access_token))
         .unwrap()
         .then((userData) => {
+          // Merge cart
+          if (localStorage.getItem("sessionId")) {
+            dispatch(mergeCart());
+          }
           // Check if profile is incomplete
           if (
             !userData.user?.firstName ||

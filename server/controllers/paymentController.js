@@ -173,17 +173,22 @@ const verifyPayment = async (req, res) => {
 
                     // Clear user's cart after successful payment
                     const { Cart, CartItem } = require("../models");
-                    const cart = await Cart.findOne({
-                      where: { userId: o.userId },
-                      transaction: t,
-                    });
-                    if (cart) {
-                      await CartItem.destroy({
-                        where: { cartId: cart.id },
+                    const cartQuery = o.userId
+                      ? { userId: o.userId }
+                      : { sessionId: o.sessionId };
+                    if (o.userId || o.sessionId) {
+                      const cart = await Cart.findOne({
+                        where: cartQuery,
                         transaction: t,
                       });
-                      cart.totalAmount = 0;
-                      await cart.save({ transaction: t });
+                      if (cart) {
+                        await CartItem.destroy({
+                          where: { cartId: cart.id },
+                          transaction: t,
+                        });
+                        cart.totalAmount = 0;
+                        await cart.save({ transaction: t });
+                      }
                     }
 
                     // Update stock for each product in the order

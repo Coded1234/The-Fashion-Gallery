@@ -45,12 +45,6 @@ const ProductCard = ({
     e.preventDefault();
     e.stopPropagation();
 
-    if (!isAuthenticated) {
-      toast.error("Please login to add items to cart");
-      router.push("/login");
-      return;
-    }
-
     if (onAddToCart) {
       onAddToCart(product);
     } else {

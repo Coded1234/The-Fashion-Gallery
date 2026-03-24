@@ -1,5 +1,4 @@
 import CustomerLayout from "../../client/src/layouts/CustomerLayout";
-import ProtectedRoute from "../../client/src/components/ProtectedRoute";
 import Checkout from "../../client/src/pages/customer/Checkout";
 
 export const metadata = {
@@ -10,9 +9,7 @@ export const metadata = {
 export default function CheckoutPage() {
   return (
     <CustomerLayout>
-      <ProtectedRoute>
-        <Checkout />
-      </ProtectedRoute>
+      <Checkout />
     </CustomerLayout>
   );
 }

@@ -314,7 +314,12 @@ const Dashboard = () => {
                     #{order.orderNumber}
                   </p>
                   <p className="text-xs text-gray-400 mt-0.5">
-                    {order.user?.firstName} {order.user?.lastName}
+                    {order.shippingAddress?.firstName
+                      ? `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`
+                      : order.guestName ||
+                        (order.user
+                          ? `${order.user.firstName} ${order.user.lastName}`
+                          : "Guest")}
                   </p>
                 </div>
                 <div className="flex items-center gap-2 ml-2">
@@ -367,7 +372,12 @@ const Dashboard = () => {
                       #{order.orderNumber}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500">
-                      {order.user?.firstName} {order.user?.lastName}
+                      {order.shippingAddress?.firstName
+                        ? `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`
+                        : order.guestName ||
+                          (order.user
+                            ? `${order.user.firstName} ${order.user.lastName}`
+                            : "Guest")}
                     </td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">
                       {formatCurrency(order.totalAmount)}

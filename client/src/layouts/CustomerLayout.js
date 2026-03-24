@@ -1,7 +1,9 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { useDispatch } from "react-redux";
+import { fetchCart } from "../redux/slices/cartSlice";
 import Navbar from "../components/customer/Navbar";
 import Footer from "../components/customer/Footer";
 import ScrollToTop from "../components/common/ScrollToTop";
@@ -15,6 +17,11 @@ const pageVariants = {
 
 const CustomerLayout = ({ children }) => {
   const pathname = usePathname();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchCart());
+  }, [dispatch]);
 
   return (
     <div className="flex flex-col min-h-screen">

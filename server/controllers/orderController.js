@@ -49,11 +49,26 @@ const createOrder = async (req, res) => {
       couponId,
       discount,
       shippingDetails,
+      guestEmail,
+      guestName,
+      sessionId,
     } = req.body;
+
+    // Determine user or session
+    const userId = req.user ? req.user.id : null;
+    const activeSessionId = req.headers["x-session-id"] || sessionId;
+
+    if (!userId && !activeSessionId) {
+      return res
+        .status(400)
+        .json({ message: "No active session or user found." });
+    }
+
+    const cartQuery = userId ? { userId } : { sessionId: activeSessionId };
 
     // Get user's cart with items
     const cart = await Cart.findOne({
-      where: { userId: req.user.id },
+      where: cartQuery,
       include: [
         {
           model: CartItem,
@@ -94,7 +109,13 @@ const createOrder = async (req, res) => {
 
     // Create order (payment pending for online payments, confirmed for COD)
     const order = await Order.create({
-      userId: req.user.id,
+      userId,
+      sessionId: userId ? null : activeSessionId,
+      guestEmail: userId ? null : guestEmail || shippingAddress?.email,
+      guestName: userId
+        ? null
+        : guestName ||
+          `${shippingAddress?.firstName || ""} ${shippingAddress?.lastName || ""}`.trim(),
       shippingAddress,
       paymentMethod: paymentMethod || "paystack",
       paymentStatus: paymentMethod === "cod" ? "pending" : "pending",

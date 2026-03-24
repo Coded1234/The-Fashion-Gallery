@@ -172,7 +172,7 @@ const OrderDetail = () => {
       ${addr.addressDetails ? `<p>${addr.addressDetails}</p>` : ""}
       <p>${addr.city || ""}${addr.country ? `, ${addr.country}` : ""}</p>
       ${addr.phone ? `<p>📞 ${addr.phone}</p>` : ""}
-      ${addr.email ? `<p>✉ ${addr.email}</p>` : ""}
+      ${addr.email && typeof addr.email === "string" && !addr.email.includes("guest-") ? `<p>✉ ${addr.email}</p>` : ""}
     </div>
   </div>
   <table>
@@ -567,11 +567,29 @@ const OrderDetail = () => {
             </h2>
             <div className="space-y-2 md:space-y-3">
               <p className="font-medium text-gray-900 text-sm md:text-base">
-                {order.user?.firstName} {order.user?.lastName}
+                {order.shippingAddress?.firstName
+                  ? `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`
+                  : order.guestName ||
+                    (order.user
+                      ? `${order.user.firstName} ${order.user.lastName}`
+                      : "Guest")}
               </p>
               <div className="flex flex-col gap-1 text-gray-500 text-sm">
-                <p>{order.user?.email}</p>
-                <p>{order.user?.phone}</p>
+                {(order.shippingAddress?.email ||
+                  order.guestEmail ||
+                  (order.user?.email && order.user?.role !== "admin")) && (
+                  <p>
+                    {order.shippingAddress?.email ||
+                      order.guestEmail ||
+                      order.user?.email}
+                  </p>
+                )}
+                <p>{order.shippingAddress?.phone || order.user?.phone}</p>
+                {!order.shippingAddress?.email && !order.guestEmail && (
+                  <p className="text-xs text-indigo-500 font-medium bg-indigo-50 inline-block px-2 py-1 rounded w-fit mt-1">
+                    Guest Checkout
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -592,8 +610,8 @@ const OrderDetail = () => {
               {order.shippingAddress?.phone && (
                 <p>Phone: {order.shippingAddress?.phone}</p>
               )}
-              {order.shippingAddress?.email && (
-                <p>Email: {order.shippingAddress?.email}</p>
+              {(order.shippingAddress?.email || order.guestEmail) && (
+                <p>Email: {order.shippingAddress?.email || order.guestEmail}</p>
               )}
             </div>
           </div>

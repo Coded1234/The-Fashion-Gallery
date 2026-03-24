@@ -6,16 +6,17 @@ const {
   updateCartItem,
   removeFromCart,
   clearCart,
+  mergeCart,
 } = require("../controllers/cartController");
-const { protect } = require("../middleware/auth");
+const { protect, optionalAuth } = require("../middleware/auth");
 
-// All routes are protected
-router.use(protect);
+router.use(optionalAuth);
 
 router.get("/", getCart);
 router.post("/add", addToCart);
 router.put("/update/:itemId", updateCartItem);
 router.delete("/remove/:itemId", removeFromCart);
 router.delete("/clear", clearCart);
+router.post("/merge", protect, mergeCart);
 
 module.exports = router;

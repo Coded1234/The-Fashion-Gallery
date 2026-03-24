@@ -11,7 +11,12 @@ const Cart = sequelize.define(
     },
     userId: {
       type: DataTypes.UUID,
-      allowNull: false,
+      allowNull: true,
+      unique: true,
+    },
+    sessionId: {
+      type: DataTypes.STRING,
+      allowNull: true,
       unique: true,
     },
     totalAmount: {
@@ -22,7 +27,7 @@ const Cart = sequelize.define(
   {
     tableName: "carts",
     underscored: true,
-  }
+  },
 );
 
 module.exports = Cart;

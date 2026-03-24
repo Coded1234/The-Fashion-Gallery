@@ -96,9 +96,23 @@ const Orders = () => {
     const searchLower = searchTerm.toLowerCase();
     return (
       order.orderNumber?.toLowerCase().includes(searchLower) ||
-      order.user?.firstName?.toLowerCase().includes(searchLower) ||
-      order.user?.lastName?.toLowerCase().includes(searchLower) ||
-      order.user?.email?.toLowerCase().includes(searchLower)
+      (order.shippingAddress?.firstName
+        ? `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`
+        : order.user
+          ? `${order.user.firstName || ""} ${order.user.lastName || ""}`
+          : order.guestName || ""
+      )
+        .toLowerCase()
+        .includes(searchLower) ||
+      (
+        order.shippingAddress?.email ||
+        order.guestEmail ||
+        order.shippingAddress?.phone ||
+        order.phone ||
+        (order.user?.email && !order.guestName ? order.user.email : "")
+      )
+        .toLowerCase()
+        .includes(searchLower)
     );
   });
 
@@ -191,7 +205,12 @@ const Orders = () => {
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-gray-500">
-                        {order.user?.firstName} {order.user?.lastName}
+                        {order.shippingAddress?.firstName
+                          ? `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`
+                          : order.guestName ||
+                            (order.user
+                              ? `${order.user.firstName} ${order.user.lastName}`
+                              : "Guest")}
                       </span>
                       <span className="text-xs font-bold text-gray-800">
                         {formatCurrency(order.totalAmount)}
@@ -300,10 +319,21 @@ const Orders = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">
-                            {order.user?.firstName} {order.user?.lastName}
+                            {order.shippingAddress?.firstName
+                              ? `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`
+                              : order.guestName ||
+                                (order.user
+                                  ? `${order.user.firstName} ${order.user.lastName}`
+                                  : "Guest")}
                           </div>
                           <div className="text-xs text-gray-500 truncate max-w-[160px]">
-                            {order.user?.email}
+                            {order.shippingAddress?.email ||
+                              order.guestEmail ||
+                              order.shippingAddress?.phone ||
+                              order.phone ||
+                              (order.user
+                                ? order.user.email
+                                : "Guest Checkout")}
                           </div>
                         </td>
                         <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">

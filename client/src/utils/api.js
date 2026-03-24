@@ -42,6 +42,18 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    // Add Guest Session ID
+    let sessionId = localStorage.getItem("sessionId");
+    if (!sessionId) {
+      // Create simple uuid-like string for fallbacks
+      sessionId = crypto.randomUUID
+        ? crypto.randomUUID()
+        : Math.random().toString(36).substring(2) + Date.now().toString(36);
+      localStorage.setItem("sessionId", sessionId);
+    }
+    config.headers["x-session-id"] = sessionId;
+
     return config;
   },
   (error) => {
@@ -106,6 +118,7 @@ export const cartAPI = {
   update: (itemId, data) => api.put(`/cart/update/${itemId}`, data),
   remove: (itemId) => api.delete(`/cart/remove/${itemId}`),
   clear: () => api.delete("/cart/clear"),
+  merge: () => api.post("/cart/merge"),
 };
 
 // Orders API

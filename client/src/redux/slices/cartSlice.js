@@ -17,10 +17,10 @@ export const fetchCart = createAsyncThunk(
       return data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch cart"
+        error.response?.data?.message || "Failed to fetch cart",
       );
     }
-  }
+  },
 );
 
 export const addToCart = createAsyncThunk(
@@ -31,10 +31,10 @@ export const addToCart = createAsyncThunk(
       return data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to add item"
+        error.response?.data?.message || "Failed to add item",
       );
     }
-  }
+  },
 );
 
 export const updateCartItem = createAsyncThunk(
@@ -45,10 +45,10 @@ export const updateCartItem = createAsyncThunk(
       return data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to update item"
+        error.response?.data?.message || "Failed to update item",
       );
     }
-  }
+  },
 );
 
 export const removeFromCart = createAsyncThunk(
@@ -59,10 +59,10 @@ export const removeFromCart = createAsyncThunk(
       return data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to remove item"
+        error.response?.data?.message || "Failed to remove item",
       );
     }
-  }
+  },
 );
 
 export const clearCart = createAsyncThunk(
@@ -73,10 +73,25 @@ export const clearCart = createAsyncThunk(
       return data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to clear cart"
+        error.response?.data?.message || "Failed to clear cart",
       );
     }
-  }
+  },
+);
+
+export const mergeCart = createAsyncThunk(
+  "cart/mergeCart",
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await cartAPI.merge();
+      // data.cart contains the merged cart
+      return data.cart;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to merge cart",
+      );
+    }
+  },
 );
 
 const cartSlice = createSlice({
@@ -130,6 +145,13 @@ const cartSlice = createSlice({
       .addCase(clearCart.fulfilled, (state) => {
         state.items = [];
         state.totalAmount = 0;
+      })
+      // Merge Cart
+      .addCase(mergeCart.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.items = action.payload.items || [];
+          state.totalAmount = action.payload.totalAmount || 0;
+        }
       });
   },
 });

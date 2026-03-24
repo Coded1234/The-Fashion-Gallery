@@ -147,12 +147,6 @@ const ProductDetail = ({
   const globalStock = product?.remainingStock ?? product?.totalStock ?? 0;
 
   const handleAddToCart = async () => {
-    if (!isAuthenticated) {
-      toast.error("Please login to add items to cart");
-      router.push(`/login?from=${encodeURIComponent(`/product/${id}`)}`);
-      return;
-    }
-
     if (isVariantProduct && !selectedSize) {
       toast.error("Please select a size");
       return;
