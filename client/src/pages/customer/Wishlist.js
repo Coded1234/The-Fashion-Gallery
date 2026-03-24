@@ -85,8 +85,12 @@ const Wishlist = () => {
   };
 
   const moveAllToCart = async () => {
-    const availableItems = wishlistItems.filter((item) => item.stock > 0);
-
+    // Check for totalStock, remainingStock, or stock depending on backend response
+    const availableItems = wishlistItems.filter((item) => {
+      const itemStock =
+        item.totalStock ?? item.remainingStock ?? item.stock ?? 1;
+      return itemStock > 0;
+    });
     if (availableItems.length === 0) {
       toast.error("No available items to add to cart");
       return;
@@ -147,7 +151,11 @@ const Wishlist = () => {
     return new Intl.NumberFormat("en-GH", {
       style: "currency",
       currency: "GHS",
-    }).format(price);
+    }).format(price || 0);
+  };
+
+  const getItemStock = (item) => {
+    return item.totalStock ?? item.remainingStock ?? item.stock ?? 1;
   };
 
   // Loading State
@@ -298,12 +306,12 @@ const Wishlist = () => {
                             -{item.discount}%
                           </span>
                         )}
-                        {item.stock <= 5 && item.stock > 0 && (
+                        {getItemStock(item) <= 5 && getItemStock(item) > 0 && (
                           <span className="px-2 py-1 bg-yellow-500 text-white text-xs font-semibold rounded">
                             Low Stock
                           </span>
                         )}
-                        {item.stock === 0 && (
+                        {getItemStock(item) === 0 && (
                           <span className="px-2 py-1 bg-gray-500 text-white text-xs font-semibold rounded">
                             Out of Stock
                           </span>
@@ -375,10 +383,10 @@ const Wishlist = () => {
                       <button
                         onClick={() => addToCart(item)}
                         disabled={
-                          item.stock === 0 || addingToCartId === item.id
+                          getItemStock(item) === 0 || addingToCartId === item.id
                         }
                         className={`w-full mt-3 py-2.5 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${
-                          item.stock === 0
+                          getItemStock(item) === 0
                             ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                             : "btn-gradient"
                         }`}
@@ -388,7 +396,9 @@ const Wishlist = () => {
                         ) : (
                           <>
                             <FiShoppingCart size={18} />
-                            {item.stock === 0 ? "Out of Stock" : "Add to Cart"}
+                            {getItemStock(item) === 0
+                              ? "Out of Stock"
+                              : "Add to Cart"}
                           </>
                         )}
                       </button>
@@ -460,11 +470,13 @@ const Wishlist = () => {
                         </div>
                         <span
                           className={`text-sm font-medium ${
-                            item.stock > 0 ? "text-green-500" : "text-red-500"
+                            getItemStock(item) > 0
+                              ? "text-green-500"
+                              : "text-red-500"
                           }`}
                         >
-                          {item.stock > 0
-                            ? `${item.stock} in stock`
+                          {getItemStock(item) > 0
+                            ? `${getItemStock(item)} in stock`
                             : "Out of stock"}
                         </span>
                       </div>
@@ -491,10 +503,11 @@ const Wishlist = () => {
                         <button
                           onClick={() => addToCart(item)}
                           disabled={
-                            item.stock === 0 || addingToCartId === item.id
+                            getItemStock(item) === 0 ||
+                            addingToCartId === item.id
                           }
                           className={`flex-1 sm:flex-initial px-6 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${
-                            item.stock === 0
+                            getItemStock(item) === 0
                               ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                               : "btn-gradient"
                           }`}
@@ -504,7 +517,7 @@ const Wishlist = () => {
                           ) : (
                             <>
                               <FiShoppingCart size={18} />
-                              {item.stock === 0
+                              {getItemStock(item) === 0
                                 ? "Out of Stock"
                                 : "Add to Cart"}
                             </>
