@@ -72,8 +72,14 @@ const Wishlist = () => {
         addToCartAction({
           productId: product.id,
           quantity: 1,
-          size: product.sizes?.[0] || "M",
-          color: product.colors?.[0] || null,
+          size:
+            typeof product.sizes?.[0] === "object"
+              ? product.sizes[0].size
+              : product.sizes?.[0] || "M",
+          color:
+            typeof product.colors?.[0] === "object"
+              ? product.colors[0].name
+              : product.colors?.[0] || null,
         }),
       ).unwrap();
       toast.success("Added to cart!");
@@ -105,8 +111,14 @@ const Wishlist = () => {
           addToCartAction({
             productId: item.id,
             quantity: 1,
-            size: item.sizes?.[0] || "M",
-            color: item.colors?.[0] || null,
+            size:
+              typeof item.sizes?.[0] === "object"
+                ? item.sizes[0].size
+                : item.sizes?.[0] || "M",
+            color:
+              typeof item.colors?.[0] === "object"
+                ? item.colors[0].name
+                : item.colors?.[0] || null,
           }),
         ).unwrap();
         successCount++;
