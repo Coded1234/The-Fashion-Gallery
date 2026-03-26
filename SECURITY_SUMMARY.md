@@ -47,9 +47,10 @@ Your e-commerce platform has **23 security vulnerabilities** requiring immediate
 **Impact:** Session hijacking if XSS exists  
 **Action:** Switch to HttpOnly cookies
 
-### 5. **No CSRF Protection**
-- Forms vulnerable to cross-site forgery
-- No token validation
+### 5. ~~No CSRF Protection~~ **[FIXED]**
+- ~~Forms vulnerable to cross-site forgery~~
+- ~~No token validation~~
+- Status: CSRF middleware + token endpoint implemented in `server/server.js`
 
 **Impact:** Unauthorized orders, password changes, account deletion  
 **Action:** Add CSRF tokens to all state-changing endpoints
@@ -60,14 +61,22 @@ Your e-commerce platform has **23 security vulnerabilities** requiring immediate
 
 | # | Issue | Impact | Effort |
 |---|-------|--------|--------|
-| 6 | No HTTPS enforcement | Man-in-middle attacks | 2 hours |
+| 6 | ~~No HTTPS enforcement~~ **[FIXED]** | Man-in-middle attacks | 2 hours |
 | 7 | Weak password policy | Brute force attacks | 4 hours |
 | 8 | Missing input validation | Injection attacks | 8 hours |
-| 9 | No rate limiting on auth | Brute force login | 3 hours |
+| 9 | ~~No rate limiting on auth~~ **[FIXED]** | Brute force login | 3 hours |
 | 10 | Admin password hardcoded | Privilege escalation | 1 hour |
 | 11 | Order authorization bypass | View other users' orders | 2 hours |
 | 12 | No HttpOnly cookies | XSS token theft | 6 hours |
 | 13 | File upload validation missing | Malicious uploads | 4 hours |
+
+### Additional Confirmed Fixes
+- ~~Swagger API documentation exposed~~ [FIXED]
+- ~~Missing Content Security Policy (CSP)~~ [FIXED]
+- ~~No API Version Control~~ [FIXED]
+- ~~No Rate Limiting on Order Creation~~ [FIXED]
+- ~~Missing X-Content-Type-Options Header~~ [FIXED]
+- ~~No HTTP Strict Transport Security (HSTS)~~ [FIXED]
 
 ---
 
@@ -85,13 +94,13 @@ Your e-commerce platform has **23 security vulnerabilities** requiring immediate
 
 ### Week 2: Authentication (20 hours)
 - [ ] HttpOnly cookie auth (8h)
-- [ ] CSRF protection (4h)
-- [ ] Rate limiting setup (4h)
+- [x] CSRF protection (4h)
+- [x] Rate limiting setup (4h)
 - [ ] Input validation (4h)
 
 ### Week 3: Security Headers & Logging (16 hours)
-- [ ] CSP headers (2h)
-- [ ] HTTPS enforcement (2h)
+- [x] CSP headers (2h)
+- [x] HTTPS enforcement (2h)
 - [ ] Secure logging (4h)
 - [ ] File upload validation (4h)
 - [ ] Testing (4h)

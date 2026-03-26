@@ -329,7 +329,9 @@ export { setAccessToken: (token) => (accessToken = token) };
 
 ---
 
-## 3. HIGH: Add CSRF Protection
+## 3. ~~HIGH: Add CSRF Protection~~ [FIXED]
+
+Status: Implemented in `server/server.js` with `csurf` + cookie-based CSRF tokens and `/api/v1/csrf-token` endpoint.
 
 **File:** `server/middleware/csrf.js`
 
@@ -456,7 +458,9 @@ npm install joi
 
 ---
 
-## 5. HIGH: Rate Limiting on Auth
+## 5. ~~HIGH: Rate Limiting on Auth~~ [FIXED]
+
+Status: Implemented and applied to auth routes in `server/server.js` and `server/routes/auth.js`.
 
 **File:** `server/middleware/rateLimiting.js`
 
@@ -503,7 +507,9 @@ router.post('/verify-email', authLimiter, verifyEmail);
 
 ---
 
-## 6. MEDIUM: Content Security Policy
+## 6. ~~MEDIUM: Content Security Policy~~ [FIXED]
+
+Status: Implemented in `server/server.js` via Helmet CSP directives.
 
 **Update:** `server/server.js`
 

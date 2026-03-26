@@ -15,13 +15,29 @@ const api = axios.create({
 });
 
 let csrfTokenPromise = null;
+let csrfTokenCache = null;
 
 const getCsrfToken = async () => {
+  if (csrfTokenCache) {
+    return csrfTokenCache;
+  }
+
   if (!csrfTokenPromise) {
     csrfTokenPromise = axios
       .get(`${API_URL}/csrf-token`, { withCredentials: true })
-      .then((res) => res.data.csrfToken)
-      .catch((err) => null);
+      .then((res) => {
+        const token = res?.data?.csrfToken || null;
+        csrfTokenCache = token;
+        return token;
+      })
+      .catch(() => {
+        // Don't cache failed fetches; allow next request to retry.
+        csrfTokenCache = null;
+        return null;
+      })
+      .finally(() => {
+        csrfTokenPromise = null;
+      });
   }
   return csrfTokenPromise;
 };
@@ -32,7 +48,12 @@ api.interceptors.request.use(
     if (
       ["post", "put", "patch", "delete"].includes(config.method?.toLowerCase())
     ) {
-      const csrfToken = await getCsrfToken();
+      let csrfToken = await getCsrfToken();
+      if (!csrfToken) {
+        // Retry once in case the first token request failed transiently.
+        csrfToken = await getCsrfToken();
+      }
+
       if (csrfToken) {
         config.headers["X-CSRF-Token"] = csrfToken;
       }
@@ -65,6 +86,16 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (error.response?.status === 403) {
+      const errorMsg = String(
+        error.response?.data?.message || "",
+      ).toLowerCase();
+      if (errorMsg.includes("csrf")) {
+        // Force a fresh CSRF token fetch on the next mutating request.
+        csrfTokenCache = null;
+      }
+    }
+
     if (error.response?.status === 401) {
       // Do not force a full redirect when the failed request is the login attempt itself.
       // This prevents the page from reloading on wrong credentials — the UI can show a toast instead.

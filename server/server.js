@@ -109,6 +109,21 @@ const authLimiter = rateLimit({
 app.use(generalLimiter);
 
 // CORS
+const allowedOrigins = new Set(
+  [
+    process.env.CLIENT_URL,
+    process.env.NEXT_PUBLIC_SITE_URL,
+    process.env.NEXT_PUBLIC_APP_URL,
+    "https://diamondauragallery.vercel.app",
+    "https://diamondauragallery-admin.vercel.app",
+    "https://enam-clothings.vercel.app",
+  ].filter(Boolean),
+);
+
+if (process.env.VERCEL_URL) {
+  allowedOrigins.add(`https://${process.env.VERCEL_URL}`);
+}
+
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -116,9 +131,7 @@ app.use(
       if (!origin) return callback(null, true);
       // Allow exact predefined deployment domains
       if (
-        origin === process.env.CLIENT_URL ||
-        origin === "https://diamondauragallery.vercel.app" ||
-        origin === "https://diamondauragallery-admin.vercel.app" ||
+        allowedOrigins.has(origin) ||
         /^http:\/\/localhost(:\d+)?$/.test(origin)
       ) {
         return callback(null, true);
@@ -242,6 +255,7 @@ app.get(`${API_PREFIX}/health`, (req, res) => {
 
 // Error handling middleware
 app.use((err, req, res, next) => {
+  void next;
   if (err.code === "EBADCSRFTOKEN") {
     return res.status(403).json({
       message: "Invalid CSRF Token. Please refresh the page and try again.",
