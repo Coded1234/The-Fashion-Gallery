@@ -48,12 +48,12 @@ const IMAGES = {
 
   // Instagram feed images
   instagram: [
-    "/images/insta1.jpg?w=300",
+    "/images/insta6.jpg?w=300",
     "/images/insta2.jpg?w=300",
     "/images/insta3.jpg?w=300",
     "/images/insta4.jpg?w=300",
     "/images/insta5.jpg?w=300",
-    "/images/insta6.jpg?w=300",
+    "/images/insta1.jpg?w=300",
   ],
 
   // ==========================================

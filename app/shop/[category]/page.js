@@ -3,7 +3,8 @@ import CustomerLayout from "../../../client/src/layouts/CustomerLayout";
 import Shop from "../../../client/src/pages/customer/Shop";
 
 export async function generateMetadata({ params }) {
-  const category = params.category;
+  const resolvedParams = await params;
+  const category = resolvedParams.category;
   return {
     title: `${category.charAt(0).toUpperCase() + category.slice(1)}`,
     description: `Shop ${category} at Diamond Aura Gallery.`,

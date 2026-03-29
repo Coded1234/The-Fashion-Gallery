@@ -1,11 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { authAPI } from "../../utils/api";
 
-// Load user from localStorage
-const userFromStorage =
-  typeof window !== "undefined" && localStorage.getItem("user")
-    ? JSON.parse(localStorage.getItem("user"))
-    : null;
+// Default to not authenticated until loadUser verifies from HttpOnly cookie
+const userFromStorage = null;
 
 const initialState = {
   user: userFromStorage,
@@ -20,7 +17,7 @@ export const register = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const { data } = await authAPI.register(userData);
-      localStorage.setItem("user", JSON.stringify(data));
+
       return data;
     } catch (error) {
       return rejectWithValue(
@@ -35,7 +32,7 @@ export const login = createAsyncThunk(
   async (credentials, { rejectWithValue }) => {
     try {
       const { data } = await authAPI.login(credentials);
-      localStorage.setItem("user", JSON.stringify(data));
+
       return data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Login failed");
@@ -48,7 +45,7 @@ export const googleLogin = createAsyncThunk(
   async (token, { rejectWithValue }) => {
     try {
       const { data } = await authAPI.googleLogin(token);
-      localStorage.setItem("user", JSON.stringify(data));
+
       return data;
     } catch (error) {
       return rejectWithValue(
@@ -63,7 +60,7 @@ export const facebookLogin = createAsyncThunk(
   async (token, { rejectWithValue }) => {
     try {
       const { data } = await authAPI.facebookLogin(token);
-      localStorage.setItem("user", JSON.stringify(data));
+
       return data;
     } catch (error) {
       return rejectWithValue(
@@ -93,7 +90,7 @@ export const updateProfile = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const { data } = await authAPI.updateProfile(userData);
-      localStorage.setItem("user", JSON.stringify(data));
+
       return data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Update failed");

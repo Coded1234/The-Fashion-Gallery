@@ -8,7 +8,7 @@ export async function generateMetadata({ params }) {
       process.env.NEXT_PUBLIC_API_URL ||
       (process.env.VERCEL_URL
         ? `https://${process.env.VERCEL_URL}/api`
-        : "http://localhost:5000/api");
+        : "http://127.0.0.1:5000/api");
     const res = await fetch(`${apiUrl}/products/${id}`, {
       next: { revalidate: 3600 },
     });

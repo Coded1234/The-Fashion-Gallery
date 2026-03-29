@@ -44,7 +44,6 @@ const VerifyEmail = () => {
         toast.success("Email verified successfully!");
 
         if (data.user) {
-          localStorage.setItem("user", JSON.stringify(data.user));
           dispatch(setCredentials(data.user));
           setTimeout(() => router.push("/"), 2000);
         }

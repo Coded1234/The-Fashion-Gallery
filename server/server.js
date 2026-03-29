@@ -245,6 +245,11 @@ app.use(
   }),
 );
 
+// Redirect /docs to /api-docs for convenience
+app.get("/docs", (req, res) => {
+  res.redirect("/api-docs");
+});
+
 // API Versioning prefix
 const API_PREFIX = "/api/v1";
 

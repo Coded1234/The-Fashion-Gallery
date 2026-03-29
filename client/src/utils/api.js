@@ -4,7 +4,7 @@ import axios from "axios";
 // REACT_APP_API_URL can override this for local dev pointing at a separate server.
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ||
-  (typeof window !== "undefined" ? "/api/v1" : "http://localhost:5000/api/v1");
+  (typeof window !== "undefined" ? "/api/v1" : "http://127.0.0.1:5000/api/v1");
 
 const api = axios.create({
   baseURL: API_URL,
@@ -60,13 +60,13 @@ api.interceptors.request.use(
     }
 
     // Add Guest Session ID
-    let sessionId = localStorage.getItem("sessionId");
+    let sessionId = localStorage.getItem("guest_cart_id");
     if (!sessionId) {
       // Create simple uuid-like string for fallbacks
       sessionId = crypto.randomUUID
         ? crypto.randomUUID()
         : Math.random().toString(36).substring(2) + Date.now().toString(36);
-      localStorage.setItem("sessionId", sessionId);
+      localStorage.setItem("guest_cart_id", sessionId);
     }
     config.headers["x-session-id"] = sessionId;
 
