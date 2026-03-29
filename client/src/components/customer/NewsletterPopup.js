@@ -76,6 +76,29 @@ const NewsletterPopup = () => {
 
     // Show popup after 30 seconds
     const timer = setTimeout(() => {
+      const currentShown = sessionStorage.getItem("newsletter_shown");
+      const currentSubscribed = localStorage.getItem("newsletter_subscribed");
+      const currentDismissed = localStorage.getItem(
+        "newsletter_last_dismissed",
+      );
+      const currentNeverShow = localStorage.getItem("newsletter_never_show");
+
+      if (
+        currentShown === "true" ||
+        currentSubscribed === "true" ||
+        currentNeverShow === "true"
+      ) {
+        return;
+      }
+
+      if (currentDismissed) {
+        const daysSinceDismissed =
+          (Date.now() - parseInt(currentDismissed)) / (1000 * 60 * 60 * 24);
+        if (daysSinceDismissed < 30) {
+          return;
+        }
+      }
+
       setIsOpen(true);
       sessionStorage.setItem("newsletter_shown", "true");
       localStorage.setItem("newsletter_last_shown", Date.now().toString());
@@ -83,7 +106,32 @@ const NewsletterPopup = () => {
 
     // Exit intent detection
     const handleMouseLeave = (e) => {
-      if (e.clientY <= 0 && !shownThisSession) {
+      // Always check actual storage natively so the closure doesn't have stale values
+      const currentShown = sessionStorage.getItem("newsletter_shown");
+      const currentSubscribed = localStorage.getItem("newsletter_subscribed");
+      const currentDismissed = localStorage.getItem(
+        "newsletter_last_dismissed",
+      );
+      const currentNeverShow = localStorage.getItem("newsletter_never_show");
+
+      if (
+        currentShown === "true" ||
+        currentSubscribed === "true" ||
+        currentNeverShow === "true"
+      ) {
+        return;
+      }
+
+      // Also check if dismissed recently
+      if (currentDismissed) {
+        const daysSinceDismissed =
+          (Date.now() - parseInt(currentDismissed)) / (1000 * 60 * 60 * 24);
+        if (daysSinceDismissed < 30) {
+          return;
+        }
+      }
+
+      if (e.clientY <= 0) {
         setIsOpen(true);
         sessionStorage.setItem("newsletter_shown", "true");
         localStorage.setItem("newsletter_last_shown", Date.now().toString());

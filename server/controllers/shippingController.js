@@ -245,26 +245,64 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 }
 
 /**
- * Calculate actual road distance using OSRM routing API
- * This gives real driving distance following roads
+ * Calculate actual road distance using mapping APIs
+ * Tries OpenRouteService first, falls back to OSRM, then straight-line
  */
 async function calculateRoadDistance(lat1, lon1, lat2, lon2) {
   try {
-    // Use OSRM (Open Source Routing Machine) for road distance
-    const url = `https://router.project-osrm.org/route/v1/driving/${lon1},${lat1};${lon2},${lat2}?overview=false`;
+    const orsApiKey = process.env.OPENROUTESERVICE_API_KEY;
 
-    logger.info("Calculating road distance", {
+    // 1. Try OpenRouteService
+    if (orsApiKey && orsApiKey !== "your_openrouteservice_key_here") {
+      // Using cycling-electric as OpenRouteService's free tier doesn't have a dedicated "motorcycle" profile,
+      // and cycling-electric is the closest mapping for 2-wheel vehicles avoiding major highways.
+      const url = `https://api.openrouteservice.org/v2/directions/cycling-electric?api_key=${orsApiKey}&start=${lon1},${lat1}&end=${lon2},${lat2}`;
+
+      logger.info("Calculating road distance via OpenRouteService", {
+        origin: { lat: lat1, lon: lon1 },
+        destination: { lat: lat2, lon: lon2 },
+      });
+
+      const response = await axios.get(url, {
+        timeout: 8000,
+        headers: {
+          "User-Agent": "EcommerceWebsite/1.0",
+          Accept: "application/json",
+        },
+        validateStatus: (status) => status < 500,
+      });
+
+      if (
+        response.data &&
+        response.data.features &&
+        response.data.features.length > 0
+      ) {
+        // Distance in ORS is in meters
+        const distanceKm =
+          response.data.features[0].properties.summary.distance / 1000;
+        logger.info("Road distance calculated via ORS", {
+          distanceKm: Number(distanceKm.toFixed(2)),
+        });
+        return distanceKm;
+      }
+    }
+
+    // 2. Fallback to OSRM (Open Source Routing Machine) without API key
+    // Using 'bike' profile as public OSRM only supports driving, bike, and foot.
+    const url = `https://router.project-osrm.org/route/v1/bike/${lon1},${lat1};${lon2},${lat2}?overview=false`;
+
+    logger.info("Calculating road distance via OSRM", {
       origin: { lat: lat1, lon: lon1 },
       destination: { lat: lat2, lon: lon2 },
     });
 
     const response = await axios.get(url, {
-      timeout: 8000, // Increased timeout for Vercel
+      timeout: 8000,
       headers: {
         "User-Agent": "EcommerceWebsite/1.0",
         Accept: "application/json",
       },
-      validateStatus: (status) => status < 500, // Don't throw on 4xx errors
+      validateStatus: (status) => status < 500,
     });
 
     if (
@@ -274,20 +312,19 @@ async function calculateRoadDistance(lat1, lon1, lat2, lon2) {
     ) {
       // Distance is in meters, convert to km
       const distanceKm = response.data.routes[0].distance / 1000;
-      logger.info("Road distance calculated", {
+      logger.info("Road distance calculated via OSRM", {
         distanceKm: Number(distanceKm.toFixed(2)),
       });
       return distanceKm;
     }
 
-    // Fallback if no routes found
+    // 3. Fallback if no routes found
     logger.warn("No routes found; using straight-line fallback");
     const straightLine = calculateDistance(lat1, lon1, lat2, lon2);
     return straightLine * ROAD_MULTIPLIER;
   } catch (error) {
     logger.error("Road distance calculation error", { error: error.message });
-    // Fallback to straight-line distance with road multiplier
-    const straightLine = calculateDistance(lat1, lon1, lat2, lon2);
+    // 4. Final Fallback to straight-line distance with road multiplier
     const estimated = straightLine * ROAD_MULTIPLIER;
     logger.info("Using road distance fallback estimate", {
       straightLineKm: Number(straightLine.toFixed(2)),
