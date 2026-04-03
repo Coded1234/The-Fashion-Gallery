@@ -98,6 +98,7 @@ const Home = () => {
             src={IMAGES.hero.main}
             alt="Hero"
             className="w-full h-full object-cover opacity-30"
+            fetchPriority="high"
           />
         </div>
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-transparent"></div>
