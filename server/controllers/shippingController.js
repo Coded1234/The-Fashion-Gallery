@@ -267,7 +267,7 @@ async function calculateRoadDistance(lat1, lon1, lat2, lon2) {
         timeout: 8000,
         headers: {
           "User-Agent": "EcommerceWebsite/1.0",
-          Accept: "application/json",
+          Accept: "application/json, application/geo+json",
         },
         validateStatus: (status) => status < 500,
       });
@@ -284,6 +284,11 @@ async function calculateRoadDistance(lat1, lon1, lat2, lon2) {
           distanceKm: Number(distanceKm.toFixed(2)),
         });
         return distanceKm;
+      } else {
+        logger.warn("ORS returned unexpected structure or error", {
+          status: response.status,
+          data: response.data,
+        });
       }
     }
 
@@ -502,15 +507,23 @@ function calculatePriceByDistance(distanceKm) {
   const basePrice = 15; // GHS
   const pricePerKm = 2; // GHS per km
 
+  let totalFee;
+
   if (effectiveKm <= 5) {
-    return Math.round(basePrice);
+    totalFee = basePrice;
   } else if (effectiveKm <= 20) {
-    return Math.round(basePrice + effectiveKm * pricePerKm);
+    totalFee = basePrice + effectiveKm * pricePerKm;
   } else if (effectiveKm <= 50) {
-    return Math.round(basePrice + effectiveKm * 1.8);
+    totalFee = basePrice + effectiveKm * 1.8;
   } else {
-    return Math.round(basePrice + effectiveKm * 1.5);
+    totalFee = basePrice + effectiveKm * 1.5;
   }
+
+  // Subtract 5 GHS discount from the calculated total fee
+  // Ensure the fee doesn't drop below a minimum threshold (e.g. 5 GHS minimum)
+  const finalFee = Math.max(5, totalFee - 7);
+
+  return Math.round(finalFee);
 }
 
 /**

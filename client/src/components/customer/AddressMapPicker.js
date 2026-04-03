@@ -8,9 +8,18 @@ if (L.Icon.Default.prototype._getIconUrl) {
   delete L.Icon.Default.prototype._getIconUrl;
 }
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
-  iconUrl: require("leaflet/dist/images/marker-icon.png"),
-  shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
+  iconRetinaUrl:
+    require("leaflet/dist/images/marker-icon-2x.png").default?.src ||
+    require("leaflet/dist/images/marker-icon-2x.png").src ||
+    require("leaflet/dist/images/marker-icon-2x.png"),
+  iconUrl:
+    require("leaflet/dist/images/marker-icon.png").default?.src ||
+    require("leaflet/dist/images/marker-icon.png").src ||
+    require("leaflet/dist/images/marker-icon.png"),
+  shadowUrl:
+    require("leaflet/dist/images/marker-shadow.png").default?.src ||
+    require("leaflet/dist/images/marker-shadow.png").src ||
+    require("leaflet/dist/images/marker-shadow.png"),
 });
 
 // Direct Leaflet map - immune to React Strict Mode double-invoke (no react-leaflet callback-ref stale closure)
