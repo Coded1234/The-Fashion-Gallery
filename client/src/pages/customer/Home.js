@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useMemo, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
@@ -94,18 +95,18 @@ const Home = () => {
       <section className="relative min-h-[440px] sm:min-h-[620px] overflow-hidden bg-[#111111]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_24%,rgba(250,204,21,0.18),transparent_40%),radial-gradient(circle_at_84%_20%,rgba(234,179,8,0.16),transparent_36%),linear-gradient(120deg,#111111_0%,#181818_52%,#252525_100%)]"></div>
         <div className="absolute inset-0">
-          <img
-            src={IMAGES.hero.main}
+          <Image
+            src="/images/banners.jpg"
             alt="Hero"
-            width="1920"
-            height="1080"
-            className="w-full h-full object-cover opacity-30"
-            fetchPriority="high"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover opacity-30"
           />
         </div>
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-transparent"></div>
         <div className="relative container mx-auto px-4 py-12 sm:py-16 min-h-[440px] sm:min-h-[620px] flex items-center">
-          <div className="max-w-2xl text-white animate-reveal">
+          <div className="max-w-2xl text-white opacity-0 animate-fade-in-up">
             <span className="inline-flex items-center rounded-full border border-amber-300/35 bg-amber-200/10 px-3 py-1 text-[11px] sm:text-xs font-semibold tracking-[0.14em] uppercase text-amber-200 mb-4">
               New Collection 2026
             </span>
